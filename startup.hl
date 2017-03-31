@@ -14,7 +14,7 @@
  * Creating unrolling event for Camphora main folder.
  */
 create-event:p5.io.unroll-path.@CAMPHORA
-  return:/system42/apps/sulphur-five
+  return:/system42/components/camphora-five
 
 
 
