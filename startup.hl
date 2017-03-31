@@ -1,0 +1,26 @@
+
+/*
+ * Startup file for Camphora Five.
+ *
+ * This file simply evaluates all files in the "/startup/" folder, in addition to
+ * creating an "IO environment variable".
+ */
+
+
+
+
+
+/*
+ * Creating unrolling event for Camphora main folder.
+ */
+create-event:p5.io.unroll-path.@CAMPHORA
+  return:/system42/apps/sulphur-five
+
+
+
+
+
+/*
+ * Evaluating all other startup scripts.
+ */
+sys42.utilities.execute-lambda-folder:@CAMPHORA/startup/
