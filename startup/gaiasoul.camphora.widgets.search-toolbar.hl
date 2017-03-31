@@ -60,9 +60,9 @@ whenever the associated 'datagrid' needs to be re-databound"
         /*
          * Then associating "onkeydown" DOM event with JavaScript function included above.
          */
-        p5.web.widgets.property.set:x:/@p5.web.widgets.find/*/*?value
+        p5.web.widgets.property.set:x:/../*/p5.web.widgets.find/[0,1]/*/*?value
           onkeypress:"return p5.sephia_toolbar_search_keypress_{0}(event);"
-            :x:/@p5.web.widgets.find/*/*?value
+            :x:/../*/p5.web.widgets.find/[0,1]/*/*?value
 
       widgets
 
