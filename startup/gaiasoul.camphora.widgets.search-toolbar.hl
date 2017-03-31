@@ -37,7 +37,7 @@ whenever the associated 'datagrid' needs to be re-databound"
    */
   return
     div
-      class:input-group
+      class:input-group camphora-search-toolbar
       oninit
 
         /*
@@ -94,9 +94,9 @@ whenever the associated 'datagrid' needs to be re-databound"
                  *
                  * First getting search criteria as supplied by user.
                  */
-                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                  class:input-group
-                p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
+                  class:camphora-search-toolbar
+                p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
                   type:search
                 p5.web.widgets.property.get:x:/@p5.web.widgets.find/*/*?value
                   value
@@ -121,7 +121,7 @@ whenever the associated 'datagrid' needs to be re-databound"
                  * To make it easier to search multiple times, we make sure we set focus to, 
                  * and select all text in search textbox.
                  */
-                p5.web.send-javascript:@"$('#{0}').focus().select();"
+                p5.web.send-javascript:@"p5.$('{0}').el.focus();p5.$('{0}').el.select();"
                   :x:/@p5.web.widgets.find/*/*?value
 
             /*
@@ -140,9 +140,9 @@ whenever the associated 'datagrid' needs to be re-databound"
                 /*
                  * Setting search textbox content to empty.
                  */
-                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                  class:input-group
-                p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
+                  class:camphora-search-toolbar
+                p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
                   type:search
                 p5.web.widgets.property.set:x:/@p5.web.widgets.find/*/*?value
                   value:
@@ -159,7 +159,7 @@ whenever the associated 'datagrid' needs to be re-databound"
                  * To make it easier to search immediately, we make sure we set focus to, 
                  * and select all text in search textbox.
                  */
-                p5.web.send-javascript:@"$('#{0}').focus().select();"
+                p5.web.send-javascript:@"p5.$('{0}').el.focus();"
                   :x:/@p5.web.widgets.find/*/*?value
 
             /*
@@ -198,9 +198,9 @@ whenever the associated 'datagrid' needs to be re-databound"
                 /*
                  * Retrieving "search textbox" value.
                  */
-                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                  class:input-group
-                p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
+                  class:camphora-search-toolbar
+                p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
                   type:search
                 p5.web.widgets.property.get:x:/@p5.web.widgets.find/*/*?value
                   value
@@ -242,7 +242,7 @@ whenever the associated 'datagrid' needs to be re-databound"
                  * Setting focus to search textbox, and making sure we select all text, to make it easier to supply
                  * a new search criteria immediately.
                  */
-                p5.web.send-javascript:@"$('#{0}').focus().select();"
+                p5.web.send-javascript:@"p5.$('{0}').el.focus();"
                   :x:/@p5.web.widgets.find/*/*?value
 
             button
@@ -266,9 +266,9 @@ whenever the associated 'datagrid' needs to be re-databound"
                 /*
                  * Retrieving "search textbox" value.
                  */
-                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                  class:input-group
-                p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                p5.web.widgets.find-first-ancestor-like:x:/../*/_event?value
+                  class:camphora-search-toolbar
+                p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor-like/*/*?value
                   type:search
                 p5.web.widgets.property.get:x:/@p5.web.widgets.find/*/*?value
                   value
@@ -299,5 +299,5 @@ whenever the associated 'datagrid' needs to be re-databound"
                  * Setting focus to search textbox, and making sure we select all text, to make it easier to supply
                  * a new search criteria immediately.
                  */
-                p5.web.send-javascript:@"$('#{0}').focus().select();"
+                p5.web.send-javascript:@"p5.$('{0}').el.focus();"
                   :x:/@p5.web.widgets.find/*/*?value

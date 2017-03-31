@@ -39,7 +39,7 @@ create-event:gaiasoul.camphora.widgets.fieldset
             a
               href:#
               role:button
-              innerValue:@"<span class=""glyphicon glyphicon-question-sign sephia-settings-help-button""></span>"
+              innerValue:@"<span class=""glyphicon glyphicon-question-sign camphora-fieldset-help-button""></span>"
               onclick
 
                 /*
@@ -48,7 +48,7 @@ create-event:gaiasoul.camphora.widgets.fieldset
                 p5.web.widgets.get-parent:x:/../*/_event?value
                 p5.web.widgets.get-parent:x:/-/*/*?value
                 p5.web.widgets.find-like:x:/-/*/*?value
-                  class:sephia-settings-help-info
+                  class:camphora-fieldset-help-info
                 if
                   fetch:x:/0/0/0?value.bool
                     p5.web.widgets.property.get:x:/@p5.web.widgets.find-like/*/*?value
@@ -72,6 +72,6 @@ create-event:gaiasoul.camphora.widgets.fieldset
          */
         literal
           element:div
-          class:col-xs-12 fade-in prepend-bottom sephia-settings-help-info
+          class:col-xs-12 fade-in prepend-bottom camphora-fieldset-help-info
           visible:false
           innerValue:x:/../*/help?value

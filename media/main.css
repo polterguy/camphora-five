@@ -1,0 +1,28 @@
+
+/*
+ * Main CSS file for the Camphora components.
+ */
+
+
+
+/*
+ * Help button (legen bugger).
+ */
+.camphora-fieldset-help-button {
+    float:right;
+    opacity:.2;
+    transform:scale(1);
+    transition:opacity, transform ease-in-out .3s;
+}
+.camphora-fieldset-help-button:hover,
+.camphora-fieldset-help-button:focus {
+    opacity:1;
+    transform:scale(1.5) rotate(19deg);
+    transition:opacity, transform ease-in-out .3s;
+}
+.camphora-fieldset-help-info {
+    color:rgba(0,0,0,.5);
+}
+.camphora-search-toolbar .input-group-addon:first-child {
+    min-width:100px;
+}
