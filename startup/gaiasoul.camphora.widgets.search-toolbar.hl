@@ -22,6 +22,7 @@
  * - [previous-text]       - Optional [innerValue] for previous button, default to "<".
  * - [next-text]           - Optional [innerValue] for next button, defaults to ">".
  * - [widgets]             - Additional widgets to append after the main button widgets, no defaults.
+ * - [auto-focus]          - If true, sets focus to filter textbox initially.
  */
 create-event:gaiasoul.camphora.widgets.grid-filter
 
@@ -37,6 +38,7 @@ create-event:gaiasoul.camphora.widgets.grid-filter
     clear-text:Clear
     previous-text:&lt;
     next-text:&gt;
+    auto-focus:bool:false
 
   /*
    * Basic sanity check!
@@ -59,6 +61,16 @@ whenever the associated 'datagrid' needs to be re-databound"
   if:x:/../*/widgets/*
     add:x:/../*/return/*/container/*/widgets/*/container/[1,2]/*/widgets
       src:x:/../*/widgets/*
+
+  /*
+   * Checking if a [auto-focus] is true.
+   */
+  if:x:/../*(/auto-focus|/.defaults/*/auto-focus)/$?value.bool
+    add:x:/../*/return/*/container/*/widgets/*/container/[0,1]/*/widgets/*/input
+      src
+        oninit
+          p5.web.send-javascript:@"p5.$('{0}').el.focus();"
+            :x:/../*/_event?value
 
   /*
    * Returning widget to caller.

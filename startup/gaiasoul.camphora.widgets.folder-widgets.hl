@@ -1,0 +1,12 @@
+
+/*
+ * Creating Camphora folder extension widget.
+ *
+ * This widget can be given the path to a folder, and will automatically load all Hyperlambda files in that folder, 
+ * and append into itself
+ *
+ * Arguments;
+ *
+ */
+create-event:gaiasoul.camphora.widgets.folder-widgets
+
