@@ -57,7 +57,7 @@ else
   set:x:/@.defaults/*/filename?value
     src:/users/{0}/documents/private/camphora/{1}.hl
       :x:/@whoami/*/username?value
-      :x:/@defaults/*/name?value
+      :x:/@.defaults/*/name?value
 
 
 
@@ -88,7 +88,7 @@ if:x:/@p5.web.widgets.find/*/*?value
 /*
  * Creating main wire frame for editing app.
  */
-eval-x:x:/+/*/.filename|/+/*/*/*/*/*/*/h3/*/innerValue|/+/**/micro.widgets.wizard-form/*/*/value
+eval-x:x:/+/*/.filename|/+/**/micro.widgets.wizard-form/*/*/value
 create-widget
   class:row
   .filename:x:/@.defaults/*/filename?value
@@ -129,8 +129,6 @@ create-widget
           class:shaded rounded air-inner
           .data
           widgets
-            h3
-              innerValue:x:/@.defaults/*/name?value
             micro.widgets.wizard-form
               text
                 info:Name
@@ -144,12 +142,119 @@ create-widget
                   micro.page.set-focus:x:/../*/_event?value
 
             div
+              .fields
+              widgets
+
+            div
               class:right
               widgets
                 div
                   class:strip
                   style:"display:inline-block;"
                   widgets
+                    button
+                      style:"margin-bottom:0;"
+                      innerValue:@"<span class=""icon-plus""></span>"
+                      title:Adds another field to your CRUD form
+                      onclick
+
+                        /*
+                         * Adding a new field into form.
+                         */
+                        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                          .filename
+                        p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                          .fields
+
+                        /*
+                         * Creating widget wrapping field definition.
+                         */
+                        create-widget
+                          parent:x:/@p5.web.widgets.find/*/*?value
+                          class:strip fill
+                          widgets
+                            label
+                              innerValue:Field
+                            input
+                              type:text
+                              placeholder:Name ...
+                              .data-field:field-name
+                              oninit
+
+                                /*
+                                 * Setting initial focus to name textbox.
+                                 */
+                                micro.page.set-focus:x:/../*/_event?value
+
+                            select
+                              .data-field:field-type
+                              onchange
+
+                                /*
+                                 * Retrieving our "options" textbox.
+                                 */
+                                p5.web.widgets.get-parent:x:/../*/_event?value
+                                p5.web.widgets.find:x:/-/*/*?value
+                                  .data-field:options
+
+                                /*
+                                 * Checking if we should enable our "options" textbox.
+                                 */
+                                get-widget-property:x:/../*/_event?value
+                                  value
+                                if:x:/@get-widget-property/*/*?value
+                                  =:select
+                                  or:x:/@get-widget-property/*/*?value
+                                    =:radio
+
+                                  /*
+                                   * Enabling our "options" textbox.
+                                   */
+                                  delete-widget-property:x:/@p5.web.widgets.find/*/*?value
+                                    disabled
+
+                                else
+
+                                  /*
+                                   * Disabling our "options" textbox.
+                                   */
+                                  set-widget-property:x:/@p5.web.widgets.find/*/*?value
+                                    disabled
+
+                              widgets
+                                option
+                                  innerValue:Singleline text
+                                  value:text
+                                option
+                                  innerValue:Multiline text
+                                  value:textarea
+                                option
+                                  innerValue:Checkbox
+                                  value:checkbox
+                                option
+                                  innerValue:Select dropdown
+                                  value:select
+                                option
+                                  innerValue:Radiobuttons
+                                  value:radio
+                            input
+                              type:text
+                              placeholder:Options ...
+                              .data-field:options
+                              disabled
+                            label
+                              innerValue:Show
+                            span
+                              widgets
+                                input
+                                  type:checkbox
+                                  title:Show in grid
+                                  .data-field:show-in-grid
+                                  checked
+                            input
+                              type:hidden
+                              .data-field:.signal
+
                     button
                       style:"margin-bottom:0;"
                       innerValue:Save
@@ -205,6 +310,19 @@ create-widget
                           return
 
                         /*
+                         * Making sure app has at least one column.
+                         */
+                        if:x:/@micro.form.serialize/*/.signal?count
+                          =:int:0
+
+                          /*
+                           * Oops, app has no field declarations.
+                           */
+                          micro.windows.info:Your app must have at least one field
+                            class:micro-windows-info warning
+                          return
+
+                        /*
                          * Retrieving app's filename, and if it is not null, we delete
                          * the file.
                          */
@@ -216,7 +334,8 @@ create-widget
                           !=
 
                           /*
-                           * Editing mode, making sure we delete existing file.
+                           * Editing mode, making sure we delete existing file,
+                           * if it exists.
                            */
                           if
                             fetch:x:/0/0?value
@@ -231,7 +350,49 @@ create-widget
                          * Used to hold actual data for our app.
                          */
                         .data
-                          foo:bar
+
+                        /*
+                         * Iterating through each field, and adding as field into
+                         * above [.data] lambda.
+                         */
+                        for-each:x:/@micro.form.serialize/*/.signal
+
+                          /*
+                           * Sanity checking field-name before we add it into resulting lambda.
+                           */
+                          match:x:/@_dp/#/@field-name?value
+                            src:regex:@"/^[-a-z]{3,}$/"
+                          if:x:/@match/*?count
+                            =:int:0
+                            or:x:/@match/0?name
+                              =:
+
+                            /*
+                             * Oops, not an accepted name!
+                             */
+                            micro.windows.info:The names of your fields must only contain lowercase letters [a-z], hyphens (-), and be minimum 3 characters long
+                              class:micro-windows-info warning
+                            return
+
+                          eval-x:x:/+/*/*/*
+                          add:x:/@.data
+                            src
+                              field
+                                name:x:/@_dp/#/@field-name?value
+                                type:x:/@_dp/#/@field-type?value
+                                show:x:/@_dp/#/@show-in-grid?value
+                          if:x:/@_dp/#/@options?value
+
+                            /*
+                             * Splitting up options semantically for each "," found
+                             * in its value.
+                             */
+                            split:x:/@_dp/#/@options?value
+                              =:,
+                              trim:true
+                            for-each:x:/@split/*?name
+                              add:x:/@.data/0/-/*/type
+                                src:x:/@_dp?value
 
                         /*
                          * Saving file.

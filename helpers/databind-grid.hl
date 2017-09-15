@@ -80,6 +80,13 @@ for-each:x:/@list-files/*?name
                                   button
                                     innerValue:Yes
                                     style:"margin-bottom:0;"
+                                    oninit
+
+                                      /*
+                                       * Setting initial focus to "Yes" button.
+                                       */
+                                      micro.page.set-focus:x:/../*/_event?value
+
                                     onclick
 
                                       /*
@@ -107,13 +114,6 @@ for-each:x:/@list-files/*?name
                                   button
                                     innerValue:No
                                     style:"margin-bottom:0;"
-                                    oninit
-
-                                      /*
-                                       * Setting initial focus to "No" button.
-                                       */
-                                      micro.page.set-focus:x:/../*/_event?value
-
                                     onclick
 
                                       /*
