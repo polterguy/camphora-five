@@ -1,0 +1,34 @@
+
+/*
+ * Desktop widget file for Capmohora Five.
+ */
+container
+  element:a
+  class:desktop-app shaded rounded air-inner
+  title:CRUD
+  oninit
+
+    /*
+     * Verifying user is logged in as root, and if not, deleting widget altogether, 
+     * and returning early.
+     */
+    whoami
+    if:x:/@whoami/*/role?value
+      !=:root
+
+      /*
+       * User is not logged in as root, simply deleting entire icon.
+       */
+      delete-widget:x:/../*/_event?value
+      return
+
+    /*
+     * Getting link URL to point correctly.
+     */
+    set-widget-property:x:/../*/_event?value
+      href:/camphora-five
+
+  widgets
+    span
+      class:desktop-app-name
+      innerValue:@"<span class=""icon-th desktop-app-icon""></span><span style=""position:absolute;top:5px;right:5px;font-size:.7rem;"">CRUD</span>"

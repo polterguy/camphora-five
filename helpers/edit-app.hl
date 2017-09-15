@@ -1,0 +1,14 @@
+
+/*
+ * File responsible for editing and creating new apps.
+ */
+
+
+
+
+
+/*
+ * Listing files in user's "apps folder", and creating one datagrid item for each
+ * file that exists there.
+ */
+micro.windows.info:Foo

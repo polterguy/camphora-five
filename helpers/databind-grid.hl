@@ -1,0 +1,106 @@
+
+/*
+ * File responsible for databinding Camphora apps datagrid.
+ */
+
+
+
+
+
+/*
+ * Listing files in user's "apps folder", and creating one datagrid item for each
+ * file that exists there.
+ */
+list-files:~/documents/private/camphora/
+  filter:.hl
+for-each:x:/@list-files/*?name
+
+  /*
+   * Figuring out filename, without extension.
+   */
+  split:x:/@_dp?value
+    =:/
+    =:.
+
+  /*
+   * Adding grid [item] to databind operation below.
+   */
+  eval-x:x:/+/*/*/*|/+/**/_filename
+  add:x:/../*/micro.widgets.grid.databind
+    src
+      item
+        name:x:/@split/0/-2?name
+        edit
+          style:"text-align:right;"
+          widgets
+            button
+              style:"margin-bottom:0;"
+              innerValue:@"<span class=""icon-pencil""></span>"
+            button
+              style:"margin-bottom:0;"
+              innerValue:@"<span class=""icon-trash""></span>"
+              onclick
+
+                /*
+                 * Deleting app, after having asked user to confirm action, for then
+                 * to simply re-databind grid.
+                 */
+                create-widgets
+                  micro.widgets.modal:camphora-confirm-deletion
+                    widgets
+                      h3
+                        innerValue:Confirm deletion of app
+                      p
+                        innerValue:Are you sure you want to delete this app? This action is permanent.
+                      div
+                        class:right
+                        widgets
+                          div
+                            class:strip
+                            style:"display:inline-block"
+                            widgets
+                              button
+                                innerValue:Yes
+                                onclick
+
+                                  /*
+                                   * Forward evaluated above.
+                                   */
+                                  _filename:x:/@_dp?value
+
+                                  /*
+                                   * Deleting app declaration file, for then to simply
+                                   * delete modal widget.
+                                   */
+                                  delete-file:x:/@_filename?value
+                                  delete-widget:camphora-confirm-deletion
+
+                                  /*
+                                   * Re-databinding grid.
+                                   */
+                                  micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
+
+                              button
+                                innerValue:No
+                                oninit
+
+                                  /*
+                                   * Setting initial focus to "No" button.
+                                   */
+                                  micro.page.set-focus:x:/../*/_event?value
+
+                                onclick
+
+                                  /*
+                                   * Simply deleting modal widget.
+                                   */
+                                  delete-widget:camphora-confirm-deletion
+
+
+
+
+
+/*
+ * Databinding grid.
+ */
+micro.widgets.grid.databind:camphora-apps

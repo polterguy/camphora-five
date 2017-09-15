@@ -11,10 +11,18 @@
 
 
 /*
- * Creating unrolling event for Camphora main folder.
+ * Creates the "path" Active Event that points to our "/camphora/" folder.
+ * This is done in such a way that we can install Camphora in any folder we wish.
  */
+split:x:/..?name
+  =:/
+set:x:/@split/0/-
+join:x:/@split/*?name
+  sep:/
+eval-x:x:/+/*
 create-event:p5.io.unroll-path.@CAMPHORA
-  return:/system42/components/camphora-five
+  return:/{0}
+    :x:/@join?value
 
 
 
