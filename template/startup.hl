@@ -14,6 +14,46 @@
  */
 split:x:/..?name
   =:/
+  =:.
+
+
+
+
+
+/*
+ * Loading app's declaration file, to make sure we can get the columns of our
+ * database correct.
+ */
+_cols
+load-file:/modules/{0}/helpers/app.hl
+  :x:/@split/0/-3?name
+for-each:x:/@load-file/*/*/field
+
+  /*
+   * Appending currently iterated column to [_cols] above, according to 
+   * what [type] of [field] it is.
+   */
+  switch:x:/@_dp/#/*/type?value
+    case:text
+    case:radio
+    case:select
+      set:x:/@_cols?value
+        src:{0}{1}
+          :x:/@_cols?value
+          :"`{0}` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,"
+            :x:/@_dp/#/*/name?value
+    case:checkbox
+      set:x:/@_cols?value
+        src:{0}{1}
+          :x:/@_cols?value
+          :"`{0}` INT(10) NOT NULL,"
+            :x:/@_dp/#/*/name?value
+    case:textarea
+      set:x:/@_cols?value
+        src:{0}{1}
+          :x:/@_cols?value
+          :"`{0}` longtext COLLATE utf8mb4_unicode_ci NOT NULL,"
+            :x:/@_dp/#/*/name?value
 
 
 
@@ -22,4 +62,42 @@ split:x:/..?name
 /*
  * Creating database for app, unless it already exists.
  */
+try
+  p5.mysql.connect:[camphora]
+    p5.mysql.execute:@"
+CREATE TABLE IF NOT EXISTS `{0}` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  {1}
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+"
+      :x:/@split/0/-3?name
+      :x:/@_cols?value
 
+catch
+
+  /*
+   * Attempting to create database, unless this is our second invocation, for then
+   * to invoke self again, for simplicity reasons.
+   */
+  if:x:/../*/second?value
+    not
+
+    /*
+     * Making sure we prepend the database prefix in front of schema name.
+     */
+    p5.config.get:p5.data.prefix
+
+    /*
+     * Creating database schema.
+     */
+    p5.mysql.connect:[sys]
+      p5.mysql.execute:@"CREATE SCHEMA `{0}camphora`;"
+        :x:/@p5.config.get/*?value
+
+    /*
+     * Invoking self, with [second] being true, to avoid never ending recursion.
+     */
+    micro.evaluate.file:x:/..?name
+      second:bool:true

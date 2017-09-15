@@ -54,17 +54,6 @@ create-folder:/modules/{0}/
 
 
 /*
- * Copying file that declares our app into folder for app.
- */
-copy-file:x:/../*/filename?value
-  dest:/modules/{0}/app.hl
-    :x:/@split/0/-2?name
-
-
-
-
-
-/*
  * Copying all files and folders from "template" folder into app's folder.
  */
 list-files:@CAMPHORA/template/
@@ -72,6 +61,48 @@ copy-file:x:/@list-files/*?name
   dest:/modules/{0}/
     :x:/@split/0/-2?name
 list-folders:@CAMPHORA/template/
-copy-folder:x:/@list-folders/*?name
-  dest:/modules/{0}/
+for-each:x:/-/*?name
+  split:x:/@_dp?value
+    =:/
+  copy-folder:x:/@_dp?value
+    dest:/modules/{0}/{1}/
+      :x:/..for-each/@split/0/-2?name
+      :x:/@split/0/-?name
+
+
+
+
+
+/*
+ * Copying file that declares our app into folder for app.
+ */
+copy-file:x:/../*/filename?value
+  dest:/modules/{0}/helpers/app.hl
     :x:/@split/0/-2?name
+
+
+
+
+
+/*
+ * Trying to delete old database table, if it exists.
+ */
+try
+  p5.mysql.connect:[camphora]
+    p5.mysql.execute:@"drop table `{0}`"
+      :x:/@split/0/-2?name
+catch
+
+  /*
+   * Silent catch, since exception implies database/table didn't exist.
+   */
+
+
+
+
+
+/*
+ * Evaluating startup file.
+ */
+micro.evaluate.file:/modules/{0}/startup.hl
+  :x:/@split/0/-2?name
