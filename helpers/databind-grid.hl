@@ -31,70 +31,95 @@ for-each:x:/@list-files/*?name
       item
         name:x:/@split/0/-2?name
         edit
-          style:"text-align:right;"
+          class:right
           widgets
-            button
-              style:"margin-bottom:0;"
-              innerValue:@"<span class=""icon-pencil""></span>"
-            button
-              style:"margin-bottom:0;"
-              innerValue:@"<span class=""icon-trash""></span>"
-              onclick
+            div
+              class:strip
+              style:"display:inline-block;"
+              widgets
+                button
+                  style:"margin-bottom:0;padding-left:35px;padding-right:35px;"
+                  innerValue:@"<span class=""icon-pencil""></span>"
+                  onclick
 
-                /*
-                 * Deleting app, after having asked user to confirm action, for then
-                 * to simply re-databind grid.
-                 */
-                create-widgets
-                  micro.widgets.modal:camphora-confirm-deletion
-                    widgets
-                      h3
-                        innerValue:Confirm deletion of app
-                      p
-                        innerValue:Are you sure you want to delete this app? This action is permanent.
-                      div
-                        class:right
+                    /*
+                     * Forward evaluated above.
+                     */
+                    _filename:x:/@_dp?value
+
+                    /*
+                     * Evaluating file responsible for editing app.
+                     */
+                    eval-x:x:/+/*
+                    micro.evaluate.file:@CAMPHORA/helpers/edit-app.hl
+                      filename:x:/@_filename?value
+
+                button
+                  style:"margin-bottom:0;"
+                  innerValue:@"<span class=""icon-trash""></span>"
+                  onclick
+
+                    /*
+                     * Deleting app, after having asked user to confirm action, for then
+                     * to simply re-databind grid.
+                     */
+                    create-widgets
+                      micro.widgets.modal:camphora-confirm-deletion
                         widgets
+                          h3
+                            innerValue:Confirm deletion of app
+                          p
+                            innerValue:Are you sure you want to delete this app? This action is permanent.
                           div
-                            class:strip
-                            style:"display:inline-block"
+                            class:right
                             widgets
-                              button
-                                innerValue:Yes
-                                onclick
+                              div
+                                class:strip
+                                style:"display:inline-block"
+                                widgets
+                                  button
+                                    innerValue:Yes
+                                    style:"margin-bottom:0;"
+                                    onclick
 
-                                  /*
-                                   * Forward evaluated above.
-                                   */
-                                  _filename:x:/@_dp?value
+                                      /*
+                                       * Forward evaluated above.
+                                       */
+                                      _filename:x:/@_dp?value
 
-                                  /*
-                                   * Deleting app declaration file, for then to simply
-                                   * delete modal widget.
-                                   */
-                                  delete-file:x:/@_filename?value
-                                  delete-widget:camphora-confirm-deletion
+                                      /*
+                                       * Deleting app declaration file, for then to simply
+                                       * delete modal widget.
+                                       */
+                                      delete-file:x:/@_filename?value
+                                      delete-widget:camphora-confirm-deletion
 
-                                  /*
-                                   * Re-databinding grid.
-                                   */
-                                  micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
+                                      /*
+                                       * Re-databinding grid.
+                                       */
+                                      micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
 
-                              button
-                                innerValue:No
-                                oninit
+                                      /*
+                                       * Signaling listeners that app's been deleted.
+                                       */
+                                      camphora.delete-app:x:/@_filename?value
 
-                                  /*
-                                   * Setting initial focus to "No" button.
-                                   */
-                                  micro.page.set-focus:x:/../*/_event?value
+                                  button
+                                    innerValue:No
+                                    style:"margin-bottom:0;"
+                                    oninit
 
-                                onclick
+                                      /*
+                                       * Setting initial focus to "No" button.
+                                       */
+                                      micro.page.set-focus:x:/../*/_event?value
 
-                                  /*
-                                   * Simply deleting modal widget.
-                                   */
-                                  delete-widget:camphora-confirm-deletion
+                                    onclick
+
+                                      /*
+                                       * Simply deleting modal widget.
+                                       */
+                                      delete-widget:camphora-confirm-deletion
 
 
 

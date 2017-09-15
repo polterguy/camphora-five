@@ -1,6 +1,9 @@
 
 /*
  * File responsible for editing and creating new apps.
+ *
+ * Optionally takes a [filename] argument, for editing existing app, instead of
+ * creating a new app.
  */
 
 
@@ -8,7 +11,89 @@
 
 
 /*
- * Listing files in user's "apps folder", and creating one datagrid item for each
- * file that exists there.
+ * Sanity check.
  */
-micro.windows.info:Foo
+micro.lambda.contract.optional:x:/..
+  filename:string
+
+
+
+
+
+/*
+ * Default values.
+ */
+.defaults
+  name:new-app
+  filename
+
+
+
+
+
+/*
+ * Modifying defaults, if a [filename] argument was supplied.
+ */
+if:x:/../*/filename?value
+
+  /*
+   * We're in "edit modus", hence we change the [.defaults] segment to contain
+   * data from our actual file.
+   */
+  split:x:/../*/filename?value
+    =:/
+    =:.
+  set:x:/@.defaults/*/name?value
+    src:x:/@split/0/-2?name
+  set:x:/@.defaults/*/filename?value
+    src:x:/../*/filename?value
+
+
+
+
+
+/*
+ * Creating main wire frame for editing app.
+ */
+eval-x:x:/+/*/.filename|/+/*/*/*/*/*/*/h3/*/innerValue
+create-widget
+  class:row
+  .filename:x:/@.defaults/*/filename?value
+  events
+
+    /*
+     * Invoked when an app is deleted.
+     *
+     * We're checking if the deleted app, is the currently edited one, and if so,
+     * we delete the widget.
+     */
+    camphora.delete-app
+
+      /*
+       * Sanity check.
+       */
+      micro.lambda.contract.min:x:/..
+        _arg:string
+
+      /*
+       * Checking if this is our guy, at which point we delete widget entirely.
+       */
+      get-widget-property:x:/../*/_event?value
+        .filename
+      if:x:/@get-widget-property/*/*?value
+        =:x:/../*/_arg?value
+
+        /*
+         * Our guy, making sure we delete widget, to not have it "dangling".
+         */
+        delete-widget:x:/../*/_event?value
+
+  widgets
+    div
+      class:col
+      widgets
+        div
+          class:shaded rounded air-inner
+          widgets
+            h3
+              innerValue:x:/@.defaults/*/name?value
