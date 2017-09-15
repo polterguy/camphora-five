@@ -1,0 +1,25 @@
+
+/*
+ * Startup file for Camphora Five generated app.
+ *
+ * This file simply creates the app's database, unless it already exists.
+ */
+
+
+
+
+
+/*
+ * Figuring out name of app.
+ */
+split:x:/..?name
+  =:/
+
+
+
+
+
+/*
+ * Creating database for app, unless it already exists.
+ */
+

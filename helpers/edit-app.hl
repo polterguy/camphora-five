@@ -154,6 +154,8 @@ create-widget
           class:shaded rounded air-inner
           .data
           widgets
+            h4
+              innerValue:Meta info
             micro.widgets.wizard-form
               text
                 info:Name
@@ -166,9 +168,12 @@ create-widget
                    */
                   micro.page.set-focus:x:/../*/_event?value
 
+            hr
             div
               .fields
               widgets
+                h4
+                  innerValue:Fields
 
             div
               class:right
@@ -202,6 +207,7 @@ create-widget
                     button
                       style:"margin-bottom:0;"
                       innerValue:Save
+                      .save-button
                       onclick
 
                         /*
@@ -367,6 +373,58 @@ create-widget
                          * Re-databinding grid.
                          */
                         micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
+
+                        /*
+                         * Notifying user.
+                         */
+                        micro.windows.info:App was saved
+                          class:micro-windows-info success
+
+                    button
+                      style:"margin-bottom:0;"
+                      innerValue:Generate
+                      onclick
+
+                        /*
+                         * Retrieving filename widget, saving app, and invoking 
+                         * file responsible for generating our app.
+                         */
+                        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                          .filename
+                        p5.web.widgets.find:x:/-/*/*?value
+                          .save-button
+                        p5.web.widgets.ajax-events.raise:x:/-/*/*?value
+                          onclick
+                        get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                          .filename
+
+                        /*
+                         * Invoking file responsible for generating our app, making
+                         * sure we wrap the invocation in a try/catch block, in case
+                         * exceptions occurs.
+                         */
+                        try
+
+                          /*
+                           * Evaluating file responsible for creating our app.
+                           */
+                          eval-x:x:/+/*
+                          micro.evaluate.file:@CAMPHORA/helpers/generate-app.hl
+                            filename:x:/@get-widget-property/*/*?value
+
+                          /*
+                           * Notifying user.
+                           */
+                          micro.windows.info:App was successfully generated
+                            class:micro-windows-info success
+
+                        catch
+
+                          /*
+                           * Oops ...!!
+                           */
+                          micro.windows.info:x:/@message?value
+                            class:micro-windows-info warning
 
                     button
                       style:"margin-bottom:0;"

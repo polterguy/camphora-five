@@ -2,7 +2,7 @@
 /*
  * Main CSS file for Camphora Five.
  */
-body {
+.container {
     margin-bottom:150px;
 }
 .strip > label:first-child {

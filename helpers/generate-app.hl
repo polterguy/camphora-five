@@ -1,0 +1,77 @@
+
+/*
+ * File responsible for generating app.
+ *
+ * Requires a [filename] argument, declaring which app to generate.
+ */
+
+
+
+
+
+/*
+ * Sanity check.
+ */
+micro.lambda.contract.min:x:/..
+  filename:string
+
+
+
+
+
+/*
+ * Figuring out app's folder name.
+ */
+split:x:/../*/filename?value
+  =:/
+  =:.
+
+
+
+
+
+/*
+ * Checking if folder exists from before, and if it does, we throw an exception.
+ */
+if
+  fetch:x:/0/0?value
+    folder-exists:/modules/{0}/
+      :x:/@split/0/-2?name
+  throw:Sorry, this app already exists. You must first uninstall any old versions before you can re-generate the app.
+
+
+
+
+
+/*
+ * Creating folder structure for our app.
+ */
+create-folder:/modules/{0}/
+  :x:/@split/0/-2?name
+
+
+
+
+
+/*
+ * Copying file that declares our app into folder for app.
+ */
+copy-file:x:/../*/filename?value
+  dest:/modules/{0}/app.hl
+    :x:/@split/0/-2?name
+
+
+
+
+
+/*
+ * Copying all files and folders from "template" folder into app's folder.
+ */
+list-files:@CAMPHORA/template/
+copy-file:x:/@list-files/*?name
+  dest:/modules/{0}/
+    :x:/@split/0/-2?name
+list-folders:@CAMPHORA/template/
+copy-folder:x:/@list-folders/*?name
+  dest:/modules/{0}/
+    :x:/@split/0/-2?name
