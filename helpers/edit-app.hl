@@ -48,6 +48,36 @@ if:x:/../*/filename?value
   set:x:/@.defaults/*/filename?value
     src:x:/../*/filename?value
 
+else
+
+  /*
+   * "New app modus".
+   */
+  whoami
+  set:x:/@.defaults/*/filename?value
+    src:/users/{0}/documents/private/camphora/{1}.hl
+      :x:/@whoami/*/username?value
+      :x:/@defaults/*/name?value
+
+
+
+
+
+/*
+ * Checking if app is already being edited, and if so, simply scrolling existing
+ * editor into view.
+ */
+p5.web.widgets.find
+  .filename:x:/@.defaults/*/filename?value
+if:x:/@p5.web.widgets.find/*/*?value
+
+  /*
+   * App is already being edited, scrolling existing editor into view, and returning early.
+   */
+  p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView(true);"
+    :x:/@p5.web.widgets.find/*/*?value
+  return
+
 
 
 
@@ -55,7 +85,7 @@ if:x:/../*/filename?value
 /*
  * Creating main wire frame for editing app.
  */
-eval-x:x:/+/*/.filename|/+/*/*/*/*/*/*/h3/*/innerValue
+eval-x:x:/+/*/.filename|/+/*/*/*/*/*/*/h3/*/innerValue|/+/**/micro.widgets.wizard-form/*/*/value
 create-widget
   class:row
   .filename:x:/@.defaults/*/filename?value
@@ -94,6 +124,125 @@ create-widget
       widgets
         div
           class:shaded rounded air-inner
+          .data
           widgets
             h3
               innerValue:x:/@.defaults/*/name?value
+            micro.widgets.wizard-form
+              text
+                info:Name
+                .data-field:name
+                value:x:/@.defaults/*/name?value
+                oninit
+
+                  /*
+                   * Setting initial focus to name textbox.
+                   */
+                  micro.page.set-focus:x:/../*/_event?value
+
+            div
+              class:right
+              widgets
+                div
+                  class:strip
+                  style:"display:inline-block;"
+                  widgets
+                    button
+                      style:"margin-bottom:0;"
+                      innerValue:Save
+                      onclick
+
+                        /*
+                         * Retrieving wizard-form's data.
+                         */
+                        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                          .data
+                        micro.form.serialize:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
+                        /*
+                         * Sanity checking name of app.
+                         */
+                        match:x:/@micro.form.serialize/*/name?value
+                          src:regex:@"/^[-a-z]{5,}$/"
+                        if:x:/@match/0?name
+                          =:
+                          or:x:/@match/*?count
+                            =:int:0
+
+                          /*
+                           * App's name is not accepted.
+                           */
+                          micro.windows.info:Your app can only have a-z and hyphens (-) in its name, and must be more than 4 characters long
+                            class:micro-windows-info warning
+                          return
+
+                        /*
+                         * Retrieving app's filename, and if it is not null, we delete
+                         * the file.
+                         */
+                        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                          .filename
+                        get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                          .filename
+                        if:x:/@get-widget-property/*/*?value
+                          !=
+
+                          /*
+                           * Editing mode, making sure we delete existing file.
+                           */
+                          if
+                            fetch:x:/0/0?value
+                              file-exists:x:/@get-widget-property/*/*?value
+
+                            /*
+                             * File exists, deleting it.
+                             */
+                            delete-file:x:/@get-widget-property/*/*?value
+
+                        /*
+                         * Used to hold actual data for our app.
+                         */
+                        .data
+                          foo:bar
+
+                        /*
+                         * Saving file.
+                         */
+                        lambda2hyper:x:/@.data/*
+                        save-file:~/documents/private/camphora/{0}.hl
+                          :x:/@micro.form.serialize/*/name?value
+                          src:x:/@lambda2hyper?value
+
+                        /*
+                         * Updating header.
+                         */
+                        p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                          element:h3
+                        set-widget-property:x:/@p5.web.widgets.find/*/*?value
+                          innerValue:x:/@micro.form.serialize/*/name?value
+
+                        /*
+                         * Updating [.filename] to signal we're in "edit mode".
+                         */
+                        whoami
+                        set-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                          .filename:/users/{0}/documents/private/camphora/{1}.hl
+                            :x:/@whoami/*/username?value
+                            :x:/@micro.form.serialize/*/name?value
+
+                        /*
+                         * Re-databinding grid.
+                         */
+                        micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
+
+                    button
+                      style:"margin-bottom:0;"
+                      innerValue:Close
+                      onclick
+
+                        /*
+                         * Finding main "editing" widget, and deleting it.
+                         */
+                        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                          .filename
+                        delete-widget:x:/-/*/*?value

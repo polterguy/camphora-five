@@ -2,3 +2,6 @@
 /*
  * Main CSS file for Camphora Five.
  */
+body {
+    margin-bottom:150px;
+}
