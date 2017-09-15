@@ -76,6 +76,9 @@ if:x:/@p5.web.widgets.find/*/*?value
    */
   p5.web.send-javascript:@"p5.$('{0}').el.scrollIntoView(true);"
     :x:/@p5.web.widgets.find/*/*?value
+  p5.web.widgets.find:x:/@p5.web.widgets.find/*/*?value
+    .data-field:name
+  micro.page.set-focus:x:/@p5.web.widgets.find/*/*?value
   return
 
 
@@ -168,12 +171,37 @@ create-widget
                           =:
                           or:x:/@match/*?count
                             =:int:0
+                          or
+                            fetch:x:/0/0?value
+                              folder-exists:/modules/{0}/
+                                :x:/@micro.form.serialize/*/name?value
+                          or
+                            fetch:x:/0/0?value
+                              file-exists:~/documents/private/camphora/{0}.hl
+                                :x:/@micro.form.serialize/*/name?value
+                            and
+                              fetch:x:/*/.different?value
+                                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                                  .filename
+                                get-widget-property:x:/-/*/*?value
+                                  .filename
+                                .different:bool:false
+                                whoami
+                                if:x:/@get-widget-property/*/*?value
+                                  !=:/users/{0}/documents/private/camphora/{1}.hl
+                                    :x:/@whoami/*/username?value
+                                    :x:/@micro.form.serialize/*/name?value
+                                  set:x:/@.different?value
+                                    src:bool:true
 
                           /*
                            * App's name is not accepted.
                            */
-                          micro.windows.info:Your app can only have a-z and hyphens (-) in its name, and must be more than 4 characters long
+                          micro.windows.info:Your app can only have a-z and hyphens (-) in its name, and must be more than 4 characters long. It must also not be an existing module, and it must be unique.
                             class:micro-windows-info warning
+                          p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                            .data-field:name
+                          micro.page.set-focus:x:/@p5.web.widgets.find/*/*?value
                           return
 
                         /*
