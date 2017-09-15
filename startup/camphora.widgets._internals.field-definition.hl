@@ -1,0 +1,132 @@
+
+/*
+ * Creates our "field definition widget".
+ *
+ * Optionally pass in [name], [type], [options] and [show]
+ */
+create-event:camphora.widgets._internals.field-definition
+
+  /*
+   * Signal.
+   */
+  .signal
+
+  /*
+   * Parametrizing widget.
+   */
+  if:x:/../*/type?value
+    add:x:/../*/return/**/select/*/widgets/*/option/*/value/={0}/.
+      :x:/../*/type?value
+      src:selected
+    if:x:/../*/type?value
+      =:radio
+      or:x:/../*/type?value
+        =:select
+      set:x:/../*/return/**/.data-field/=options/./*/disabled
+  if:x:/../*/show?value
+    =:bool:false
+    set:x:/../*/return/**/.data-field/=show-in-grid/./*/checked
+
+  /*
+   * If [name] is not given, we set focus to name widget.
+   */
+  if:x:/../*/name
+    not
+    add:x:/../*/return/**/.data-field/=field-name/.
+      src
+        oninit
+          micro.page.set-focus:x:/../*/_event?value
+
+  /*
+   * Returning widget to caller.
+   */
+  eval-x:x:/+/*/*/*/*/value
+  return
+    container
+      class:strip fill
+      widgets
+        label
+          innerValue:Field
+        input
+          type:text
+          placeholder:Name ...
+          .data-field:field-name
+          value:x:/@.signal/--/name?value
+        select
+          .data-field:field-type
+          onchange
+
+            /*
+             * Retrieving our "options" textbox.
+             */
+            p5.web.widgets.get-parent:x:/../*/_event?value
+            p5.web.widgets.find:x:/-/*/*?value
+              .data-field:options
+
+            /*
+             * Checking if we should enable our "options" textbox.
+             */
+            get-widget-property:x:/../*/_event?value
+              value
+            if:x:/@get-widget-property/*/*?value
+              =:select
+              or:x:/@get-widget-property/*/*?value
+                =:radio
+
+              /*
+               * Enabling our "options" textbox.
+               */
+              delete-widget-property:x:/@p5.web.widgets.find/*/*?value
+                disabled
+
+            else
+
+              /*
+               * Disabling our "options" textbox.
+               */
+              set-widget-property:x:/@p5.web.widgets.find/*/*?value
+                disabled
+
+          widgets
+            option
+              innerValue:Singleline text
+              value:text
+            option
+              innerValue:Multiline text
+              value:textarea
+            option
+              innerValue:Checkbox
+              value:checkbox
+            option
+              innerValue:Select dropdown
+              value:select
+            option
+              innerValue:Radiobuttons
+              value:radio
+        input
+          type:text
+          placeholder:Options ...
+          .data-field:options
+          disabled
+          value:x:/@.signal/--/options?value
+        label
+          innerValue:Show
+        span
+          widgets
+            input
+              type:checkbox
+              title:Show in grid
+              .data-field:show-in-grid
+              checked
+        input
+          type:hidden
+          .data-field:.signal
+        button
+          innerValue:@"<span class=""icon-trash""></span>"
+          onclick
+
+            /*
+             * Retrieving parent widget, and simply deleting it.
+             */
+            p5.web.widgets.get-parent:x:/../*/_event?value
+            delete-widget:x:/-/*/*?value

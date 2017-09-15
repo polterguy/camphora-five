@@ -48,6 +48,31 @@ if:x:/../*/filename?value
   set:x:/@.defaults/*/filename?value
     src:x:/../*/filename?value
 
+  /*
+   * Loading file, and making sure initial state of widget reflects file's actual
+   * declaration.
+   */
+  load-file:x:/../*/filename?value
+
+  /*
+   * Looping through each [field] from file, and creating a wrapper widget for it.
+   */
+  for-each:x:/@load-file/*/*/field
+
+    /*
+     * Adding a widget into fields wrapper widget, reflecting currently iterated field declaration.
+     */
+    join:x:/@_dp/#/*/type/*?name
+      sep:", "
+    eval-x:x:/+/*/*/*
+    add:x:/../*/create-widget/**/div/*/.fields/./*/widgets
+      src
+        camphora.widgets._internals.field-definition
+          name:x:/@_dp/#/*/name?value
+          type:x:/@_dp/#/*/type?value
+          options:x:/@join?value
+          show:x:/@_dp/#/*/show?value
+
 else
 
   /*
@@ -169,91 +194,10 @@ create-widget
                         /*
                          * Creating widget wrapping field definition.
                          */
-                        create-widget
-                          parent:x:/@p5.web.widgets.find/*/*?value
-                          class:strip fill
-                          widgets
-                            label
-                              innerValue:Field
-                            input
-                              type:text
-                              placeholder:Name ...
-                              .data-field:field-name
-                              oninit
-
-                                /*
-                                 * Setting initial focus to name textbox.
-                                 */
-                                micro.page.set-focus:x:/../*/_event?value
-
-                            select
-                              .data-field:field-type
-                              onchange
-
-                                /*
-                                 * Retrieving our "options" textbox.
-                                 */
-                                p5.web.widgets.get-parent:x:/../*/_event?value
-                                p5.web.widgets.find:x:/-/*/*?value
-                                  .data-field:options
-
-                                /*
-                                 * Checking if we should enable our "options" textbox.
-                                 */
-                                get-widget-property:x:/../*/_event?value
-                                  value
-                                if:x:/@get-widget-property/*/*?value
-                                  =:select
-                                  or:x:/@get-widget-property/*/*?value
-                                    =:radio
-
-                                  /*
-                                   * Enabling our "options" textbox.
-                                   */
-                                  delete-widget-property:x:/@p5.web.widgets.find/*/*?value
-                                    disabled
-
-                                else
-
-                                  /*
-                                   * Disabling our "options" textbox.
-                                   */
-                                  set-widget-property:x:/@p5.web.widgets.find/*/*?value
-                                    disabled
-
-                              widgets
-                                option
-                                  innerValue:Singleline text
-                                  value:text
-                                option
-                                  innerValue:Multiline text
-                                  value:textarea
-                                option
-                                  innerValue:Checkbox
-                                  value:checkbox
-                                option
-                                  innerValue:Select dropdown
-                                  value:select
-                                option
-                                  innerValue:Radiobuttons
-                                  value:radio
-                            input
-                              type:text
-                              placeholder:Options ...
-                              .data-field:options
-                              disabled
-                            label
-                              innerValue:Show
-                            span
-                              widgets
-                                input
-                                  type:checkbox
-                                  title:Show in grid
-                                  .data-field:show-in-grid
-                                  checked
-                            input
-                              type:hidden
-                              .data-field:.signal
+                        eval-x:x:/+/*/*
+                        create-widgets
+                          camphora.widgets._internals.field-definition
+                            parent:x:/@p5.web.widgets.find/*/*?value
 
                     button
                       style:"margin-bottom:0;"

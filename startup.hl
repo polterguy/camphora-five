@@ -31,4 +31,4 @@ create-event:p5.io.unroll-path.@CAMPHORA
 /*
  * Evaluating all other startup scripts.
  */
-sys42.utilities.execute-lambda-folder:@CAMPHORA/startup/
+micro.evaluate.folder:@CAMPHORA/startup/
