@@ -228,10 +228,6 @@ create-widget
                             =:int:0
                           or
                             fetch:x:/0/0?value
-                              folder-exists:/modules/{0}/
-                                :x:/@micro.form.serialize/*/name?value
-                          or
-                            fetch:x:/0/0?value
                               file-exists:~/documents/private/camphora/{0}.hl
                                 :x:/@micro.form.serialize/*/name?value
                             and
@@ -386,45 +382,93 @@ create-widget
                       onclick
 
                         /*
-                         * Retrieving filename widget, saving app, and invoking 
-                         * file responsible for generating our app.
+                         * Asking user to confirm action.
                          */
-                        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                          .filename
-                        p5.web.widgets.find:x:/-/*/*?value
-                          .save-button
-                        p5.web.widgets.ajax-events.raise:x:/-/*/*?value
-                          onclick
-                        get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                          .filename
+                        eval-x:x:/+/**/_widget
+                        create-widgets
+                          micro.widgets.modal:camphora-confirm-app-creation
+                            widgets
+                              h3
+                                innerValue:Please confirm action
+                              p
+                                innerValue:This will delete any existing apps with the same name, and also delete any existing data for these apps. Are you sure you wish to proceed?
+                              div
+                                class:right
+                                widgets
+                                  div
+                                    class:strip
+                                    style:"display:inline-block;"
+                                    widgets
+                                      button
+                                        innerValue:Yes
+                                        oninit
 
-                        /*
-                         * Invoking file responsible for generating our app, making
-                         * sure we wrap the invocation in a try/catch block, in case
-                         * exceptions occurs.
-                         */
-                        try
+                                          /*
+                                           * Setting focus initially to "Yes" button.
+                                           */
+                                          micro.page.set-focus:x:/../*/_event?value
 
-                          /*
-                           * Evaluating file responsible for creating our app.
-                           */
-                          eval-x:x:/+/*
-                          micro.evaluate.file:@CAMPHORA/helpers/generate-app.hl
-                            filename:x:/@get-widget-property/*/*?value
+                                        onclick
 
-                          /*
-                           * Notifying user.
-                           */
-                          micro.windows.info:App was successfully generated
-                            class:micro-windows-info success
+                                          /*
+                                           * Forward evaluated above.
+                                           */
+                                          _widget:x:/../*/_event?value
 
-                        catch
+                                          /*
+                                           * Retrieving filename widget, saving app, and invoking 
+                                           * file responsible for generating our app.
+                                           */
+                                          p5.web.widgets.find-first-ancestor:x:/../*/_widget?value
+                                            .filename
+                                          p5.web.widgets.find:x:/-/*/*?value
+                                            .save-button
+                                          p5.web.widgets.ajax-events.raise:x:/-/*/*?value
+                                            onclick
+                                          get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                                            .filename
 
-                          /*
-                           * Oops ...!!
-                           */
-                          micro.windows.info:x:/@message?value
-                            class:micro-windows-info warning
+                                          /*
+                                           * Invoking file responsible for generating our app, making
+                                           * sure we wrap the invocation in a try/catch block, in case
+                                           * exceptions occurs.
+                                           */
+                                          try
+
+                                            /*
+                                             * Evaluating file responsible for creating our app.
+                                             */
+                                            eval-x:x:/+/*
+                                            micro.evaluate.file:@CAMPHORA/helpers/generate-app.hl
+                                              filename:x:/@get-widget-property/*/*?value
+
+                                            /*
+                                             * Notifying user.
+                                             */
+                                            micro.windows.info:App was successfully generated
+                                              class:micro-windows-info success
+
+                                            /*
+                                             * Deleting modal widget.
+                                             */
+                                            delete-widget:camphora-confirm-app-creation
+
+                                          catch
+
+                                            /*
+                                             * Oops ...!!
+                                             */
+                                            micro.windows.info:x:/@message?value
+                                              class:micro-windows-info warning
+
+                                      button
+                                        innerValue:No
+                                        onclick
+
+                                          /*
+                                           * Deleting modal widget.
+                                           */
+                                          delete-widget:camphora-confirm-app-creation
 
                     button
                       style:"margin-bottom:0;"

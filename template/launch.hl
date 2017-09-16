@@ -2,4 +2,99 @@
 /*
  * Launcher file for Camphora Five generated app.
  */
-micro.windows.info:Foo
+
+
+
+
+
+/*
+ * Including Micro, adding Awesome Fonts, and serious skin.
+ */
+p5.web.include-css-file:@MICRO/media/main.css
+p5.web.include-css-file:@MICRO/media/ext.css
+p5.web.include-css-file:@MICRO/media/fonts.css
+p5.web.include-css-file:@MICRO/media/skins/serious.css
+
+
+
+
+
+/*
+ * Loading template file, and creating one column in our datagrid for each [field]
+ * in our "app.hl" file.
+ */
+load-file:/modules{0}/helpers/app.hl
+  :x:/../*/url?value
+for-each:x:/@load-file/*/*/field
+
+  /*
+   * Checking if field is supposed to be visible in grid.
+   */
+  if:x:/@_dp/#/*/show?value
+    =:bool:false
+
+    /*
+     * Current field is not supposed to be visible in the datagrid.
+     */
+    continue
+
+  /*
+   * Adding a column to our datagrid below.
+   */
+  add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
+    src:x:/@_dp/#/*/name?value
+
+
+
+
+
+/*
+ * Creating main wire-frame grid.
+ */
+set-widget-property:cnt
+  class:container
+eval-x:x:/+/**/_folder
+create-widget
+  class:container
+  widgets
+    div
+      class:row
+      widgets
+        div
+          class:col-100
+          widgets
+            div
+              class:right
+              widgets
+                button
+                  innerValue:@"<span class=""icon-home""></span>"
+                  onclick
+
+                    /*
+                     * Redirecting user to server's root URL.
+                     */
+                    p5.web.get-root-location
+                    p5.web.set-location:x:/-?value
+
+    div
+      class:row
+      widgets
+        div
+          class:col-100
+          widgets
+            micro.widgets.grid:camphora-crud-grid
+              oninit
+
+                /*
+                 * Forward evaluated above.
+                 */
+                _folder:/modules{0}/
+                  :x:/../*/url?value
+
+                /*
+                 * Evaluating file responsible for databinding grid.
+                 */
+                micro.evaluate.file:{0}helpers/databind-grid.hl
+                  :x:/@_folder?value
+
+              columns

@@ -31,13 +31,14 @@ split:x:/../*/filename?value
 
 
 /*
- * Checking if folder exists from before, and if it does, we throw an exception.
+ * Checking if folder exists from before, and if it does, we delete it.
  */
 if
   fetch:x:/0/0?value
     folder-exists:/modules/{0}/
       :x:/@split/0/-2?name
-  throw:Sorry, this app already exists. You must first uninstall any old versions before you can re-generate the app.
+  delete-folder:/modules/{0}/
+    :x:/@split/0/-2?name
 
 
 
