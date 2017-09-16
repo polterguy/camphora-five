@@ -55,6 +55,18 @@ for-each:x:/@load-file/*/*/field
 
 
 /*
+ * Creating delete row header
+ */
+add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
+  src
+    Delete
+      style:"width:5px;"
+
+
+
+
+
+/*
  * Creating main wire-frame grid.
  */
 set-widget-property:cnt

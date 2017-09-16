@@ -168,7 +168,13 @@ for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=selec
       /*
        * Adding each option for radiobutton field.
        */
+      _first:bool:true
       for-each:x:/@_dp/#/*/type/*
+        if:x:/@_first?value
+          add:x:/..for-each/*/add/*/*/input
+            src:checked
+          set:x:/@_first?value
+            src:bool:false
         eval-x:x:/+/*/*/*(/name|/.data-value|/innerValue)
         add:x:/..case/*/add/*/*/*/widgets
           src

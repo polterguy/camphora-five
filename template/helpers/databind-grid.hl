@@ -139,7 +139,7 @@ set:x:/@_cols?value
  * Opening database connection, and executing our SQL query.
  */
 p5.mysql.connect:[camphora]
-  p5.mysql.select:@"select {0} from {1}{2} order by id limit 10 offset @offset"
+  p5.mysql.select:@"select id, {0} from {1}{2} order by id limit 10 offset @offset"
     :x:/@_cols?value
     :x:/@split/0/-2?name
     :x:/@_where?value
@@ -148,6 +148,7 @@ p5.mysql.connect:[camphora]
   /*
    * Looping through above results, and creating a row in grid for each row in database.
    */
+  eval-x:x:/+/**/_table-name
   for-each:x:/@p5.mysql.select/*
 
     /*
@@ -160,7 +161,7 @@ p5.mysql.connect:[camphora]
      * Then looping through each cell, making sure we HTML encode it before we
      * append it's value into currently iterated [item].
      */
-    for-each:x:/@_dp/#/*
+    for-each:x:/@_dp/#/*(!/id)
 
       /*
        * HTML encoding value, to eliminate risk of SQL injection attacks.
@@ -176,6 +177,46 @@ p5.mysql.connect:[camphora]
       add:x:/../*/micro.widgets.grid.databind/0/-
         src
           foo:x:/@p5.html.html-encode?value
+
+    /*
+     * Adding "delete button" to grid, in addition to meta info for row.
+     */
+    eval-x:x:/+/*/*/*/.id
+    add:x:/../*/micro.widgets.grid.databind/0/-
+      src
+        .row
+          .id:x:/@_dp/#/*/id?value
+        Delete
+          widgets
+            button
+              innerValue:@"<span class=""icon-trash""></span>"
+              style:"margin-bottom:0;padding-left:25px;padding-right:25px;"
+              onclick
+
+                /*
+                 * Deleting row.
+                 */
+                _table-name:x:/../*/split/[0,1]/0/-2?name
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  .id
+                get-widget-property:x:/-/*/*?value
+                  .id
+                p5.mysql.connect:[camphora]
+                  p5.mysql.delete:@"delete from {0} where id = @id"
+                    :x:/@_table-name?value
+                    @id:x:/@get-widget-property/*/*?value
+
+                /*
+                 * Re-databinding grid.
+                 */
+                micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
+                  :x:/@_table-name?value
+
+                /*
+                 * Giving user visual feedback.
+                 */
+                micro.windows.info:Record was deleted
+                  class:micro-windows-info success
 
 
 
