@@ -38,6 +38,7 @@ load-file:/{0}/app.hl
  * added first, then textarea fields, then select fields, then radio field, before 
  * finally all other types of fields (only checkbox type left at that point though).
  */
+_first:bool:true
 for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=select/.|/type/=/radio/.|/*/.)
 
   /*
@@ -50,6 +51,20 @@ for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=selec
      */
     case:text
 
+      /*
+       * Checking if this is our first iteration.
+       */
+      if:x:/@_first?value
+        add:x:/..case/*/add/*/*/*/*/input
+          src
+            oninit
+              micro.page.set-focus:x:/../*/_event?value
+        set:x:/@_first?value
+          src:bool:false
+
+      /*
+       * Adding widget to modal window.
+       */
       eval-x:x:/+/*/*/*/*/*(/innerValue|/placeholder|/.data-field)
       add:x:/../*/create-widgets/**/div/*/widgets/=data
         src
@@ -71,6 +86,20 @@ for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=selec
      */
     case:textarea
 
+      /*
+       * Checking if this is our first iteration.
+       */
+      if:x:/@_first?value
+        add:x:/..case/*/add/*/*
+          src
+            oninit
+              micro.page.set-focus:x:/../*/_event?value
+        set:x:/@_first?value
+          src:bool:false
+
+      /*
+       * Adding widget to modal window.
+       */
       eval-x:x:/+/*/*/*(/placeholder|/.data-field)
       add:x:/../*/create-widgets/**/div/*/widgets/=data
         src
@@ -140,12 +169,13 @@ for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=selec
        * Adding each option for radiobutton field.
        */
       for-each:x:/@_dp/#/*/type/*
-        eval-x:x:/+/*/*/*(/name|/innerValue)
+        eval-x:x:/+/*/*/*(/name|/.data-value|/innerValue)
         add:x:/..case/*/add/*/*/*/widgets
           src
             input
               type:radio
               name:x:/@for-each/@_dp/#/*/name?value
+              .data-value:x:/@_dp/#?name
             label
               innerValue:x:/@_dp/#?name
               class:capitalize
@@ -165,6 +195,7 @@ for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=selec
 /*
  * Creating a modal widget, asking user to supply his data for his new record.
  */
+eval-x:x:/+/**/_helper-folder
 create-widgets
   micro.widgets.modal:camphora-new-item-modal
     widgets
@@ -184,14 +215,77 @@ create-widgets
                 onclick
 
                   /*
-                   * Saving record to database, closing modal window, and re-databinding
-                   * grid.
+                   * Forward evaluated above.
+                   */
+                  _helper-folder:x:/@join?value
+
+                  /*
+                   * Serializing form's data.
                    */
                   micro.form.serialize:camphora-new-item-modal
-                  create-widget
-                    element:pre
-                    innerValue:x:/..
+
+                  /*
+                   * Figuring out table's name.
+                   */
+                  split:x:/@_helper-folder?value
+                    =:/
+                  eval-x:x:/+
+                  _table:x:/@split/0/-2?name
+
+                  /*
+                   * Parametrizing SQL insert statement with column names, and SQL parameters.
+                   */
+                  _cols
+                  _pars
+                  _par-names
+                  for-each:x:/@micro.form.serialize/*
+                    set:x:/@_cols?value
+                      src:{0},{1}
+                        :x:/@_cols?value
+                        :x:/@_dp/#?name
+                    set:x:/@_par-names?value
+                      src:{0},@{1}
+                        :x:/@_par-names?value
+                        :x:/@_dp/#?name
+                    eval-x:x:/+2/*/*
+                    set:x:/+/*/*?name
+                      src:@{0}
+                        :x:/@_dp/#?name
+                    add:x:/@_pars
+                      src
+                        foo:x:/@_dp/#?value
+
+                  /*
+                   * Trimming away additional ",".
+                   */
+                  set:x:/@_cols?value
+                    trim:x:/@_cols?value
+                      chars:,
+                  set:x:/@_par-names?value
+                    trim:x:/@_par-names?value
+                      chars:,
+
+                  /*
+                   * Adding all parameters into SQL insert statement.
+                   */
+                  add:x:/../*/p5.mysql.connect/*/p5.mysql.insert
+                    src:x:/@_pars/*
+
+                  /*
+                   * Inserting into database.
+                   */
+                  p5.mysql.connect:[camphora]
+                    p5.mysql.insert:@"insert into {0} ({1}) values ({2})"
+                      :x:/@_table?value
+                      :x:/@_cols?value
+                      :x:/@_par-names?value
+
+                  /*
+                   * Deleting modal widget, and re-databinding datagrid.
+                   */
                   delete-widget:camphora-new-item-modal
+                  micro.evaluate.file:/{0}/databind-grid.hl
+                    :x:/@_helper-folder?value
 
               button
                 innerValue:Cancel
