@@ -1,0 +1,10 @@
+
+/*
+ * Main CSS file for Camphora Five CRUD app.
+ */
+.container {
+    margin-bottom:150px;
+}
+.strip > label:first-child {
+    min-width: 90px;
+}

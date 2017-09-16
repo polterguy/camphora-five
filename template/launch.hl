@@ -14,6 +14,8 @@ p5.web.include-css-file:@MICRO/media/main.css
 p5.web.include-css-file:@MICRO/media/ext.css
 p5.web.include-css-file:@MICRO/media/fonts.css
 p5.web.include-css-file:@MICRO/media/skins/serious.css
+p5.web.include-css-file:/modules{0}/media/main.css
+  :x:/../*/url?value
 
 
 
@@ -53,7 +55,7 @@ for-each:x:/@load-file/*/*/field
  */
 set-widget-property:cnt
   class:container
-eval-x:x:/+/**/_folder
+eval-x:x:/+/**(/_folder|/_url)
 create-widget
   class:container
   widgets
@@ -66,15 +68,35 @@ create-widget
             div
               class:right
               widgets
-                button
-                  innerValue:@"<span class=""icon-home""></span>"
-                  onclick
+                div
+                  class:strip
+                  style:"display:inline-block;"
+                  widgets
+                    button
+                      innerValue:@"<span class=""icon-plus""></span>"
+                      style:"padding-left:35px;padding-right:35px;"
+                      onclick
 
-                    /*
-                     * Redirecting user to server's root URL.
-                     */
-                    p5.web.get-root-location
-                    p5.web.set-location:x:/-?value
+                        /*
+                         * Forward evaluated above.
+                         */
+                        _url:x:/../*/url?value
+
+                        /*
+                         * Evaluating file responsible for creating a new record.
+                         */
+                        micro.evaluate.file:/modules{0}/helpers/create-item.hl
+                          :x:/@_url?value
+
+                    button
+                      innerValue:@"<span class=""icon-home""></span>"
+                      onclick
+
+                        /*
+                         * Redirecting user to server's root URL.
+                         */
+                        p5.web.get-root-location
+                        p5.web.set-location:x:/-?value
 
     div
       class:row
@@ -83,6 +105,7 @@ create-widget
           class:col-100
           widgets
             micro.widgets.grid:camphora-crud-grid
+              columns
               oninit
 
                 /*
@@ -96,5 +119,3 @@ create-widget
                  */
                 micro.evaluate.file:{0}helpers/databind-grid.hl
                   :x:/@_folder?value
-
-              columns
