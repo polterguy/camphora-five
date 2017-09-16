@@ -3,6 +3,8 @@
  * File responsible for generating app.
  *
  * Requires a [filename] argument, declaring which app to generate.
+ * Optionally pass in a [delete-data] argument, and set its value to boolean "true"
+ * if you wish to delete existing data/database/table for app.
  */
 
 
@@ -86,17 +88,18 @@ copy-file:x:/../*/filename?value
 
 
 /*
- * Trying to delete old database table, if it exists.
+ * Trying to delete old database table, if it exists, and if caller told us to do so.
  */
-try
-  p5.mysql.connect:[camphora]
-    p5.mysql.execute:@"drop table `{0}`"
-      :x:/@split/0/-2?name
-catch
+if:x:/../*/delete-data?value
+  try
+    p5.mysql.connect:[camphora]
+      p5.mysql.execute:@"drop table `{0}`"
+        :x:/@split/0/-2?name
+  catch
 
-  /*
-   * Silent catch, since exception implies database/table didn't exist.
-   */
+    /*
+     * Silent catch, since exception implies database/table didn't exist.
+     */
 
 
 

@@ -391,7 +391,15 @@ create-widget
                               h3
                                 innerValue:Please confirm action
                               p
-                                innerValue:This will delete any existing apps with the same name, and also delete any existing data for these apps. Are you sure you wish to proceed?
+                                innerValue:@"This will delete any existing apps with the same name, and also delete any existing data for these apps, if you choose to check off the <em>'delete data'</em> checkbox. Are you sure you wish to proceed?"
+                              p
+                                innerValue:@"<strong>Notice</strong>, - If you have added or changed any of your fields, you might have to delete your data in order to have your app working. If you get weird errors as you run your app, try to re-generate your app, and delete your data as you do."
+                              input:camphora-delete-data
+                                type:checkbox
+                                style:"margin-bottom:0;"
+                              label
+                                for:camphora-delete-data
+                                innerValue:Delete existing data
                               div
                                 class:right
                                 widgets
@@ -401,6 +409,7 @@ create-widget
                                     widgets
                                       button
                                         innerValue:Yes
+                                        style:"margin-bottom:0;"
                                         oninit
 
                                           /*
@@ -414,6 +423,16 @@ create-widget
                                            * Forward evaluated above.
                                            */
                                           _widget:x:/../*/_event?value
+
+                                          /*
+                                           * Checking if user wants to delete any existing data for app.
+                                           */
+                                          get-widget-property:camphora-delete-data
+                                            checked
+                                          if:x:/-/*/*
+                                            add:x:/../**/micro.evaluate.file
+                                              src
+                                                delete-data:bool:true
 
                                           /*
                                            * Retrieving filename widget, saving app, and invoking 
@@ -463,6 +482,7 @@ create-widget
 
                                       button
                                         innerValue:No
+                                        style:"margin-bottom:0;"
                                         onclick
 
                                           /*
