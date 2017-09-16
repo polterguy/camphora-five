@@ -2,8 +2,18 @@
 /*
  * File responsible for databinding the grid for a Camphora Five generated app.
  *
- * Optionally requires [filter] and [offset].
+ * Optionally requires [filter] or [.id], at which the latter case, only the 
+ * specified database [id] item will be re-databound.
  */
+
+
+
+
+
+/*
+ * Signal node, to separate arguments from the rest of our lambda.
+ */
+.signal
 
 
 
@@ -15,6 +25,7 @@
 micro.lambda.contract.optional:x:/..
   filter:string
   offset:long
+  id:long
 
 
 
@@ -103,7 +114,7 @@ for-each:x:/@load-file/*/*/field
        * Adding first parts of our "where" clause.
        */
       set:x:/@_where?value
-        src:" where "
+        src:" where ("
 
       /*
        * Making sure we pass in [@filter] to [p5.mysql.select]
@@ -125,11 +136,60 @@ for-each:x:/@load-file/*/*/field
 
 
 /*
- * Trimming away redundant ",".
+ * Adding closing ")" to where clause.
+ */
+if:x:/@_where?value
+  set:x:/@_where?value
+    src:"{0})"
+      :x:/@_where?value
+
+
+
+
+
+/*
+ * Trimming away redundant "," on columns declaration.
  */
 set:x:/@_cols?value
   trim:x:/@_cols?value
     chars:,
+
+
+
+
+
+/*
+ * Checking if caller supplied an [id] argument.
+ */
+if:x:/@.signal/--/id?value
+
+  /*
+   * [id] argument was supplied, modifying where clause to accommodate for 
+   * only specified id.
+   */
+  if:x:/@_where?value
+
+    /*
+     * Adding "id" clause as AND parameter to SQL.
+     */
+    set:x:/@_where?value
+      src:@"{0} and id = @id"
+        :x:/@_where?value
+
+  else
+
+    /*
+     * Adding "id" clause as main where parts to SQL.
+     */
+    set:x:/@_where?value
+      src:@" where id = @id"
+
+  /*
+   * Adding [@id] parameter to SQL.
+   */
+  add:x:/../*/p5.mysql.connect/*/p5.mysql.select
+    src
+      @id:x:/../*/id?value
 
 
 
@@ -208,12 +268,13 @@ p5.mysql.connect:[camphora]
         /*
          * Adding item to grid's databind invocation.
          */
-        eval-x:x:/+2/*/*
+        eval-x:x:/+2/*/**
         set:x:/+/*/*?name
           src:x:/@_dp/#?name
         add:x:/../*/micro.widgets.grid.databind/0/-
           src
             foo:x:/@p5.html.html-encode?value
+              .data-field:x:/@_dp/#?name
 
     /*
      * Adding "delete button" to grid, in addition to meta info for row, and [onclick]
@@ -322,6 +383,29 @@ p5.mysql.connect:[camphora]
                  */
                 micro.windows.info:Record was deleted
                   class:micro-windows-info success
+
+
+
+
+
+/*
+ * Checking if this is a "replace" operation, at which point an [id] argument
+ * was specified.
+ */
+if:x:/../*/id?value
+
+  /*
+   * Making sure our item replaces existing grid item, instead of appending.
+   */
+  p5.web.widgets.find
+    .id:x:/../*/id?value
+  add:x:/../*/micro.widgets.grid.databind
+    src
+      keep-items:bool:true
+  eval-x:x:/+/*/*
+  add:x:/../*/micro.widgets.grid.databind/*/*/.row
+    src
+      .replace:x:/@p5.web.widgets.find/*/*?value
 
 
 

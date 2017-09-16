@@ -131,10 +131,17 @@ add:x:/../*/create-widget/*/widgets
                     @id:x:/@get-widget-property/*/*?value
 
                 /*
-                 * Re-databinding grid for simplicity.
+                 * Re-databinding grid for updated item only.
                  */
+                eval-x:x:/+/*/id
                 micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
                   :x:/@_app-name?value
+                  id:x:/@get-widget-property/*/*?value
+
+                /*
+                 * Deleting edit widget.
+                 */
+                delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 
             button
               innerValue:Close
