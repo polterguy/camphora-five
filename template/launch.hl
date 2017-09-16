@@ -63,9 +63,13 @@ for-each:x:/@load-file/*/*/field
         style:"width:5px;"
 
   else-if:x:/@_first?value
+    and:x:/@_dp/#/*/type?value
+      =:text
+      or:x:/@_dp/#/*/type?value
+        =:textarea
 
     /*
-     * This is our first "non-checked" column, making it 100% wide, to throw
+     * This is our first text or textarea column, making it 100% wide, to throw
      * our CSS trick from above (read comments above).
      */
     add:x:/..for-each/*/add/*/*
@@ -156,7 +160,7 @@ create-widget
               class:air-inner shaded rounded
               widgets
                 micro.widgets.grid:camphora-crud-grid
-                  class:hover striped spaced lg-headers
+                  class:hover spaced lg-headers
                   columns
                   oninit
 

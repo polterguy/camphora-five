@@ -21,9 +21,9 @@ join:x:/@split/*?name
 
 
 /*
- * Loading app declaration file.
+ * Evaluating file responsible for creating widgets for us.
  */
-load-file:/{0}/app.hl
+micro.evaluate.file:/{0}/create-item-widgets.hl
   :x:/@join?value
 
 
@@ -31,176 +31,10 @@ load-file:/{0}/app.hl
 
 
 /*
- * Figuring out which data to ask user by, by creating an associated widget for
- * each [field] in "app.hl" file.
- *
- * Notice, we do some "expression magic" here, to make sure all textbox fields are
- * added first, then textarea fields, then select fields, then radio field, before 
- * finally all other types of fields (only checkbox type left at that point though).
+ * Adding widgets returned from above file invocation to [widgets:data] segment below.
  */
-_first:bool:true
-for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=select/.|/type/=/radio/.|/*/.)
-
-  /*
-   * Figuring out type of field, and creating an associated widget accordingly.
-   */
-  switch:x:/@_dp/#/*/type?value
-
-    /*
-     * Single line textbox type of data.
-     */
-    case:text
-
-      /*
-       * Checking if this is our first iteration.
-       */
-      if:x:/@_first?value
-        add:x:/..case/*/add/*/*/*/*/input
-          src
-            oninit
-              micro.page.set-focus:x:/../*/_event?value
-        set:x:/@_first?value
-          src:bool:false
-
-      /*
-       * Adding widget to modal window.
-       */
-      eval-x:x:/+/*/*/*/*/*(/innerValue|/placeholder|/.data-field)
-      add:x:/../*/create-widgets/**/div/*/widgets/=data
-        src
-          div
-            class:strip fill
-            widgets
-              label
-                innerValue:x:/@_dp/#/*/name?value
-                class:capitalize
-              input
-                type:text
-                placeholder:{0} ...
-                  :x:/@_dp/#/*/name?value
-                .data-field:x:/@_dp/#/*/name?value
-                onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-save-new-record-button').raise('onclick');return false;}"
-
-    /*
-     * Multi line textbox type of data.
-     */
-    case:textarea
-
-      /*
-       * Checking if this is our first iteration.
-       */
-      if:x:/@_first?value
-        add:x:/..case/*/add/*/*
-          src
-            oninit
-              micro.page.set-focus:x:/../*/_event?value
-        set:x:/@_first?value
-          src:bool:false
-
-      /*
-       * Adding widget to modal window.
-       */
-      eval-x:x:/+/*/*/*(/placeholder|/.data-field)
-      add:x:/../*/create-widgets/**/div/*/widgets/=data
-        src
-          literal
-            element:textarea
-            class:fill
-            rows:5
-            placeholder:{0} ...
-              :x:/@_dp/#/*/name?value
-            .data-field:x:/@_dp/#/*/name?value
-
-    /*
-     * Select type of data.
-     */
-    case:select
-
-      /*
-       * Adding each option for select field.
-       */
-      for-each:x:/@_dp/#/*/type/*
-        eval-x:x:/+/*/*/*/innerValue
-        add:x:/..case/*/add/*/*/*/widgets/*/select/*/widgets
-          src
-            option
-              innerValue:x:/@_dp/#?name
-
-      /*
-       * Now adding option element to modal widget.
-       */
-      eval-x:x:/+/*/*/*/*/*(/innerValue|/.data-field)
-      add:x:/../*/create-widgets/**/div/*/widgets/=data
-        src
-          div
-            class:strip fill
-            widgets
-              label
-                innerValue:x:/@_dp/#/*/name?value
-                class:capitalize
-              select
-                class:fill
-                .data-field:x:/@_dp/#/*/name?value
-                widgets
-
-    /*
-     * Checkbox type of data.
-     */
-    case:checkbox
-
-      eval-x:x:/+/*/*/*/*/*(/innerValue|/.data-field)
-      add:x:/../*/create-widgets/**/div/*/widgets/=data
-        src
-          div
-            widgets
-              input
-                type:checkbox
-                .data-field:x:/@_dp/#/*/name?value
-              label
-                innerValue:x:/@_dp/#/*/name?value
-                class:capitalize
-
-    /*
-     * Radiobutton type of data.
-     */
-    case:radio
-
-      /*
-       * Adding each option for radiobutton field.
-       */
-      _first:bool:true
-      for-each:x:/@_dp/#/*/type/*
-
-        /*
-         * Making sure first radiobutton becomes checked by default.
-         */
-        if:x:/@_first?value
-          add:x:/..for-each/*/add/*/*/input
-            src:checked
-          set:x:/@_first?value
-            src:bool:false
-
-        /*
-         * Adding radio button to modal widget.
-         */
-        eval-x:x:/+/*/*/*(/name|/.data-value|/innerValue)
-        add:x:/..case/*/add/*/*/*/widgets
-          src
-            input
-              type:radio
-              name:x:/@for-each/@_dp/#/*/name?value
-              .data-value:x:/@_dp/#?name
-            label
-              innerValue:x:/@_dp/#?name
-              class:capitalize
-
-      /*
-       * Now adding radiobutton group widget to modal widget.
-       */
-      add:x:/../*/create-widgets/**/div/*/widgets/=data
-        src
-          div
-            widgets
+add:x:/../*/create-widgets/**/widgets/=data
+  src:x:/@micro.evaluate.file/*
 
 
 
@@ -226,6 +60,7 @@ create-widgets
             widgets
               button:camphora-save-new-record-button
                 innerValue:Save
+                style:"margin-bottom:0;"
                 onclick
 
                   /*
@@ -303,6 +138,7 @@ create-widgets
 
               button
                 innerValue:Cancel
+                style:"margin-bottom:0;"
                 onclick
 
                   /*

@@ -8,3 +8,9 @@
 .strip > label:first-child {
     min-width: 90px;
 }
+.camphora-edit-row,
+.camphora-edit-row:hover,
+.camphora-edit-row:active,
+.camphora-edit-row:focus {
+    background-color: transparent !important;
+}

@@ -216,13 +216,69 @@ p5.mysql.connect:[camphora]
             foo:x:/@p5.html.html-encode?value
 
     /*
-     * Adding "delete button" to grid, in addition to meta info for row.
+     * Adding "delete button" to grid, in addition to meta info for row, and [onclick]
+     * event, to handle editing.
      */
     eval-x:x:/+/*/*/*/.id
     add:x:/../*/micro.widgets.grid.databind/0/-
       src
         .row
           .id:x:/@_dp/#/*/id?value
+          onclick
+
+            /*
+             * Figuring our row's database ID.
+             */
+            get-widget-property:x:/../*/_event?value
+              .id
+
+            /*
+             * Checking to see if row's already being edited, at which point we
+             * simply abort evaluation of the rest of lambda.
+             */
+            p5.web.widgets.find
+              .edit
+            if:x:/-/*/*?value
+
+              /*
+               * Another item is already being edited, not need to continue.
+               */
+              micro.windows.info:Please finish editing your items, before attempting to edit another item
+                class:micro-windows-info warning
+              return
+
+            /*
+             * Figuring out number of child widgets in row, such that we can create
+             * our "colspan" attribute correctly for our "edit row widget".
+             */
+            p5.web.widgets.get-children:x:/../*/_event?value
+
+            /*
+             * Creating our "edit record widget", just beneath the currentl clicked row.
+             */
+            eval-x:x:/+/**/id
+            create-widget
+              element:tr
+              after:x:/../*/_event?value
+              .edit:x:/@get-widget-property/*/*?value
+              widgets
+                container
+                  element:td
+                  colspan:x:/@p5.web.widgets.get-children/*/*?count
+                  class:camphora-edit-row bg
+                  oninit
+
+                    /*
+                     * Evaluating file responsible for creating our actual "edit widget", passing
+                     * inn ID of current widget as [parent].
+                     */
+                    _table-name:x:/../*/split/[0,1]/0/-2?name
+                    eval-x:x:/+/*
+                    micro.evaluate.file:/modules/{0}/helpers/edit-item.hl
+                      :x:/@_table-name?value
+                      parent:x:/../*/_event?value
+                      id:x:/@get-widget-property/*/*?value
+
         Delete
           widgets
             button
@@ -244,10 +300,22 @@ p5.mysql.connect:[camphora]
                     @id:x:/@get-widget-property/*/*?value
 
                 /*
-                 * Re-databinding grid.
+                 * Deleting row wrapping record.
                  */
-                micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
-                  :x:/@_table-name?value
+                delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
+                /*
+                 * Checking if item is currently being edited, and if so, making sure
+                 * we delete its "edit widget".
+                 */
+                p5.web.widgets.find
+                  .edit:x:/@get-widget-property/*/*?value
+                if:x:/@p5.web.widgets.find/*/*?value
+
+                  /*
+                   * Item is being edited, making sure we delete its edit widget.
+                   */
+                  delete-widget:x:/@p5.web.widgets.find/*/*?value
 
                 /*
                  * Giving user visual feedback.

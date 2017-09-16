@@ -1,0 +1,109 @@
+
+/*
+ * File responsible for editing existing CRUD item.
+ *
+ * Expects a [parent], being the ID of the widget where the editing widget should
+ * be injected - In addition to [id] being record's database ID.
+ */
+
+
+
+
+
+/*
+ * Sanity checking argument.
+ */
+micro.lambda.contract.min:x:/..
+  parent:string
+  id:long
+
+
+
+
+
+/*
+ * Figuring out path of app's "/helpers/" folder.
+ */
+split:x:/..?name
+  =:/
+set:x:/@split/0/-
+join:x:/@split/*?name
+  sep:/
+
+
+
+
+
+/*
+ * Selecting item from database, and parametrizing invocation of file responsible
+ * for creating our editing widget(s).
+ */
+p5.mysql.connect:[camphora]
+  p5.mysql.select:@"select * from {0} where id = @id"
+    :x:/@split/0/-2?name
+    @id:x:/../*/id?value
+  add:x:/../*/micro.evaluate.file
+    src:x:/@p5.mysql.select/*/*(!/id)
+
+
+
+
+
+/*
+ * Evaluating file responsible for creating widgets for us.
+ */
+micro.evaluate.file:/{0}/create-item-widgets.hl
+  :x:/@join?value
+
+
+
+
+
+/*
+ * Adding widgets created in above invocation to [create-widget] invocation below.
+ */
+add:x:/../*/create-widget/*/widgets
+  src:x:/@micro.evaluate.file/*
+
+
+
+
+
+/*
+ * Adding Save and Close buttons.
+ */
+add:x:/../*/create-widget/*/widgets
+  src
+    div
+      class:right
+      widgets
+        div
+          class:strip
+          style:"display:inline-block;"
+          widgets
+            button
+              innerValue:Save
+              style:"margin-bottom:0;"
+            button
+              innerValue:Close
+              style:"margin-bottom:0;"
+              onclick
+
+                /*
+                 * Simply deleting editing widget.
+                 */
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  .edit
+                delete-widget:x:/-/*/*?value
+
+
+
+
+
+/*
+ * Creating editing widget for record.
+ */
+create-widget
+  parent:x:/../*/parent?value
+  class:air-top
+  widgets
