@@ -170,11 +170,19 @@ for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=selec
        */
       _first:bool:true
       for-each:x:/@_dp/#/*/type/*
+
+        /*
+         * Making sure first radiobutton becomes checked by default.
+         */
         if:x:/@_first?value
           add:x:/..for-each/*/add/*/*/input
             src:checked
           set:x:/@_first?value
             src:bool:false
+
+        /*
+         * Adding radio button to modal widget.
+         */
         eval-x:x:/+/*/*/*(/name|/.data-value|/innerValue)
         add:x:/..case/*/add/*/*/*/widgets
           src
@@ -187,7 +195,7 @@ for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=selec
               class:capitalize
 
       /*
-       * Now adding option element to modal widget.
+       * Now adding radiobutton group widget to modal widget.
        */
       add:x:/../*/create-widgets/**/div/*/widgets/=data
         src

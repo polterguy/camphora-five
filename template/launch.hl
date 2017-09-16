@@ -24,7 +24,13 @@ p5.web.include-css-file:/modules{0}/media/main.css
 /*
  * Loading template file, and creating one column in our datagrid for each [field]
  * in our "app.hl" file.
+ *
+ * Notice, we're tracking the first column, and making it "100%" wide, which will
+ * prioritize the first column in regards to spacing, and make all other columns
+ * reduce accordingly in size, to have no more width than what's absolutely necessary
+ * in order to show their values, without breaking.
  */
+_first:bool:true
 load-file:/modules{0}/helpers/app.hl
   :x:/../*/url?value
 for-each:x:/@load-file/*/*/field
@@ -39,6 +45,32 @@ for-each:x:/@load-file/*/*/field
      * Current field is not supposed to be visible in the datagrid.
      */
     continue
+
+  /*
+   * Checking if this is a "checked" type of field.
+   */
+  if:x:/@_dp/#/*/type?value
+    =:checkbox
+
+    /*
+     * Yup, checked - Reducing width of column.
+     *
+     * This little CSS trick will make the column no wider than what it absolutely
+     * needs to be, to show its header (th) cell.
+     */
+    add:x:/..for-each/*/add/*/*
+      src
+        style:"width:5px;"
+
+  else-if:x:/@_first?value
+
+    /*
+     * This is our first "non-checked" column, making it 100% wide, to throw
+     * our CSS trick from above (read comments above).
+     */
+    add:x:/..for-each/*/add/*/*
+      src
+        style:"width:100%;"
 
   /*
    * Adding a column to our datagrid below.

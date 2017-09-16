@@ -164,19 +164,56 @@ p5.mysql.connect:[camphora]
     for-each:x:/@_dp/#/*(!/id)
 
       /*
-       * HTML encoding value, to eliminate risk of SQL injection attacks.
+       * Special handling of "checkbox" type of items, to create some candy.
        */
-      p5.html.html-encode:x:/@_dp/#?value
+      if:x:/@load-file/*/*/field/*/name/={0}/./*/type?value
+        :x:/@_dp/#?name
+        =:checkbox
 
-      /*
-       * Adding item to grid's databind invocation.
-       */
-      eval-x:x:/+2/*/*
-      set:x:/+/*/*?name
-        src:x:/@_dp/#?name
-      add:x:/../*/micro.widgets.grid.databind/0/-
-        src
-          foo:x:/@p5.html.html-encode?value
+        /*
+         * Checkbox type of item.
+         */
+        if:x:/@_dp/#?value.int
+          =:int:1
+
+          /*
+           * Item is checked.
+           */
+          set:x:/+/*/*?name
+            src:x:/@_dp/#?name
+          add:x:/../*/micro.widgets.grid.databind/0/-
+            src
+              foo:@"<span class=""icon-check""></span>"
+                style:"text-align:right;width:5px;font-size:1.5rem;"
+
+        else
+
+          /*
+           * Item is NOT checked.
+           */
+          set:x:/+/*/*?name
+            src:x:/@_dp/#?name
+          add:x:/../*/micro.widgets.grid.databind/0/-
+            src
+              foo:""
+                style:"width:5px;"
+
+      else
+
+        /*
+         * HTML encoding value, to eliminate risk of SQL injection attacks.
+         */
+        p5.html.html-encode:x:/@_dp/#?value
+
+        /*
+         * Adding item to grid's databind invocation.
+         */
+        eval-x:x:/+2/*/*
+        set:x:/+/*/*?name
+          src:x:/@_dp/#?name
+        add:x:/../*/micro.widgets.grid.databind/0/-
+          src
+            foo:x:/@p5.html.html-encode?value
 
     /*
      * Adding "delete button" to grid, in addition to meta info for row.
