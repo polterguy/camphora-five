@@ -82,7 +82,7 @@ add:x:/../*/create-widget/*/widgets
           class:strip
           style:"display:inline-block;"
           widgets
-            button
+            button:camphora-save-record-button
               innerValue:Save
               style:"margin-bottom:0;"
               onclick

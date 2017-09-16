@@ -58,7 +58,7 @@ create-widgets
             class:strip
             style:"display:inline-block;"
             widgets
-              button:camphora-save-new-record-button
+              button:camphora-save-record-button
                 innerValue:Save
                 style:"margin-bottom:0;"
                 onclick

@@ -105,7 +105,7 @@ for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=selec
                 placeholder:{0} ...
                   :x:/@_dp/#/*/name?value
                 .data-field:x:/@_dp/#/*/name?value
-                onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-save-new-record-button').raise('onclick');return false;}"
+                onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-save-record-button').raise('onclick');return false;}"
 
     /*
      * Multi line textbox type of data.
