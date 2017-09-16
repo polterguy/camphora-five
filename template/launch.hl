@@ -43,8 +43,12 @@ for-each:x:/@load-file/*/*/field
   /*
    * Adding a column to our datagrid below.
    */
-  add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
+  set:x:/+/*/*?name
     src:x:/@_dp/#/*/name?value
+  add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
+    src
+      foo
+        class:capitalize
 
 
 
@@ -104,18 +108,22 @@ create-widget
         div
           class:col-100
           widgets
-            micro.widgets.grid:camphora-crud-grid
-              columns
-              oninit
+            div
+              class:air-inner shaded rounded
+              widgets
+                micro.widgets.grid:camphora-crud-grid
+                  class:hover striped spaced lg-headers
+                  columns
+                  oninit
 
-                /*
-                 * Forward evaluated above.
-                 */
-                _folder:/modules{0}/
-                  :x:/../*/url?value
+                    /*
+                     * Forward evaluated above.
+                     */
+                    _folder:/modules{0}/
+                      :x:/../*/url?value
 
-                /*
-                 * Evaluating file responsible for databinding grid.
-                 */
-                micro.evaluate.file:{0}helpers/databind-grid.hl
-                  :x:/@_folder?value
+                    /*
+                     * Evaluating file responsible for databinding grid.
+                     */
+                    micro.evaluate.file:{0}helpers/databind-grid.hl
+                      :x:/@_folder?value
