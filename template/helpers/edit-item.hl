@@ -72,6 +72,7 @@ add:x:/../*/create-widget/*/widgets
 /*
  * Adding Save and Close buttons.
  */
+eval-x:x:/+/**/_app-name
 add:x:/../*/create-widget/*/widgets
   src
     div
@@ -84,6 +85,57 @@ add:x:/../*/create-widget/*/widgets
             button
               innerValue:Save
               style:"margin-bottom:0;"
+              onclick
+
+                /*
+                 * Forward evaluated above.
+                 */
+                _app-name:x:/@split/0/-2?name
+
+                /*
+                 * Serializing form data, and updating database.
+                 */
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  .edit
+                micro.form.serialize:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  .edit
+
+                /*
+                 * Figuring out column names for database table, and parametrizing update SQL.
+                 */
+                _cols
+                for-each:x:/@micro.form.serialize/*
+                  set:x:/@_cols?value
+                    src:{0},{1}=@{1}
+                      :x:/@_cols?value
+                      :x:/@_dp/#?name
+                  eval-x:x:/+2/*/*
+                  set:x:/+/*/*?name
+                    src:@{0}
+                      :x:/@_dp/#?name
+                  add:x:/../*/p5.mysql.connect/*/p5.mysql.update
+                    src
+                      foo:x:/@_dp/#?value
+                set:x:/@_cols?value
+                  trim:x:/@_cols?value
+                    chars:,
+
+                /*
+                 * Updating database.
+                 */
+                p5.mysql.connect:[camphora]
+                  p5.mysql.update:@"update {0} set {1} where id = @id"
+                    :x:/@_app-name?value
+                    :x:/@_cols?value
+                    @id:x:/@get-widget-property/*/*?value
+
+                /*
+                 * Re-databinding grid for simplicity.
+                 */
+                micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
+                  :x:/@_app-name?value
+
             button
               innerValue:Close
               style:"margin-bottom:0;"
