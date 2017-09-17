@@ -104,7 +104,7 @@ for-each:x:/@load-file/*/*/field
 add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
   src
     Edit
-      style:"width:5px;"
+      style:"width:5px;text-align:center;"
 
 
 
