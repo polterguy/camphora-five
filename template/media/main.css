@@ -8,9 +8,18 @@
 .strip > label:first-child {
     min-width: 90px;
 }
-.camphora-edit-row,
-.camphora-edit-row:hover,
-.camphora-edit-row:active,
-.camphora-edit-row:focus {
-    background-color: transparent !important;
+.camphora-crud-grid-wrapper {
+    display:inline-block;
 }
+.camphora-crud-grid-wrapper table tr td {
+    border-top:solid 1px #fafafa;
+    vertical-align:top;
+    cursor:default;
+}
+.camphora-crud-grid-wrapper table tr:first-child td {
+    border-top:none;
+}
+.camphora-edit-column {
+    min-width:110px;
+}
+

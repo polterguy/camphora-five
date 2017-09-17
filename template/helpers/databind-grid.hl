@@ -145,7 +145,7 @@ for-each:x:/@load-file/*/*/field
     if:x:/@_where?value
 
       /*
-       * Adding "and" parts to SQL.
+       * Adding "or" parts to SQL.
        */
       set:x:/@_where?value
         src:"{0} or "
@@ -171,7 +171,8 @@ for-each:x:/@load-file/*/*/field
      * Adding up "where" for currently iterated column.
      */
     set:x:/@_where?value
-      src:@"{0} like @filter"
+      src:@"{0}{1} like @filter"
+        :x:/@_where?value
         :x:/@_dp/#/*/name?value
 
 
@@ -259,7 +260,7 @@ if:x:/@.signal/--/id?value
  * Opening database connection, and executing our SQL query.
  */
 p5.mysql.connect:[camphora]
-  p5.mysql.select:@"select id, {0} from {1}{2}{3} order by id limit 10 offset @offset"
+  p5.mysql.select:@"select id, {0} from {1}{2}{3} order by id limit 25 offset @offset"
     :x:/@_cols?value
     :x:/../*/split/[0,1]/0/-2?name
     :x:/@_where?value
@@ -378,11 +379,11 @@ p5.mysql.connect:[camphora]
           .id:x:/@_dp/#/*/id?value
 
         Edit
-          style:"vertical-align:bottom;"
+          class:strip camphora-edit-column
           widgets
             button
               innerValue:@"<span class=""icon-pencil""></span>"
-              style:"margin-bottom:0;padding-left:25px;padding-right:25px;"
+              style:"margin-bottom:0;"
               onclick
 
                 /*
@@ -440,12 +441,9 @@ p5.mysql.connect:[camphora]
                           parent:x:/../*/_event?value
                           id:x:/@get-widget-property/*/*?value
 
-        Delete
-          style:"vertical-align:bottom;"
-          widgets
             button
               innerValue:@"<span class=""icon-trash""></span>"
-              style:"margin-bottom:0;padding-left:25px;padding-right:25px;"
+              style:"margin-bottom:0;"
               onclick
 
                 /*

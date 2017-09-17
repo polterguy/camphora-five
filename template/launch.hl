@@ -24,8 +24,8 @@ p5.web.include-css-file:@MICRO/media/main.css
 p5.web.include-css-file:@MICRO/media/ext.css
 p5.web.include-css-file:@MICRO/media/fonts.css
 p5.web.include-css-file:@MICRO/media/skins/serious.css
-p5.web.include-css-file:/modules{0}/media/main.css
-  :x:/@split/1?name
+p5.web.include-css-file:/modules/{0}/media/main.css
+  :x:/@split/0?name
 
 
 
@@ -107,8 +107,6 @@ add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
   src
     Edit
       style:"width:5px;"
-    Delete
-      style:"width:5px;"
 
 
 
@@ -136,6 +134,49 @@ create-widget
                   class:strip
                   style:"display:inline-block;"
                   widgets
+                    input:camphora-search-query
+                      type:text
+                      placeholder:Search ...
+                      onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-search-button').raise('onclick');return false;}"
+
+                    button:camphora-search-button
+                      innerValue:@"<span class=""icon-search""></span>"
+                      onclick
+
+                        /*
+                         * Forward evaluated above.
+                         */
+                        _url:x:/@split/0?name
+
+                        /*
+                         * Databinding grid, now with [filter].
+                         */
+                        get-widget-property:camphora-search-query
+                          value
+                        if:x:/@get-widget-property/*/*?value
+                          !=:
+
+                          /*
+                           * Filter was given.
+                           */
+                          eval-x:x:/+/*/filter
+                          micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
+                            :x:/@_url?value
+                            filter:x:/@get-widget-property/*/*?value
+
+                        else
+
+                          /*
+                           * Filter was removed.
+                           */
+                          micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
+                            :x:/@_url?value
+
+                        /*
+                         * Setting focus to search textbox for simplicity.
+                         */
+                        micro.page.set-focus:camphora-search-query
+
                     button
                       innerValue:@"<span class=""icon-plus""></span>"
                       style:"padding-left:35px;padding-right:35px;"
@@ -169,10 +210,10 @@ create-widget
           class:col-100
           widgets
             div
-              class:air-inner shaded rounded
+              class:camphora-crud-grid-wrapper
               widgets
                 micro.widgets.grid:camphora-crud-grid
-                  class:spaced lg-headers
+                  class:spaced lg-headers hover
                   columns
                   oninit
 
