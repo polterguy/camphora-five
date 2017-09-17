@@ -431,7 +431,7 @@ p5.mysql.connect:[camphora]
                         container
                           element:td
                           colspan:x:/@p5.web.widgets.get-children/*/*?count
-                          class:camphora-edit-row bg
+                          class:camphora-edit-row
                           oninit
 
                             /*

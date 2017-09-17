@@ -23,4 +23,13 @@
     min-width:110px;
     text-align:right;
 }
+.camphora-edit-row,
+.camphora-edit-row:hover,
+.camphora-edit-row:active,
+.camphora-edit-row:focus {
+    background-color: transparent !important;
+}
+.camphora-edit-row {
+    border-top:none !important;
+}
 

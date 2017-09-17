@@ -150,7 +150,7 @@ for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=selec
           literal
             element:textarea
             class:fill
-            rows:5
+            rows:7
             placeholder:{0} ...
               :x:/@_dp/#/*/name?value
             .data-field:x:/@_dp/#/*/name?value
