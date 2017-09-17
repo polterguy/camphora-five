@@ -65,31 +65,74 @@ load-file:/{0}/app.hl
 
 
 /*
- * Creating our SQL, by figuring out which columns are supposed to be visible in
+ * Splitting URL, to figure out which type of request this is.
+ *
+ * Candidates are "/tag" request for instance.
+ */
+split:x:/../*/url?value
+  =:/
+
+
+
+
+
+/*
+ * Creating our SQL fields definition, by figuring out which columns are supposed to be visible in
  * the datagrid.
  */
 _cols
-_where
 for-each:x:/@load-file/*/*/field
 
   /*
    * Checking if field is supposed to be visible in grid.
    */
   if:x:/@_dp/#/*/show?value
-    =:bool:false
 
     /*
-     * Current field is not supposed to be visible in the datagrid.
+     * Adding column to SQL.
      */
-    continue
+    set:x:/@_cols?value
+      src:{0},{1}
+        :x:/@_cols?value
+        :x:/@_dp/#/*/name?value
+
+
+
+
+
+/*
+ * Creating our SQL "where" statement, according to [filter] and "tag" requested.
+ */
+_where
+_tag
+for-each:x:/@load-file/*/*/field
 
   /*
-   * Adding column to SQL.
+   * Checking if we have a [tag] condition.
    */
-  set:x:/@_cols?value
-    src:{0},{1}
-      :x:/@_cols?value
-      :x:/@_dp/#/*/name?value
+  if:x:/@split/*?count
+    >:int:2
+    and:x:/@split/1?name
+      =:tag
+
+    /*
+     * User requested items having a #hash-tag, now checking if currently iterated
+     * field is a [textarea] type of field, and if so, we add it as a criteria.
+     */
+    if:x:/@_dp/#/*/type?value
+      =:textarea
+
+      /*
+       * Currently iterated [field] is a [textarea] field, and user requested a 
+       * specific #hash-tag - Making sure we add our #hash-tag condition.
+       */
+      set:x:/@_tag?value
+        src:"{0} regexp @tag"
+          :x:/@_dp/#/*/name?value
+      eval-x:x:/+/*/*
+      add:x:/../*/p5.mysql.connect/*/p5.mysql.select
+        src
+          @tag:x:/@split/2?name
 
   /*
    * Checking if we have a [filter] condition.
@@ -148,6 +191,23 @@ if:x:/@_where?value
 
 
 /*
+ * Checking if user requested a tag, and massaging "where" parts accordingly.
+ */
+if:x:/@_tag?value
+  if:x:/@_where?value
+    set:x:/@_tag?value
+      src:" and {0}"
+        :x:/@_tag?value
+  else
+    set:x:/@_tag?value
+      src:" where {0}"
+        :x:/@_tag?value
+
+
+
+
+
+/*
  * Trimming away redundant "," on columns declaration.
  */
 set:x:/@_cols?value
@@ -199,10 +259,11 @@ if:x:/@.signal/--/id?value
  * Opening database connection, and executing our SQL query.
  */
 p5.mysql.connect:[camphora]
-  p5.mysql.select:@"select id, {0} from {1}{2} order by id limit 10 offset @offset"
+  p5.mysql.select:@"select id, {0} from {1}{2}{3} order by id limit 10 offset @offset"
     :x:/@_cols?value
-    :x:/@split/0/-2?name
+    :x:/../*/split/[0,1]/0/-2?name
     :x:/@_where?value
+    :x:/@_tag?value
     @offset:x:(/../*/offset|/../*/.defaults/*/offset)/$?value
 
   /*

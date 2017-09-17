@@ -8,6 +8,16 @@
 
 
 /*
+ * Splitting URL, to figure out which type of request this is.
+ */
+split:x:/../*/url?value
+  =:/
+
+
+
+
+
+/*
  * Including Micro, adding Awesome Fonts, and serious skin.
  */
 p5.web.include-css-file:@MICRO/media/main.css
@@ -15,7 +25,7 @@ p5.web.include-css-file:@MICRO/media/ext.css
 p5.web.include-css-file:@MICRO/media/fonts.css
 p5.web.include-css-file:@MICRO/media/skins/serious.css
 p5.web.include-css-file:/modules{0}/media/main.css
-  :x:/../*/url?value
+  :x:/@split/1?name
 
 
 
@@ -31,8 +41,8 @@ p5.web.include-css-file:/modules{0}/media/main.css
  * in order to show their values, without breaking.
  */
 _first:bool:true
-load-file:/modules{0}/helpers/app.hl
-  :x:/../*/url?value
+load-file:/modules/{0}/helpers/app.hl
+  :x:/@split/0?name
 for-each:x:/@load-file/*/*/field
 
   /*
@@ -134,12 +144,12 @@ create-widget
                         /*
                          * Forward evaluated above.
                          */
-                        _url:x:/../*/url?value
+                        _url:x:/@split/0?name
 
                         /*
                          * Evaluating file responsible for creating a new record.
                          */
-                        micro.evaluate.file:/modules{0}/helpers/create-item.hl
+                        micro.evaluate.file:/modules/{0}/helpers/create-item.hl
                           :x:/@_url?value
 
                     button
@@ -169,11 +179,14 @@ create-widget
                     /*
                      * Forward evaluated above.
                      */
-                    _folder:/modules{0}/
-                      :x:/../*/url?value
+                    _url:x:/../*/url?value
+                    _folder:/modules/{0}/
+                      :x:/@split/0?name
 
                     /*
                      * Evaluating file responsible for databinding grid.
                      */
+                    eval-x:x:/+/*/url
                     micro.evaluate.file:{0}helpers/databind-grid.hl
                       :x:/@_folder?value
+                      url:x:/@_url?value
