@@ -91,16 +91,19 @@ for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=selec
       /*
        * Adding widget to modal window.
        */
-      eval-x:x:/+/*/*/*/*/*(/innerValue|/placeholder|/.data-field)
+      eval-x:x:/+/*/*/*/*(/input|/*(/for|/innerValue|/placeholder|/.data-field))
       add:x:/../*/return
         src
           div
             class:strip fill
             widgets
               label
+                for:{0}-widget
+                  :x:/@_dp/#/*/name?value
                 innerValue:x:/@_dp/#/*/name?value
                 class:capitalize
-              input
+              input:{0}-widget
+                :x:/@_dp/#/*/name?value
                 type:text
                 placeholder:{0} ...
                   :x:/@_dp/#/*/name?value
@@ -185,16 +188,19 @@ for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=selec
       /*
        * Now adding option element to modal widget.
        */
-      eval-x:x:/+/*/*/*/*/*(/innerValue|/.data-field)
+      eval-x:x:/+/*/*/*/*(/select|/*(/for|/innerValue|/.data-field))
       add:x:/../*/return
         src
           div
             class:strip fill
             widgets
               label
+                for:{0}-widget
+                  :x:/@_dp/#/*/name?value
                 innerValue:x:/@_dp/#/*/name?value
                 class:capitalize
-              select
+              select:{0}-widget
+                :x:/@_dp/#/*/name?value
                 class:fill
                 .data-field:x:/@_dp/#/*/name?value
                 widgets
@@ -220,15 +226,18 @@ for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=selec
       /*
        * Adding widget to modal window.
        */
-      eval-x:x:/+/*/*/*/*/*(/innerValue|/.data-field)
+      eval-x:x:/+/*/*/*/*(/input|/*(/for|/innerValue|/.data-field))
       add:x:/../*/return
         src
           div
             widgets
-              input
+              input:{0}-widget
+                :x:/@_dp/#/*/name?value
                 type:checkbox
                 .data-field:x:/@_dp/#/*/name?value
               label
+                for:{0}-widget
+                  :x:/@_dp/#/*/name?value
                 innerValue:x:/@_dp/#/*/name?value
                 class:capitalize
 
@@ -270,14 +279,17 @@ for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=selec
         /*
          * Adding radio button to modal widget.
          */
-        eval-x:x:/+/*/*/*(/name|/.data-value|/innerValue)
+        eval-x:x:/+/*/*(/input|/*(/for|/name|/.data-value|/innerValue))
         add:x:/..case/*/add/*/*/*/widgets
           src
-            input
+            input:{0}-widget
+              :x:/@_dp/#?name
               type:radio
               name:x:/@for-each/@_dp/#/*/name?value
               .data-value:x:/@_dp/#?name
             label
+              for:{0}-widget
+                :x:/@_dp/#?name
               innerValue:x:/@_dp/#?name
               class:capitalize
 

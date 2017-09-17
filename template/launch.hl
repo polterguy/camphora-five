@@ -95,6 +95,8 @@ for-each:x:/@load-file/*/*/field
  */
 add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
   src
+    Edit
+      style:"width:5px;"
     Delete
       style:"width:5px;"
 
@@ -160,7 +162,7 @@ create-widget
               class:air-inner shaded rounded
               widgets
                 micro.widgets.grid:camphora-crud-grid
-                  class:hover spaced lg-headers
+                  class:spaced lg-headers
                   columns
                   oninit
 

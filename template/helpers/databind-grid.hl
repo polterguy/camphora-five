@@ -258,10 +258,39 @@ p5.mysql.connect:[camphora]
               foo:""
                 style:"width:5px;"
 
-      else
+      else-if:x:/@load-file/*/*/field/*/name/={0}/./*/type?value
+        :x:/@_dp/#?name
+        =:textarea
 
         /*
-         * HTML encoding value, to eliminate risk of SQL injection attacks.
+         * Textarea's content is turned into Markdown using intelligent parsing.
+         */
+        camphora._internal.html.markdown2html:x:/@_dp/#?value
+
+        /*
+         * Adding item to grid's databind invocation.
+         */
+        eval-x:x:/+2/*/**
+        set:x:/+/*/*?name
+          src:x:/@_dp/#?name
+        add:x:/../*/micro.widgets.grid.databind/0/-
+          src
+            foo:x:/@camphora._internal.html.markdown2html?value
+              .data-field:x:/@_dp/#?name
+
+      else-if:x:/@load-file/*/*/field/*/name/={0}/./*/type?value
+        :x:/@_dp/#?name
+        =:text
+        or:x:/@load-file/*/*/field/*/name/={0}/./*/type?value
+          :x:/@_dp/#?name
+          =:radio
+        or:x:/@load-file/*/*/field/*/name/={0}/./*/type?value
+          :x:/@_dp/#?name
+          =:select
+
+        /*
+         * Text widgets, select widget, and radio widgets are rendered as "nowrap", 
+         * in addition to that their values are HTML encoded, to avoid HTML injection in items.
          */
         p5.html.html-encode:x:/@_dp/#?value
 
@@ -275,6 +304,7 @@ p5.mysql.connect:[camphora]
           src
             foo:x:/@p5.html.html-encode?value
               .data-field:x:/@_dp/#?name
+              style:"white-space:nowrap;"
 
     /*
      * Adding "delete button" to grid, in addition to meta info for row, and [onclick]
@@ -285,62 +315,72 @@ p5.mysql.connect:[camphora]
       src
         .row
           .id:x:/@_dp/#/*/id?value
-          onclick
 
-            /*
-             * Figuring our row's database ID.
-             */
-            get-widget-property:x:/../*/_event?value
-              .id
+        Edit
+          style:"vertical-align:bottom;"
+          widgets
+            button
+              innerValue:@"<span class=""icon-pencil""></span>"
+              style:"margin-bottom:0;padding-left:25px;padding-right:25px;"
+              onclick
 
-            /*
-             * Checking to see if row's already being edited, at which point we
-             * simply abort evaluation of the rest of lambda.
-             */
-            p5.web.widgets.find
-              .edit
-            if:x:/-/*/*?value
+                /*
+                 * Figuring our row's database ID.
+                 */
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  .id
+                get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  .id
 
-              /*
-               * Another item is already being edited, not need to continue.
-               */
-              micro.windows.info:Please finish editing your items, before attempting to edit another item
-                class:micro-windows-info warning
-              return
+                /*
+                 * Checking to see if some other row is already being edited, at which point we
+                 * simply abort evaluation of the rest of lambda.
+                 */
+                p5.web.widgets.find
+                  .edit
+                if:x:/-/*/*?value
 
-            /*
-             * Figuring out number of child widgets in row, such that we can create
-             * our "colspan" attribute correctly for our "edit row widget".
-             */
-            p5.web.widgets.get-children:x:/../*/_event?value
+                  /*
+                   * Another item is already being edited, not need to continue.
+                   */
+                  micro.windows.info:Please finish editing your items, before attempting to edit another item
+                    class:micro-windows-info warning
+                  return
 
-            /*
-             * Creating our "edit record widget", just beneath the currentl clicked row.
-             */
-            eval-x:x:/+/**/id
-            create-widget
-              element:tr
-              after:x:/../*/_event?value
-              .edit:x:/@get-widget-property/*/*?value
-              widgets
-                container
-                  element:td
-                  colspan:x:/@p5.web.widgets.get-children/*/*?count
-                  class:camphora-edit-row bg
-                  oninit
+                /*
+                 * Figuring out number of child widgets in row, such that we can create
+                 * our "colspan" attribute correctly for our "edit row widget".
+                 */
+                p5.web.widgets.get-children:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 
-                    /*
-                     * Evaluating file responsible for creating our actual "edit widget", passing
-                     * inn ID of current widget as [parent].
-                     */
-                    _table-name:x:/../*/split/[0,1]/0/-2?name
-                    eval-x:x:/+/*
-                    micro.evaluate.file:/modules/{0}/helpers/edit-item.hl
-                      :x:/@_table-name?value
-                      parent:x:/../*/_event?value
-                      id:x:/@get-widget-property/*/*?value
+                /*
+                 * Creating our "edit record widget", just beneath the currentl clicked row.
+                 */
+                eval-x:x:/+/**/id
+                create-widget
+                  element:tr
+                  after:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  .edit:x:/@get-widget-property/*/*?value
+                  widgets
+                    container
+                      element:td
+                      colspan:x:/@p5.web.widgets.get-children/*/*?count
+                      class:camphora-edit-row bg
+                      oninit
+
+                        /*
+                         * Evaluating file responsible for creating our actual "edit widget", passing
+                         * inn ID of current widget as [parent].
+                         */
+                        _table-name:x:/../*/split/[0,1]/0/-2?name
+                        eval-x:x:/+/*
+                        micro.evaluate.file:/modules/{0}/helpers/edit-item.hl
+                          :x:/@_table-name?value
+                          parent:x:/../*/_event?value
+                          id:x:/@get-widget-property/*/*?value
 
         Delete
+          style:"vertical-align:bottom;"
           widgets
             button
               innerValue:@"<span class=""icon-trash""></span>"

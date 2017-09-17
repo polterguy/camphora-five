@@ -1,0 +1,36 @@
+
+/*
+ * Contains the list of legal HTML elements and attributes an HTML Markdown cell can contain.
+ *
+ * Notice, all elements and tags not listed in this file, will be removed.
+ */
+
+// Elements.
+a
+blockquote
+br
+code
+em
+i
+li
+ol
+p
+pre
+small
+span
+strong
+ul
+img
+
+// Content of elements.
+#text
+
+// Attributes.
+@target
+@title
+@href
+@class
+@rel
+@src
+@alt
+@style
