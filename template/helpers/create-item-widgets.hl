@@ -34,7 +34,7 @@ join:x:/@split/*?name
 /*
  * Loading app declaration file.
  */
-load-file:/{0}/app.hl
+load-file:/{0}/app-manifest.hl
   :x:/@join?value
 
 
@@ -43,7 +43,7 @@ load-file:/{0}/app.hl
 
 /*
  * Figuring out which data to ask user by, by creating an associated widget for
- * each [field] in "app.hl" file.
+ * each [field] in "app-manifest.hl" file.
  *
  * Notice, we do some "expression magic" here, to make sure all textbox fields are
  * added first, then textarea fields, then select fields, then radio field, before 

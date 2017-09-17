@@ -393,7 +393,7 @@ create-widget
                               p
                                 innerValue:@"This will delete any existing apps with the same name, and also delete any existing data for these apps, if you choose to check off the <em>'delete data'</em> checkbox. Are you sure you wish to proceed?"
                               p
-                                innerValue:@"<strong>Notice</strong>, - If you have added or changed any of your fields, you might have to delete your data in order to have your app working. If you get weird errors as you run your app, try to re-generate your app, and delete your data as you do."
+                                innerValue:@"<strong>Notice</strong>, - If you have changed any of your fields to become different types, you might have to delete your data in order to have your app working. If you get weird errors as you run your app, try to re-generate your app, and delete your data as you do."
                               input:camphora-delete-data
                                 type:checkbox
                                 style:"margin-bottom:0;"

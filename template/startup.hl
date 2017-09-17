@@ -25,7 +25,8 @@ split:x:/..?name
  * database correct.
  */
 _cols
-load-file:/modules/{0}/helpers/app.hl
+_cols-changed
+load-file:/modules/{0}/helpers/app-manifest.hl
   :x:/@split/0/-3?name
 for-each:x:/@load-file/*/*/field
 
@@ -40,19 +41,43 @@ for-each:x:/@load-file/*/*/field
       set:x:/@_cols?value
         src:{0}{1}
           :x:/@_cols?value
-          :"`{0}` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,"
+          :@"`{0}` varchar(1024) COLLATE utf8mb4_unicode_ci NULL,
+  "
+            :x:/@_dp/#/*/name?value
+      set:x:/@_cols-changed?value
+        src:{0}{1}
+          :x:/@_cols-changed?value
+          :@"
+  alter table `{0}` add `{1}` varchar(1024) COLLATE utf8mb4_unicode_ci NULL;"
+            :x:/@split/0/-3?name
             :x:/@_dp/#/*/name?value
     case:checkbox
       set:x:/@_cols?value
         src:{0}{1}
           :x:/@_cols?value
-          :"`{0}` INT(10) NOT NULL,"
+          :@"`{0}` INT(10) NULL,
+  "
+            :x:/@_dp/#/*/name?value
+      set:x:/@_cols-changed?value
+        src:{0}{1}
+          :x:/@_cols-changed?value
+          :@"
+  alter table `{0}` add `{1}` INT(10) NULL;"
+            :x:/@split/0/-3?name
             :x:/@_dp/#/*/name?value
     case:textarea
       set:x:/@_cols?value
         src:{0}{1}
           :x:/@_cols?value
-          :"`{0}` longtext COLLATE utf8mb4_unicode_ci NOT NULL,"
+          :@"`{0}` longtext COLLATE utf8mb4_unicode_ci NULL,
+  "
+            :x:/@_dp/#/*/name?value
+      set:x:/@_cols-changed?value
+        src:{0}{1}
+          :x:/@_cols-changed?value
+          :@"
+  alter table `{0}` add `{1}` longtext COLLATE utf8mb4_unicode_ci NULL;"
+            :x:/@split/0/-3?name
             :x:/@_dp/#/*/name?value
 
 
@@ -63,17 +88,60 @@ for-each:x:/@load-file/*/*/field
  * Creating database for app, unless it already exists.
  */
 try
+
+  /*
+   * Necessary to parametrize our schema declarations.
+   */
+  p5.config.get:p5.data.prefix
+
+  /*
+   * Notice, if this invocation throws an exception, it means that our database
+   * doesn't exist, which we're catching further down, and handling correctly,
+   * by creating our schema, and invoking "self" again recursively.
+   */
   p5.mysql.connect:[camphora]
+
+    /*
+     * Will create the table if it doesn't exist.
+     */
     p5.mysql.execute:@"
 CREATE TABLE IF NOT EXISTS `{0}` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  {1}
-  PRIMARY KEY (`id`),
+  {1}PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-"
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
       :x:/@split/0/-3?name
       :x:/@_cols?value
+
+    /*
+     * Creates a procedure that will modify our table, to add any missing columns.
+     *
+     * Notice, this is a little bit of a MySQL trickery, where we inform MySQL
+     * that we simply want it to comtinue in case column already exists, instead of
+     * aborting, and raising an exception.
+     *
+     * This implies that all our "ALTER TABLE" queries, created above will execute,
+     * even if one of our columns already exists from before.
+     */
+    p5.mysql.execute:@"
+create procedure {0}camphora_foo ()
+begin
+  declare continue handler for 1060 begin end;{1}
+end"
+      :x:/@p5.config.get/*?value
+      :x:/@_cols-changed?value
+
+    /*
+     * Invokes our "modify tables" procedure.
+     */
+    p5.mysql.execute:@"call {0}camphora_foo()"
+      :x:/@p5.config.get/*?value
+
+    /*
+     * Drops our "modify table" procedure.
+     */
+    p5.mysql.execute:@"drop procedure {0}camphora_foo"
+      :x:/@p5.config.get/*?value
 
 catch
 

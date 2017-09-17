@@ -33,7 +33,7 @@ p5.web.include-css-file:/modules/{0}/media/main.css
 
 /*
  * Loading template file, and creating one column in our datagrid for each [field]
- * in our "app.hl" file.
+ * in our "app-manifest.hl" file.
  *
  * Notice, we're tracking the first column, and making it "100%" wide, which will
  * prioritize the first column in regards to spacing, and make all other columns
@@ -41,7 +41,7 @@ p5.web.include-css-file:/modules/{0}/media/main.css
  * in order to show their values, without breaking.
  */
 _first:bool:true
-load-file:/modules/{0}/helpers/app.hl
+load-file:/modules/{0}/helpers/app-manifest.hl
   :x:/@split/0?name
 for-each:x:/@load-file/*/*/field
 

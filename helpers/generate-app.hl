@@ -80,7 +80,7 @@ for-each:x:/-/*?name
  * Copying file that declares our app into folder for app.
  */
 copy-file:x:/../*/filename?value
-  dest:/modules/{0}/helpers/app.hl
+  dest:/modules/{0}/helpers/app-manifest.hl
     :x:/@split/0/-2?name
 
 

@@ -57,7 +57,7 @@ join:x:/@split/*?name
 /*
  * Loading app declaration file.
  */
-load-file:/{0}/app.hl
+load-file:/{0}/app-manifest.hl
   :x:/@join?value
 
 
