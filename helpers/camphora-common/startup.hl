@@ -1,0 +1,5 @@
+
+/*
+ * Evaluating all of our startup scripts.
+ */
+micro.evaluate.folder:/modules/camphora-common/startup/
