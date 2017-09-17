@@ -48,6 +48,7 @@ for-each:x:/@load-file/*/*/field
         src:{0}{1}
           :x:/@_cols-changed?value
           :@"
+  alter table `{0}` modify `{1}` varchar(1024) COLLATE utf8mb4_unicode_ci NULL;
   alter table `{0}` add `{1}` varchar(1024) COLLATE utf8mb4_unicode_ci NULL;"
             :x:/@split/0/-3?name
             :x:/@_dp/#/*/name?value
@@ -62,6 +63,7 @@ for-each:x:/@load-file/*/*/field
         src:{0}{1}
           :x:/@_cols-changed?value
           :@"
+  alter table `{0}` modify `{1}` INT(10) NULL;
   alter table `{0}` add `{1}` INT(10) NULL;"
             :x:/@split/0/-3?name
             :x:/@_dp/#/*/name?value
@@ -76,6 +78,7 @@ for-each:x:/@load-file/*/*/field
         src:{0}{1}
           :x:/@_cols-changed?value
           :@"
+  alter table `{0}` modify `{1}` longtext COLLATE utf8mb4_unicode_ci NULL;
   alter table `{0}` add `{1}` longtext COLLATE utf8mb4_unicode_ci NULL;"
             :x:/@split/0/-3?name
             :x:/@_dp/#/*/name?value
