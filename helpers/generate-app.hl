@@ -106,6 +106,254 @@ if:x:/../*/delete-data?value
 
 
 /*
+ * Creating "common" components, which is shared among all camphora apps.
+ */
+if
+  fetch:x:/0/0?value
+    folder-exists:/modules/camphora-common/
+  delete-folder:/modules/camphora-common/
+
+/*
+ * Re-creating camphora commons module.
+ */
+create-folder:/modules/camphora-common/
+save-file:/modules/camphora-common/startup.hl
+  src:@"
+/*
+ * Evaluating all of our startup scripts.
+ */
+micro.evaluate.folder:/modules/camphora-common/startup/
+"
+create-folder:/modules/camphora-common/startup/
+save-file:/modules/camphora-common/startup/camphora._internal.html.markdown2html.hl
+  src:@"
+/*
+ * Creates the Active Event that transforms Markdown to HTML, 
+ * adding #hash-tag links in the process, and adding up rel=""noreferrer"", etc.
+ */
+
+
+
+
+
+/*
+ * Creating our event.
+ */
+create-event:camphora._internal.html.markdown2html
+
+  /*
+   * Sanity check.
+   */
+  micro.lambda.contract.min:x:/..
+    _arg:string
+
+  /*
+   * Transforming Markdown to HTML.
+   */
+  markdown2html:x:/../*/_arg?value
+
+  /*
+   * Converting HTML semantically to lambda, to be able to intelligently parse it.
+   */
+  html2lambda:x:/@markdown2html?value
+
+  /*
+   * Running through each hyperlink that doesn't have a [@target], and making
+   * sure it gets a '_blank' target.
+   */
+  for-each:x:/@html2lambda/**(/a!/a/*/\@target/.)
+    add:x:/@_dp/#
+      src
+        @target:_blank
+
+  /*
+   * Running through each img tag, and making sure it gets some default sane
+   * styling, unless it already has a style tag.
+   */
+  for-each:x:/@html2lambda/**/img(!/*/style/.)
+    add:x:/@_dp/#
+      src
+        @style:""float:left;border-radius:5px;margin-right:15px;max-width:70%;""
+
+  /*
+   * Running through each hyperlink, and making sure every hyperlink displays its
+   * actual domain as a part of its anchor text, in addition to a rel=""noreferrer"" 
+   * attribute.
+   *
+   * Notice, this is a security feature, which prevents a malicous file editor/user
+   * to create hyperlinks, leading to URLs, which are ""cloaked"".
+   *
+   * Although this is technically unlikely to occur, since only registered users
+   * can edit files - In theory, an unintentional link, leading to a malicous website,
+   * could sneak in, through a user account, allowed to edit files here in the system.
+   *
+   * By simply displaying the root domain for each URL, we reduce the risk of 
+   * such ""phishing"" attacks significantly, by displaying the domain all links
+   * leads to, to a user, before he clicks the links.
+   *
+   * In addition, we add up an explicit rel='noreferrer' to all hyperlinks, to
+   * make sure any links visited, never knows the origin of the visitor, and which
+   * website the visitor comes from.
+   *
+   * This is basically ""super defensive coding"" in practive!!
+   */
+  for-each:x:/@html2lambda/**/a
+    split:x:/@_dp/#/*/\@href?value
+      =:""://""
+    split:x:/@split/0/-?name
+      =:/
+    set:x:/@_dp/#/*/\#text?value
+      src:{0} (<strong>{1}</strong>)
+        :x:/@_dp/#/*/\#text?value
+        :x:/@split/0?name
+
+    /*
+     * Removing any previous ""rel"" attributes, before we add our own.
+     */
+    set:x:/@_dp/#/*/rel
+    add:x:/@_dp/#
+      src
+        @rel:noreferrer
+
+  /*
+   * Running through ""whitelist"", making sure that content does not contain malicious HTML elements.
+   *
+   * Basically, this will remove everything not found in our ""/configuration/html-whitelist.hl"" file.
+   *
+   * Notice, our sub-set of legal HTML elements here, is quite small.
+   * For instance, it is not legally allowed to display images in any ways!
+   */
+  load-file:/modules/camphora-common/html-whitelist.hl
+    :x:/@_app-name?value
+  for-each:x:/@html2lambda/**
+    if:x:/@load-file/*/*/\{0}
+      :x:/@_dp/#?name
+      not
+
+      /*
+       * HTML tag or attribute was not on whitelist, simply removing it.
+       */
+      set:x:/@_dp/#
+
+  /*
+   * Converting lambda back to HTML, now with styling for all images.
+   */
+  lambda2html:x:/@html2lambda/*
+
+  /*
+   * Converting all hyperlinks within content that are not explicitly set to hyperlinks to such.
+   *
+   * Notice, this invocation will ignore any hyperlinks already created by our above [markdown2html] invocation.
+   */
+  camphora._internals.html.create-hyperlinks-and-tags:x:/@lambda2html?value
+
+  /*
+   * Returning HTML created above.
+   */
+  return:x:/@camphora._internals.html.create-hyperlinks-and-tags?value
+"
+save-file:/modules/camphora-common/startup/camphora._internals.html.create-hyperlinks-and-tags.hl
+  src:@"
+/*
+ * Converts the given [_arg] HTML snippet's URLs and tags into hyperlinks, 
+ * and returns the result to the caller.
+ *
+ * Notice, the path used to generate #hash-tags here is dynamically created.
+ */
+
+
+
+
+
+/*
+ * Creating our event.
+ */
+create-event:camphora._internals.html.create-hyperlinks-and-tags
+
+  /*
+   * Sanity checking invocation.
+   */
+  micro.lambda.contract.min:x:/..
+    _arg:string
+
+  /*
+   * Replacing all ""#xxx"" occurrencies in content, into a relative URL, leading
+   * to ""/tag/xxx""
+   */
+  p5.web.get-location
+  split:x:/-?value
+    =:/
+  replace:x:/../*/_arg?value
+    src:regex:@""/(\B)(#(\w[-\w]+))/i""
+    dest:@""$1<a href=""""/{0}/tag/$3"""">$2</a>""
+      :x:/@split/0/-?name
+
+  /*
+   * Using regular expression to convert anything that resembles a hyperlink, that
+   * has not already been converted somehow, into an actual clickable hyperlink, making
+   * sure we append a ""target"" attribute, leading to ""_blank"".
+   *
+   * In addition, we also add a rel=""noreferrer"" to all links, to prevent any visited
+   * websites, to know the origin of the request.
+   */
+  replace:x:/@replace?value
+    src:regex:@""/(\(|<|\[|\s|>)+(http|https|ftp)(\://)([a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3})((:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*)/""
+    dest:@""$1<a rel=""""noreferrer"""" target=""""_blank"""" href=""""$2$3$4$5""""><strong>$4</strong>$5</a>""
+
+  /*
+   * Returning the results of the above regular expression replacement.
+   */
+  return:x:/@replace?value
+"
+save-file:/modules/camphora-common/html-whitelist.hl
+  src:@"
+/*
+ * Contains the list of legal HTML elements and attributes an HTML Markdown cell can contain.
+ *
+ * Notice, all elements and tags not listed in this file, will be removed.
+ */
+
+// Elements.
+a
+blockquote
+br
+code
+em
+i
+li
+ol
+p
+pre
+small
+span
+strong
+ul
+img
+
+// Content of elements.
+#text
+
+// Attributes.
+@target
+@title
+@href
+@class
+@rel
+@src
+@alt
+@style
+"
+
+/*
+ * Evaluating "camphora-common" startup file.
+ */
+micro.evaluate.file:/modules/camphora-common/startup.hl
+
+
+
+
+
+/*
  * Evaluating startup file.
  */
 micro.evaluate.file:/modules/{0}/startup.hl

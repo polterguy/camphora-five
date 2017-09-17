@@ -89,7 +89,7 @@ create-widgets
                   _par-names
                   for-each:x:/@micro.form.serialize/*
                     set:x:/@_cols?value
-                      src:{0},{1}
+                      src:{0},`{1}`
                         :x:/@_cols?value
                         :x:/@_dp/#?name
                     set:x:/@_par-names?value
@@ -124,7 +124,7 @@ create-widgets
                    * Inserting into database.
                    */
                   p5.mysql.connect:[camphora]
-                    p5.mysql.insert:@"insert into {0} ({1}) values ({2})"
+                    p5.mysql.insert:@"insert into `{0}` ({1}) values ({2})"
                       :x:/@_table?value
                       :x:/@_cols?value
                       :x:/@_par-names?value

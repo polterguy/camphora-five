@@ -106,13 +106,3 @@ catch
      * Returning early, to avoid evaluating the rest of our file twice.
      */
     return
-
-
-
-
-
-/*
- * Evaluating the rest of our startup scripts.
- */
-micro.evaluate.folder:/modules/{0}/startup/
-  :x:/@split/0/-3?name

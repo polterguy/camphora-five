@@ -39,7 +39,7 @@ join:x:/@split/*?name
  * for creating our editing widget(s).
  */
 p5.mysql.connect:[camphora]
-  p5.mysql.select:@"select * from {0} where id = @id"
+  p5.mysql.select:@"select * from `{0}` where id = @id"
     :x:/@split/0/-2?name
     @id:x:/../*/id?value
   add:x:/../*/micro.evaluate.file
@@ -107,7 +107,7 @@ add:x:/../*/create-widget/*/widgets
                 _cols
                 for-each:x:/@micro.form.serialize/*
                   set:x:/@_cols?value
-                    src:{0},{1}=@{1}
+                    src:{0},`{1}`=@{1}
                       :x:/@_cols?value
                       :x:/@_dp/#?name
                   eval-x:x:/+2/*/*
@@ -125,7 +125,7 @@ add:x:/../*/create-widget/*/widgets
                  * Updating database.
                  */
                 p5.mysql.connect:[camphora]
-                  p5.mysql.update:@"update {0} set {1} where id = @id"
+                  p5.mysql.update:@"update `{0}` set {1} where id = @id"
                     :x:/@_app-name?value
                     :x:/@_cols?value
                     @id:x:/@get-widget-property/*/*?value
@@ -164,5 +164,6 @@ add:x:/../*/create-widget/*/widgets
  */
 create-widget
   parent:x:/../*/parent?value
-  class:bg shaded rounded air-inner air-bottom
+  class:shaded rounded air-inner air-bottom
+  style:"background-color:#fefefe;"
   widgets

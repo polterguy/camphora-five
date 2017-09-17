@@ -74,9 +74,7 @@ for-each:x:/@load-file/*/*/field
 
   else-if:x:/@_first?value
     and:x:/@_dp/#/*/type?value
-      =:text
-      or:x:/@_dp/#/*/type?value
-        =:textarea
+      =:textarea
 
     /*
      * This is our first text or textarea column, making it 100% wide, to throw
@@ -142,6 +140,7 @@ create-widget
 
                     button:camphora-search-button
                       innerValue:@"<span class=""icon-search""></span>"
+                      title:Search for items
                       onclick
 
                         /*
@@ -181,6 +180,7 @@ create-widget
                     button
                       innerValue:@"<span class=""icon-plus""></span>"
                       style:"padding-left:35px;padding-right:35px;"
+                      title:Create new record
                       onclick
 
                         /*
@@ -195,7 +195,13 @@ create-widget
                           :x:/@_url?value
 
                     button
+                      innerValue:@"<span class=""icon-download""></span>"
+                      title:Download items as CSV file
+                      onclick
+
+                    button
                       innerValue:@"<span class=""icon-home""></span>"
+                      title:Return to home
                       onclick
 
                         /*

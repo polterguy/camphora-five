@@ -171,7 +171,7 @@ for-each:x:/@load-file/*/*/field
      * Adding up "where" for currently iterated column.
      */
     set:x:/@_where?value
-      src:@"{0}{1} like @filter"
+      src:@"{0}`{1}` like @filter"
         :x:/@_where?value
         :x:/@_dp/#/*/name?value
 
@@ -260,7 +260,7 @@ if:x:/@.signal/--/id?value
  * Opening database connection, and executing our SQL query.
  */
 p5.mysql.connect:[camphora]
-  p5.mysql.select:@"select id, {0} from {1}{2}{3} order by id limit 25 offset @offset"
+  p5.mysql.select:@"select id, {0} from `{1}`{2}{3} order by id limit 25 offset @offset"
     :x:/@_cols?value
     :x:/../*/split/[0,1]/0/-2?name
     :x:/@_where?value
@@ -388,6 +388,7 @@ p5.mysql.connect:[camphora]
                 button
                   innerValue:@"<span class=""icon-pencil""></span>"
                   style:"margin-bottom:0;"
+                  title:Edit item
                   onclick
 
                     /*
@@ -448,6 +449,7 @@ p5.mysql.connect:[camphora]
                 button
                   innerValue:@"<span class=""icon-trash""></span>"
                   style:"margin-bottom:0;"
+                  title:Delete item
                   onclick
 
                     /*
@@ -459,7 +461,7 @@ p5.mysql.connect:[camphora]
                     get-widget-property:x:/-/*/*?value
                       .id
                     p5.mysql.connect:[camphora]
-                      p5.mysql.delete:@"delete from {0} where id = @id"
+                      p5.mysql.delete:@"delete from `{0}` where id = @id"
                         :x:/@_table-name?value
                         @id:x:/@get-widget-property/*/*?value
 
