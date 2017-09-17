@@ -129,6 +129,7 @@ create-widget
           widgets
             div
               class:right
+              style:"min-width:450px;"
               widgets
                 div
                   class:strip
