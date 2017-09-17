@@ -105,6 +105,7 @@ for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=selec
               input:{0}-widget
                 :x:/@_dp/#/*/name?value
                 type:text
+                maxlength:256
                 placeholder:{0} ...
                   :x:/@_dp/#/*/name?value
                 .data-field:x:/@_dp/#/*/name?value

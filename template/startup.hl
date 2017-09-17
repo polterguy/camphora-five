@@ -41,15 +41,15 @@ for-each:x:/@load-file/*/*/field
       set:x:/@_cols?value
         src:{0}{1}
           :x:/@_cols?value
-          :@"`{0}` varchar(1024) COLLATE utf8mb4_unicode_ci NULL,
+          :@"`{0}` varchar(512) COLLATE utf8mb4_unicode_ci NULL,
   "
             :x:/@_dp/#/*/name?value
       set:x:/@_cols-changed?value
         src:{0}{1}
           :x:/@_cols-changed?value
           :@"
-  alter table `{0}` modify `{1}` varchar(1024) COLLATE utf8mb4_unicode_ci NULL;
-  alter table `{0}` add `{1}` varchar(1024) COLLATE utf8mb4_unicode_ci NULL;"
+  alter table `{0}` modify `{1}` varchar(512) COLLATE utf8mb4_unicode_ci NULL;
+  alter table `{0}` add `{1}` varchar(512) COLLATE utf8mb4_unicode_ci NULL;"
             :x:/@split/0/-3?name
             :x:/@_dp/#/*/name?value
     case:checkbox
