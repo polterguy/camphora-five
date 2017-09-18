@@ -38,6 +38,7 @@ micro.lambda.contract.optional:x:/..
   viewers
   editors
   skin
+  show-headers
 
 
 
@@ -75,6 +76,8 @@ if:x:/../*/filename?value
     src:x:/@load-file/*/*/editors?value
   set:x:/@.file-values/*/skin?value
     src:x:/@load-file/*/*/skin?value
+  set:x:/@.file-values/*/show-headers?value
+    src:x:/@load-file/*/*/show-headers?value
 
   /*
    * Looping through each [field] from file, and creating a wrapper widget for it.
@@ -313,10 +316,13 @@ create-widget
                  * Skin select drop down list wrapper.
                  */
                 div
-                  class:col-33
+                  class:col-100
                   widgets
                     h4
                       innerValue:Styling
+                div
+                  class:col-33
+                  widgets
                     div
                       class:strip fill
                       widgets
@@ -372,6 +378,36 @@ create-widget
                                 parent:x:/../*/_event?value
                                 element:option
                                 innerValue:x:/@split/0/-2?name
+
+                /*
+                 * Show headers checkbox.
+                 */
+                div
+                  class:col-33
+                  widgets
+                    input:camphora-show-headers
+                      type:checkbox
+                      .data-field:show-headers
+                      style:"margin-top:6px;margin-bottom:10px;"
+                      oninit
+
+                        /*
+                         * Forward evaluated before creation of widget.
+                         */
+                        .file-values
+                          show-headers:x:/../*/.file-values/*/show-headers?value
+                        if:x:/@.file-values/*/show-headers?value
+
+                          /*
+                           * Widget should be initially checked.
+                           */
+                          set-widget-property:x:/../*/_event?value
+                            checked
+
+                    label
+                      for:camphora-show-headers
+                      innerValue:Show headers
+                      style:"margin-top:6px;margin-bottom:10px;display:inline-block;"
 
             hr
             div
@@ -572,7 +608,7 @@ create-widget
                            * Adding other types of settings for app.
                            */
                           add:x:/../*/.data
-                            src:x:/@micro.form.serialize/*(/viewers|/editors|/skin)
+                            src:x:/@micro.form.serialize/*(/viewers|/editors|/skin|/show-headers)
 
                           /*
                            * Saving file.

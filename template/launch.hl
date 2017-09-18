@@ -77,68 +77,66 @@ if:x:/@whoami/*/role?value
 
 /*
  * Iterating through each field in app, adding one column for each field that is
- * supposed to be visible in the grid.
+ * supposed to be visible in the grid - But only if settings for app has told us to
+ * actually show any headers at all.
  *
  * Notice, we're tracking the first textarea type of column, and making it "100%" wide, 
  * which will prioritize the first column in regards to spacing, and make all other columns
  * reduce accordingly in size, to have no more width than what's absolutely necessary
  * in order to show their values, without breaking text into multiple lines.
  */
-_first:bool:true
-for-each:x:/@load-file/*/*/field
-
-  /*
-   * Checking if field is supposed to be visible in grid.
-   */
-  if:x:/@_dp/#/*/show?value
-    =:bool:false
+if:x:/@load-file/*/*/show-headers?value
+  _first:bool:true
+  for-each:x:/@load-file/*/*/field
 
     /*
-     * Current field is not supposed to be visible in the datagrid.
+     * Checking if field is supposed to be visible in grid.
      */
-    continue
+    if:x:/@_dp/#/*/show?value
+      =:bool:false
 
-  /*
-   * Checking if this is a "checked" type of field.
-   */
-  if:x:/@_dp/#/*/type?value
-    =:checkbox
+      /*
+       * Current field is not supposed to be visible in the datagrid.
+       */
+      continue
 
     /*
-     * Yup, checked - Reducing width of column.
-     *
-     * This little CSS trick will make the column no wider than what it absolutely
-     * needs to be, to show its header (th) cell.
+     * Checking if this is a "checked" type of field.
      */
-    add:x:/..for-each/*/add/*/*
+    if:x:/@_dp/#/*/type?value
+      =:checkbox
+
+      /*
+       * Yup, checked - Reducing width of column.
+       *
+       * This little CSS trick will make the column no wider than what it absolutely
+       * needs to be, to show its header (th) cell.
+       */
+      add:x:/..for-each/*/add/*/*
+        src
+          style:"width:5px;"
+
+    else-if:x:/@_first?value
+      and:x:/@_dp/#/*/type?value
+        =:textarea
+
+      /*
+       * This is our first text or textarea column, making it 100% wide, to throw
+       * our CSS trick from above (read comments above).
+       */
+      add:x:/..for-each/*/add/*/*
+        src
+          style:"width:100%;"
+
+    /*
+     * Adding a column to our datagrid below.
+     */
+    set:x:/+/*/*?name
+      src:x:/@_dp/#/*/name?value
+    add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
       src
-        style:"width:5px;"
-
-  else-if:x:/@_first?value
-    and:x:/@_dp/#/*/type?value
-      =:textarea
-
-    /*
-     * This is our first text or textarea column, making it 100% wide, to throw
-     * our CSS trick from above (read comments above).
-     */
-    add:x:/..for-each/*/add/*/*
-      src
-        style:"width:100%;"
-
-  /*
-   * Adding a column to our datagrid below.
-   */
-  set:x:/+/*/*?name
-    src:x:/@_dp/#/*/name?value
-  add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
-    src
-      foo
-        class:capitalize
-
-
-
-
+        foo
+          class:capitalize
 
 /*
  * Verifying user is allowed to edit data, and if not, removing edit widgets
@@ -167,12 +165,13 @@ if:x:/@whoami/*/role?value
 else
 
   /*
-   * Creating Edit row header
+   * Creating Edit row header, but only if headers are supposed to be shown.
    */
-  add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
-    src
-      Edit
-        style:"width:5px;text-align:center;"
+  if:x:/@load-file/*/*/show-headers?value
+    add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
+      src
+        Edit
+          style:"width:5px;text-align:center;"
 
   /*
    * Making sure all other parts of our system knows the user is allowed to edit data
