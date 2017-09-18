@@ -76,6 +76,35 @@ if:x:/@whoami/*/role?value
 
 
 /*
+ * Checking if current request ir trying to download our temp CSV file, and if so,
+ * returning it to the client as is.
+ */
+if:x:/@split/*?count
+  =:int:2
+  and:x:/@split/1?name
+    =:download
+
+  /*
+   * Current request is trying to download the temporary created CSV file.
+   *
+   * Making sure we get our HTTP headers set correctly, and echoing file as is.
+   */
+  p5.web.header.set:Content-Type
+    src:text/csv
+  p5.web.header.set:Content-Disposition
+    src:@"attachment; filename=""sql.csv"""
+  p5.web.echo-file:~/temp/sql.csv
+
+  /*
+   * Returning early to abort evaluation of the rest of our file.
+   */
+  return
+
+
+
+
+
+/*
  * Iterating through each field in app, adding one column for each field that is
  * supposed to be visible in the grid - But only if settings for app has told us to
  * actually show any headers at all.
@@ -270,6 +299,19 @@ create-widget
                       innerValue:@"<span class=""icon-download""></span>"
                       title:Download items as CSV file
                       onclick
+
+                        /*
+                         * Forward evaluated above.
+                         */
+                        _url:x:/@split/0?name
+
+                        /*
+                         * Evaluating file responsible for exporting items to client.
+                         */
+                        eval-x:x:/+/*/app-name
+                        micro.evaluate.file:/modules/{0}/helpers/export-items.hl
+                          :x:/@_url?value
+                          app-name:x:/@_url?value
 
                     button
                       innerValue:@"<span class=""icon-home""></span>"

@@ -1,0 +1,90 @@
+
+/*
+ * File responsible for exporting items to client.
+ *
+ * Expects [app-name] being the name of our app.
+ */
+
+
+
+
+
+/*
+ * Checking if there exists an existing temp CSV file in user's temp folder,
+ * and deleting it if it exists.
+ */
+if
+  fetch:x:/0/0?value
+    file-exists:~/temp/sql.csv
+  delete-file:~/temp/sql.csv
+
+
+
+
+
+/*
+ * Loading app-manifest file, to figure out which columns we should export from
+ * our database.
+ */
+load-file:/modules/{0}/helpers/app-manifest.hl
+  :x:/../*/app-name?value
+_cols
+for-each:x:/@load-file/*/*/field
+
+  /*
+   * Adding column to SQL.
+   */
+  set:x:/@_cols?value
+    src:{0},{1}
+      :x:/@_cols?value
+      :x:/@_dp/#/*/name?value
+
+
+
+
+
+/*
+ * Trimming away redundant "," on columns declaration.
+ */
+set:x:/@_cols?value
+  trim:x:/@_cols?value
+    chars:,
+
+
+
+
+
+/*
+ * Selecting all records from database, and creating a CSV file out of them.
+ */
+p5.mysql.connect:[camphora]
+
+  /*
+   * Runninq query.
+   */
+  p5.mysql.select:@"select {0} from {1}"
+    :x:/@_cols?value
+    :x:/../*/app-name?value
+
+  /*
+   * Creating CSV content out of query's result.
+   */
+  p5.csv.lambda2csv:x:/@p5.mysql.select/*
+
+  /*
+   * Saving CSV content to file in user's "/temp/" folder.
+   */
+  save-file:~/temp/sql.csv
+    src:x:/@p5.csv.lambda2csv?value
+
+
+
+
+
+/*
+ * Re-directing client to download link.
+ */
+p5.web.get-root-location
+p5.web.set-location:{0}{1}/download
+  :x:/@p5.web.get-root-location?value
+  :x:/../*/app-name?value

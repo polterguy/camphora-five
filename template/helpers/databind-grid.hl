@@ -101,6 +101,17 @@ for-each:x:/@load-file/*/*/field
 
 
 /*
+ * Trimming away redundant "," on columns declaration.
+ */
+set:x:/@_cols?value
+  trim:x:/@_cols?value
+    chars:,
+
+
+
+
+
+/*
  * Creating our SQL "where" statement, according to [filter] and "tag" requested.
  */
 _where
@@ -203,17 +214,6 @@ if:x:/@_tag?value
     set:x:/@_tag?value
       src:" where {0}"
         :x:/@_tag?value
-
-
-
-
-
-/*
- * Trimming away redundant "," on columns declaration.
- */
-set:x:/@_cols?value
-  trim:x:/@_cols?value
-    chars:,
 
 
 

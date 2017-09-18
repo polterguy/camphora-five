@@ -180,7 +180,7 @@ create-widget
           .data
           widgets
             h4
-              innerValue:Meta info
+              innerValue:General
             micro.widgets.wizard-form
               collection
                 class:row
