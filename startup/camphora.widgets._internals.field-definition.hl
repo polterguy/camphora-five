@@ -50,10 +50,12 @@ create-event:camphora.widgets._internals.field-definition
         input
           type:text
           placeholder:Name ...
+          title:Name of field
           .data-field:field-name
           value:x:/@.signal/--/name?value
         select
           .data-field:field-type
+          title:Type of field
           onchange
 
             /*
@@ -106,6 +108,7 @@ create-event:camphora.widgets._internals.field-definition
         input
           type:text
           placeholder:Options ...
+          title:Options, separated by comma
           .data-field:options
           disabled
           value:x:/@.signal/--/options?value
@@ -122,7 +125,8 @@ create-event:camphora.widgets._internals.field-definition
           type:hidden
           .data-field:.signal
         button
-          innerValue:@"<span class=""icon-trash""></span>"
+          innerValue:@"<span class=""icon-close""></span>"
+          title:Delete field
           onclick
 
             /*

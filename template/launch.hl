@@ -8,7 +8,18 @@
 
 
 /*
- * Splitting URL, to figure out which type of request this is.
+ * Making sure we set the CSS class for our main wrapper widget correctly.
+ */
+set-widget-property:cnt
+  class:container
+
+
+
+
+
+/*
+ * Splitting URL, to figure out which type of request this is, and to get the
+ * inclusion of our CSS file(s) correctly.
  */
 split:x:/../*/url?value
   =:/
@@ -32,17 +43,47 @@ p5.web.include-css-file:/modules/{0}/media/main.css
 
 
 /*
- * Loading template file, and creating one column in our datagrid for each [field]
- * in our "app-manifest.hl" file.
- *
- * Notice, we're tracking the first column, and making it "100%" wide, which will
- * prioritize the first column in regards to spacing, and make all other columns
- * reduce accordingly in size, to have no more width than what's absolutely necessary
- * in order to show their values, without breaking.
+ * Loading file containing app declaration.
  */
-_first:bool:true
 load-file:/modules/{0}/helpers/app-manifest.hl
   :x:/@split/0?name
+
+
+
+
+
+/*
+ * Verifying user is allowed to view data, and if not, forcing him to login,
+ * and returning early, to avoid evaluating the rest of our file.
+ */
+whoami
+if:x:/@whoami/*/role?value
+  !=:root
+  and:x:/@load-file/*/*/viewers?value
+    !=:guest
+  and:x:/@load-file/*/*/viewers?value
+    !=:x:/whoami/*/role?value
+
+  /*
+   * Forcing user to log in, and returning early.
+   */
+  p5.core.login
+  return
+
+
+
+
+
+/*
+ * Iterating through each field in app, adding one column for each field that is
+ * supposed to be visible in the grid.
+ *
+ * Notice, we're tracking the first textarea type of column, and making it "100%" wide, 
+ * which will prioritize the first column in regards to spacing, and make all other columns
+ * reduce accordingly in size, to have no more width than what's absolutely necessary
+ * in order to show their values, without breaking text into multiple lines.
+ */
+_first:bool:true
 for-each:x:/@load-file/*/*/field
 
   /*
@@ -99,12 +140,40 @@ for-each:x:/@load-file/*/*/field
 
 
 /*
- * Creating delete row header
+ * Verifying user is allowed to edit data, and if not, removing edit widgets
+ * from our form.
  */
-add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
-  src
-    Edit
-      style:"width:5px;text-align:center;"
+whoami
+if:x:/@whoami/*/role?value
+  !=:root
+  and:x:/@load-file/*/*/editors?value
+    !=:guest
+  and:x:/@load-file/*/*/editors?value
+    !=:x:/whoami/*/role?value
+
+  /*
+   * Making sure all other parts of our system knows the user is not allowed to edit data
+   * in the system.
+   */
+  p5.web.viewstate.set:camphora.editing-allowed
+    src:bool:false
+
+else
+
+  /*
+   * Creating Edit row header
+   */
+  add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
+    src
+      Edit
+        style:"width:5px;text-align:center;"
+
+  /*
+   * Making sure all other parts of our system knows the user is allowed to edit data
+   * in the system.
+   */
+  p5.web.viewstate.set:camphora.editing-allowed
+    src:bool:true
 
 
 
@@ -113,8 +182,6 @@ add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
 /*
  * Creating main wire-frame grid.
  */
-set-widget-property:cnt
-  class:container
 eval-x:x:/+/**(/_folder|/_url)
 create-widget
   class:container

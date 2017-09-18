@@ -157,16 +157,75 @@ create-widget
             h4
               innerValue:Meta info
             micro.widgets.wizard-form
-              text
-                info:Name
-                .data-field:name
-                value:x:/@.defaults/*/name?value
-                oninit
+              collection
+                class:row
+                widgets
 
                   /*
-                   * Setting initial focus to name textbox.
+                   * Name of app.
                    */
-                  micro.page.set-focus:x:/../*/_event?value
+                  collection
+                    class:col-33
+                    widgets
+                      text
+                        info:Name
+                        .data-field:name
+                        value:x:/@.defaults/*/name?value
+                        title:Name of your app. Notice, this also declares the name of your database.
+                        oninit
+
+                          /*
+                           * Setting initial focus to name textbox.
+                           */
+                          micro.page.set-focus:x:/../*/_event?value
+
+                  /*
+                   * Role that is allowed to see the data.
+                   */
+                  collection
+                    class:col-33
+                    widgets
+                      select
+                        .data-field:viewers
+                        info:Viewers
+                        title:Minimum role that is allowed to see data in your app. Guest means also people who are not logged into the system.
+                        oninit
+
+                          /*
+                           * Creating one option element for each role in system.
+                           */
+                          p5.auth.roles.list
+                          for-each:x:/-/*?name
+                            create-widget
+                              element:option
+                              parent:x:/../*/_event?value
+                              innerValue:x:/@_dp?value
+
+                  /*
+                   * Role that is allowed to edit the data.
+                   */
+                  collection
+                    class:col-33
+                    widgets
+                      select
+                        .data-field:editors
+                        info:Editors
+                        title:Minimum role that is allowed to edit data in your app. Guest means also people who are not logged into the system.
+                        oninit
+
+                          /*
+                           * Creating one option element for each role in system.
+                           */
+                          p5.auth.roles.list
+                          for-each:x:/-/*?name
+                            if:x:/@_dp?value
+                              =:root
+                              add:x:/..for-each/*/create-widget
+                                src:selected
+                            create-widget
+                              element:option
+                              parent:x:/../*/_event?value
+                              innerValue:x:/@_dp?value
 
             hr
             div
@@ -211,170 +270,199 @@ create-widget
                       onclick
 
                         /*
-                         * Retrieving wizard-form's data.
+                         * Invoking event responsible for saving app.
                          */
-                        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                          .data
-                        micro.form.serialize:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                        camphora.save-app:x:/../*/_event?value
+
+                      events
 
                         /*
-                         * Sanity checking name of app.
+                         * Event responsible for saving our app.
                          */
-                        match:x:/@micro.form.serialize/*/name?value
-                          src:regex:@"/^[-a-z]{5,}$/"
-                        if:x:/@match/0?name
-                          =:
-                          or:x:/@match/*?count
-                            =:int:0
-                          or
-                            fetch:x:/0/0?value
-                              file-exists:~/documents/private/camphora/{0}.hl
-                                :x:/@micro.form.serialize/*/name?value
-                            and
-                              fetch:x:/*/.different?value
-                                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                                  .filename
-                                get-widget-property:x:/-/*/*?value
-                                  .filename
-                                .different:bool:false
-                                whoami
-                                if:x:/@get-widget-property/*/*?value
-                                  !=:/users/{0}/documents/private/camphora/{1}.hl
-                                    :x:/@whoami/*/username?value
-                                    :x:/@micro.form.serialize/*/name?value
-                                  set:x:/@.different?value
-                                    src:bool:true
+                        camphora.save-app
 
                           /*
-                           * App's name is not accepted.
+                           * Checking if this is our guy.
                            */
-                          micro.windows.info:Your app can only have a-z and hyphens (-) in its name, and must be more than 4 characters long. It must also not be an existing module, and it must be unique.
-                            class:micro-windows-info warning
-                          p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                            .data-field:name
-                          micro.page.set-focus:x:/@p5.web.widgets.find/*/*?value
-                          return
-
-                        /*
-                         * Making sure app has at least one column.
-                         */
-                        if:x:/@micro.form.serialize/*/.signal?count
-                          =:int:0
-
-                          /*
-                           * Oops, app has no field declarations.
-                           */
-                          micro.windows.info:Your app must have at least one field
-                            class:micro-windows-info warning
-                          return
-
-                        /*
-                         * Retrieving app's filename, and if it is not null, we delete
-                         * the file.
-                         */
-                        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                          .filename
-                        get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                          .filename
-                        if:x:/@get-widget-property/*/*?value
-                          !=
-
-                          /*
-                           * Editing mode, making sure we delete existing file,
-                           * if it exists.
-                           */
-                          if
-                            fetch:x:/0/0?value
-                              file-exists:x:/@get-widget-property/*/*?value
+                          if:x:/../*/_event?value
+                            !=:x:/../*/_arg?value
 
                             /*
-                             * File exists, deleting it.
+                             * Not our guy, returning early.
                              */
-                            delete-file:x:/@get-widget-property/*/*?value
-
-                        /*
-                         * Used to hold actual data for our app.
-                         */
-                        .data
-
-                        /*
-                         * Iterating through each field, and adding as field into
-                         * above [.data] lambda.
-                         */
-                        for-each:x:/@micro.form.serialize/*/.signal
-
-                          /*
-                           * Sanity checking field-name before we add it into resulting lambda.
-                           */
-                          match:x:/@_dp/#/@field-name?value
-                            src:regex:@"/^[-a-z]{3,}$/"
-                          if:x:/@match/*?count
-                            =:int:0
-                            or:x:/@match/0?name
-                              =:
-
-                            /*
-                             * Oops, not an accepted name!
-                             */
-                            micro.windows.info:The names of your fields must only contain lowercase letters [a-z], hyphens (-), and be minimum 3 characters long
-                              class:micro-windows-info warning
                             return
 
-                          eval-x:x:/+/*/*/*
-                          add:x:/@.data
-                            src
-                              field
-                                name:x:/@_dp/#/@field-name?value
-                                type:x:/@_dp/#/@field-type?value
-                                show:x:/@_dp/#/@show-in-grid?value
-                          if:x:/@_dp/#/@options?value
+                          /*
+                           * Retrieving wizard-form's data.
+                           */
+                          p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                            .data
+                          micro.form.serialize:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
+                          /*
+                           * Sanity checking name of app.
+                           */
+                          match:x:/@micro.form.serialize/*/name?value
+                            src:regex:@"/^[-a-z]{3,}$/"
+                          if:x:/@match/0?name
+                            =:
+                            or:x:/@match/*?count
+                              =:int:0
+                            or
+                              fetch:x:/0/0?value
+                                file-exists:~/documents/private/camphora/{0}.hl
+                                  :x:/@micro.form.serialize/*/name?value
+                              and
+                                fetch:x:/*/.different?value
+                                  p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                                    .filename
+                                  get-widget-property:x:/-/*/*?value
+                                    .filename
+                                  .different:bool:false
+                                  whoami
+                                  if:x:/@get-widget-property/*/*?value
+                                    !=:/users/{0}/documents/private/camphora/{1}.hl
+                                      :x:/@whoami/*/username?value
+                                      :x:/@micro.form.serialize/*/name?value
+                                    set:x:/@.different?value
+                                      src:bool:true
 
                             /*
-                             * Splitting up options semantically for each "," found
-                             * in its value.
+                             * App's name is not accepted.
                              */
-                            split:x:/@_dp/#/@options?value
-                              =:,
-                              trim:true
-                            for-each:x:/@split/*?name
-                              add:x:/@.data/0/-/*/type
-                                src:x:/@_dp?value
+                            micro.windows.info:Your app can only have a-z and hyphens (-) in your app's name, and the name must be 3 characters or longer. It must also not be an existing module, and it must be unique.
+                              class:micro-windows-info warning
+                            p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                              .data-field:name
+                            micro.page.set-focus:x:/@p5.web.widgets.find/*/*?value
+                            return:bool:false
 
-                        /*
-                         * Saving file.
-                         */
-                        lambda2hyper:x:/@.data/*
-                        save-file:~/documents/private/camphora/{0}.hl
-                          :x:/@micro.form.serialize/*/name?value
-                          src:x:/@lambda2hyper?value
+                          /*
+                           * Making sure app has at least one column.
+                           */
+                          if:x:/@micro.form.serialize/*/.signal?count
+                            =:int:0
 
-                        /*
-                         * Updating header.
-                         */
-                        p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                          element:h3
-                        set-widget-property:x:/@p5.web.widgets.find/*/*?value
-                          innerValue:x:/@micro.form.serialize/*/name?value
+                            /*
+                             * Oops, app has no field declarations.
+                             */
+                            micro.windows.info:Your app must have at least one field
+                              class:micro-windows-info warning
+                            return:bool:false
 
-                        /*
-                         * Updating [.filename] to signal we're in "edit mode".
-                         */
-                        whoami
-                        set-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                          .filename:/users/{0}/documents/private/camphora/{1}.hl
-                            :x:/@whoami/*/username?value
+                          /*
+                           * Retrieving app's filename, and if it is not null, we delete
+                           * the file.
+                           */
+                          p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                            .filename
+                          get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                            .filename
+                          if:x:/@get-widget-property/*/*?value
+                            !=
+
+                            /*
+                             * Editing mode, making sure we delete existing file,
+                             * if it exists.
+                             */
+                            if
+                              fetch:x:/0/0?value
+                                file-exists:x:/@get-widget-property/*/*?value
+
+                              /*
+                               * File exists, deleting it.
+                               */
+                              delete-file:x:/@get-widget-property/*/*?value
+
+                          /*
+                           * Used to hold actual data for our app.
+                           */
+                          .data
+
+                          /*
+                           * Iterating through each field, and adding as field into
+                           * above [.data] lambda.
+                           */
+                          for-each:x:/@micro.form.serialize/*/.signal
+
+                            /*
+                             * Sanity checking field-name before we add it into resulting lambda.
+                             */
+                            match:x:/@_dp/#/@field-name?value
+                              src:regex:@"/^[-a-z]{3,}$/"
+                            if:x:/@match/*?count
+                              =:int:0
+                              or:x:/@match/0?name
+                                =:
+
+                              /*
+                               * Oops, not an accepted name!
+                               */
+                              micro.windows.info:The names of your fields must only contain lowercase letters [a-z], hyphens (-), and be minimum 3 characters long
+                                class:micro-windows-info warning
+                              return:bool:false
+
+                            eval-x:x:/+/*/*/*
+                            add:x:/@.data
+                              src
+                                field
+                                  name:x:/@_dp/#/@field-name?value
+                                  type:x:/@_dp/#/@field-type?value
+                                  show:x:/@_dp/#/@show-in-grid?value
+                            if:x:/@_dp/#/@options?value
+
+                              /*
+                               * Splitting up options semantically for each "," found
+                               * in its value.
+                               */
+                              split:x:/@_dp/#/@options?value
+                                =:,
+                                trim:true
+                              for-each:x:/@split/*?name
+                                add:x:/@.data/0/-/*/type
+                                  src:x:/@_dp?value
+
+                          /*
+                           * Adding other types of settings for app.
+                           */
+                          add:x:/../*/.data
+                            src:x:/@micro.form.serialize/*(/viewers|/editors)
+
+                          /*
+                           * Saving file.
+                           */
+                          lambda2hyper:x:/@.data/*
+                          save-file:~/documents/private/camphora/{0}.hl
                             :x:/@micro.form.serialize/*/name?value
+                            src:x:/@lambda2hyper?value
 
-                        /*
-                         * Re-databinding grid.
-                         */
-                        micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
+                          /*
+                           * Updating header.
+                           */
+                          p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                            element:h3
+                          set-widget-property:x:/@p5.web.widgets.find/*/*?value
+                            innerValue:x:/@micro.form.serialize/*/name?value
 
-                        /*
-                         * Notifying user.
-                         */
-                        micro.windows.info:App was saved
-                          class:micro-windows-info success
+                          /*
+                           * Updating [.filename] to signal we're in "edit mode".
+                           */
+                          whoami
+                          set-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                            .filename:/users/{0}/documents/private/camphora/{1}.hl
+                              :x:/@whoami/*/username?value
+                              :x:/@micro.form.serialize/*/name?value
+
+                          /*
+                           * Re-databinding grid.
+                           */
+                          micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
+
+                          /*
+                           * Notifying user.
+                           */
+                          micro.windows.info:App was saved
+                            class:micro-windows-info success
 
                     button
                       style:"margin-bottom:0;"
@@ -425,6 +513,29 @@ create-widget
                                           _widget:x:/../*/_event?value
 
                                           /*
+                                           * Finding parent widget, such that we can find
+                                           * save button.
+                                           */
+                                          p5.web.widgets.get-parent:x:/../*/_widget?value
+                                          p5.web.widgets.find:x:/-/*/*?value
+                                            .save-button
+
+                                          /*
+                                           * Invoking event responsible for saving app, and
+                                           * verifying that saving operation was successful
+                                           * before we proceed to generating our app.
+                                           */
+                                          camphora.save-app:x:/@p5.web.widgets.find/*/*?value
+                                          if:x:/@camphora.save-app?value
+                                            =:bool:false
+
+                                            /*
+                                             * Saving of form was not successful.
+                                             * Returning early, to abort generating of app.
+                                             */
+                                            return
+
+                                          /*
                                            * Checking if user wants to delete any existing data for app.
                                            */
                                           get-widget-property:camphora-delete-data
@@ -435,15 +546,11 @@ create-widget
                                                 delete-data:bool:true
 
                                           /*
-                                           * Retrieving filename widget, saving app, and invoking 
+                                           * Retrieving filename widget, and invoking 
                                            * file responsible for generating our app.
                                            */
                                           p5.web.widgets.find-first-ancestor:x:/../*/_widget?value
                                             .filename
-                                          p5.web.widgets.find:x:/-/*/*?value
-                                            .save-button
-                                          p5.web.widgets.ajax-events.raise:x:/-/*/*?value
-                                            onclick
                                           get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
                                             .filename
 

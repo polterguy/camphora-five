@@ -1,0 +1,121 @@
+
+/*
+ * Template "cell" for grids that are allowed to be edited.
+ *
+ * Loaded by datagrid's databind operation, and appended as "edit cell" into grid
+ * during creation.
+ */
+Edit
+  class:camphora-edit-column
+  widgets
+    div
+      class:strip
+      style:"float:right;"
+      widgets
+        button
+          innerValue:@"<span class=""icon-pencil""></span>"
+          style:"margin-bottom:0;"
+          title:Edit item
+          onclick
+
+            /*
+             * Figuring our row's database ID.
+             */
+            p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+              .id
+            get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+              .id
+
+            /*
+             * Checking to see if some other row is already being edited, at which point we
+             * simply abort evaluation of the rest of lambda.
+             */
+            p5.web.widgets.find
+              .edit
+            if:x:/-/*/*?value
+
+              /*
+               * Another item is already being edited, not need to continue.
+               */
+              micro.windows.info:Please finish editing your items, before attempting to edit another item
+                class:micro-windows-info warning
+              return
+
+            /*
+             * Figuring out number of child widgets in row, such that we can create
+             * our "colspan" attribute correctly for our "edit row widget".
+             */
+            p5.web.widgets.get-children:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
+            /*
+             * Creating our "edit record widget", just beneath the currentl clicked row.
+             */
+            eval-x:x:/+/**/id
+            create-widget
+              element:tr
+              after:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+              .edit:x:/@get-widget-property/*/*?value
+              widgets
+                container
+                  element:td
+                  colspan:x:/@p5.web.widgets.get-children/*/*?count
+                  class:camphora-edit-row
+                  oninit
+
+                    /*
+                     * Evaluating file responsible for creating our actual "edit widget", passing
+                     * inn ID of current widget as [parent].
+                     */
+                    p5.web.get-location
+                    split:x:/@p5.web.get-location?value
+                      =:/
+                    eval-x:x:/+/*(/parent|/id)
+                    micro.evaluate.file:/modules/{0}/helpers/edit-item.hl
+                      :x:/@split/2?name
+                      parent:x:/../*/_event?value
+                      id:x:/@get-widget-property/*/*?value
+
+        button
+          innerValue:@"<span class=""icon-trash""></span>"
+          style:"margin-bottom:0;"
+          title:Delete item
+          onclick
+
+            /*
+             * Deleting row.
+             */
+            p5.web.get-location
+            split:x:/@p5.web.get-location?value
+              =:/
+            p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+              .id
+            get-widget-property:x:/-/*/*?value
+              .id
+            p5.mysql.connect:[camphora]
+              p5.mysql.delete:@"delete from `{0}` where id = @id"
+                :x:/@split/2?name
+                @id:x:/@get-widget-property/*/*?value
+
+            /*
+             * Deleting row wrapping record.
+             */
+            delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
+            /*
+             * Checking if item is currently being edited, and if so, making sure
+             * we delete its "edit widget".
+             */
+            p5.web.widgets.find
+              .edit:x:/@get-widget-property/*/*?value
+            if:x:/@p5.web.widgets.find/*/*?value
+
+              /*
+               * Item is being edited, making sure we delete its edit widget.
+               */
+              delete-widget:x:/@p5.web.widgets.find/*/*?value
+
+            /*
+             * Giving user visual feedback.
+             */
+            micro.windows.info:Record was deleted
+              class:micro-windows-info success
