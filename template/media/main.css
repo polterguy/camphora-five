@@ -10,6 +10,7 @@
 }
 .camphora-crud-grid-wrapper {
     display:inline-block;
+    width:100%;
 }
 .camphora-crud-grid-wrapper table tr td {
     border-top:solid 1px #fafafa;

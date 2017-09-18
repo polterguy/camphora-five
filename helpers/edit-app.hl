@@ -32,6 +32,18 @@ micro.lambda.contract.optional:x:/..
 
 
 /*
+ * Used to hold attributes of app retrieved from app-declaration file, if any.
+ */
+.file-values
+  viewers
+  editors
+  skin
+
+
+
+
+
+/*
  * Modifying defaults, if a [filename] argument was supplied.
  */
 if:x:/../*/filename?value
@@ -53,6 +65,16 @@ if:x:/../*/filename?value
    * declaration.
    */
   load-file:x:/../*/filename?value
+
+  /*
+   * Applying settings for later references.
+   */
+  set:x:/@.file-values/*/viewers?value
+    src:x:/@load-file/*/*/viewers?value
+  set:x:/@.file-values/*/editors?value
+    src:x:/@load-file/*/*/editors?value
+  set:x:/@.file-values/*/skin?value
+    src:x:/@load-file/*/*/skin?value
 
   /*
    * Looping through each [field] from file, and creating a wrapper widget for it.
@@ -113,7 +135,7 @@ if:x:/@p5.web.widgets.find/*/*?value
 /*
  * Creating main wire frame for editing app.
  */
-eval-x:x:/+/*/.filename|/+/**/micro.widgets.wizard-form/*/*/value
+eval-x:x:/+/*/.filename|/+/**/micro.widgets.wizard-form/*/*/value|/+/**(/.file-values/*)
 create-widget
   class:row
   .filename:x:/@.defaults/*/filename?value
@@ -192,10 +214,32 @@ create-widget
                         oninit
 
                           /*
+                           * Forward evaluated before creation of widget.
+                           */
+                          .file-values
+                            viewers:x:/../*/.file-values/*/viewers?value
+
+                          /*
                            * Creating one option element for each role in system.
                            */
                           p5.auth.roles.list
                           for-each:x:/-/*?name
+
+                            /*
+                             * Checking if this is our currently selected value.
+                             */
+                            if:x:/@.file-values/*/viewers?value
+                              =:x:/@_dp?value
+
+                              /*
+                               * Yup, currently iterated value should be our selected guy.
+                               */
+                              add:x:/..for-each/*/create-widget
+                                src:selected
+
+                            /*
+                             * Creating option element.
+                             */
                             create-widget
                               element:option
                               parent:x:/../*/_event?value
@@ -214,18 +258,120 @@ create-widget
                         oninit
 
                           /*
+                           * Forward evaluated before creation of widget.
+                           */
+                          .file-values
+                            editors:x:/../*/.file-values/*/editors?value
+
+                          /*
                            * Creating one option element for each role in system.
                            */
                           p5.auth.roles.list
                           for-each:x:/-/*?name
-                            if:x:/@_dp?value
-                              =:root
+
+                            /*
+                             * Checking if this is our currently selected value.
+                             */
+                            if:x:/@.file-values/*/editors?value
+                              =:x:/@_dp?value
+
+                              /*
+                               * Yup, currently iterated value should be our selected guy.
+                               */
                               add:x:/..for-each/*/create-widget
                                 src:selected
+
+                            /*
+                             * Checking if there are no currently selected value from file,
+                             * at which point we default our value to a sane default.
+                             */
+                            if:x:/@.file-values/*/editors?value
+                              not
+                              and:x:/@_dp?value
+                                =:root
+
+                              /*
+                               * This guy should be selected by default.
+                               */
+                              add:x:/..for-each/*/create-widget
+                                src:selected
+
+                            /*
+                             * Creating option element.
+                             */
                             create-widget
                               element:option
                               parent:x:/../*/_event?value
                               innerValue:x:/@_dp?value
+
+            hr
+            div
+              class:row
+              widgets
+
+                /*
+                 * Skin select drop down list wrapper.
+                 */
+                div
+                  class:col-33
+                  widgets
+                    h4
+                      innerValue:Styling
+                    div
+                      class:strip fill
+                      widgets
+                        label
+                          for:camphora-select-skin
+                          innerValue:Skin
+                        container:camphora-select-skin
+                          element:select
+                          .data-field:skin
+                          oninit
+
+                            /*
+                             * Forward evaluated before creation of widget.
+                             */
+                            .file-values
+                              skin:x:/../*/.file-values/*/skin?value
+
+                            /*
+                             * Checking which Micro skins exists in installation.
+                             */
+                            list-files:@MICRO/media/skins/
+                              filter:.css
+
+                            /*
+                             * Creating one option element for each skin.
+                             */
+                            for-each:x:/@list-files/*?name
+
+                              /*
+                               * Splitting currently iterated file, to figure out
+                               * only its name.
+                               */
+                              split:x:/@_dp?value
+                                =:/
+                                =:.
+
+                              /*
+                               * Checking if this is our currently selected value.
+                               */
+                              if:x:/@.file-values/*/skin?value
+                                =:x:/@split/0/-2?name
+
+                                /*
+                                 * Yup, currently iterated value should be our selected guy.
+                                 */
+                                add:x:/..for-each/*/create-literal-widget
+                                  src:selected
+
+                              /*
+                               * Creating option element.
+                               */
+                              create-literal-widget
+                                parent:x:/../*/_event?value
+                                element:option
+                                innerValue:x:/@split/0/-2?name
 
             hr
             div
@@ -426,7 +572,7 @@ create-widget
                            * Adding other types of settings for app.
                            */
                           add:x:/../*/.data
-                            src:x:/@micro.form.serialize/*(/viewers|/editors)
+                            src:x:/@micro.form.serialize/*(/viewers|/editors|/skin)
 
                           /*
                            * Saving file.

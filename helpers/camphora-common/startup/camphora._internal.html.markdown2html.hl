@@ -71,7 +71,7 @@ create-event:camphora._internal.html.markdown2html
    */
   for-each:x:/@html2lambda/**/a
     split:x:/@_dp/#/*/\@href?value
-      =:://"
+      =:"//"
     split:x:/@split/0/-?name
       =:/
     set:x:/@_dp/#/*/\#text?value

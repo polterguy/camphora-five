@@ -50,7 +50,7 @@ load-file:/{0}/app-manifest.hl
  * finally all other types of fields (only checkbox type left at that point though).
  */
 _first:bool:true
-for-each:x:/@load-file/*/*/field(/*/type/=text/.|/type/=/textarea/.|/type/=select/.|/type/=/radio/.|/*/.)
+for-each:x:/@load-file/*/*/field
 
   /*
    * Figuring out type of field, and creating an associated widget accordingly.

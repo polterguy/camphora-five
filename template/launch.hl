@@ -29,13 +29,9 @@ split:x:/../*/url?value
 
 
 /*
- * Including Micro, adding Awesome Fonts, and serious skin.
+ * Loading file containing app declaration.
  */
-p5.web.include-css-file:@MICRO/media/main.css
-p5.web.include-css-file:@MICRO/media/ext.css
-p5.web.include-css-file:@MICRO/media/fonts.css
-p5.web.include-css-file:@MICRO/media/skins/serious.css
-p5.web.include-css-file:/modules/{0}/media/main.css
+load-file:/modules/{0}/helpers/app-manifest.hl
   :x:/@split/0?name
 
 
@@ -43,9 +39,14 @@ p5.web.include-css-file:/modules/{0}/media/main.css
 
 
 /*
- * Loading file containing app declaration.
+ * Including Micro, adding Awesome Fonts, and adding app's chosen skin.
  */
-load-file:/modules/{0}/helpers/app-manifest.hl
+p5.web.include-css-file:@MICRO/media/main.css
+p5.web.include-css-file:@MICRO/media/ext.css
+p5.web.include-css-file:@MICRO/media/fonts.css
+p5.web.include-css-file:@MICRO/media/skins/{0}.css
+  :x:/@load-file/*/*/skin?value
+p5.web.include-css-file:/modules/{0}/media/main.css
   :x:/@split/0?name
 
 
@@ -158,6 +159,11 @@ if:x:/@whoami/*/role?value
   p5.web.viewstate.set:camphora.editing-allowed
     src:bool:false
 
+  /*
+   * Removing the "add new record button".
+   */
+  set:x:/../*/create-widget/**/button/=camphora-add-new-record-button
+
 else
 
   /*
@@ -194,7 +200,7 @@ create-widget
           widgets
             div
               class:right
-              style:"min-width:450px;"
+              style:"min-width:470px;"
               widgets
                 div
                   class:strip
@@ -244,7 +250,7 @@ create-widget
                          */
                         micro.page.set-focus:camphora-search-query
 
-                    button
+                    button:camphora-add-new-record-button
                       innerValue:@"<span class=""icon-plus""></span>"
                       style:"padding-left:35px;padding-right:35px;"
                       title:Create new record
