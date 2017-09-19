@@ -82,8 +82,13 @@ load-file:/{0}/app-manifest.hl
  *
  * Candidates are "/tag" request for instance.
  */
-split:x:/../*/url?value
+p5.web.get-location
+p5.web.get-root-location
+replace:x:/@p5.web.get-location?value
+  src:x:/@p5.web.get-root-location?value
+split:x:/@replace?value
   =:/
+  =:?
 
 
 
