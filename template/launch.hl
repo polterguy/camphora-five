@@ -76,7 +76,7 @@ if:x:/@whoami/*/role?value
 
 
 /*
- * Checking if current request ir trying to download our temp CSV file, and if so,
+ * Checking if current request is trying to download our temp CSV file, and if so,
  * returning it to the client as is.
  */
 if:x:/@split/*?count
@@ -115,7 +115,17 @@ if:x:/@split/*?count
  * in order to show their values, without breaking text into multiple lines.
  */
 if:x:/@load-file/*/*/show-headers?value
+
+  /*
+   * Tracking first header of type [textarea], since we want to make sure it have
+   * priority in spacing, by making it 100% width, which will force it to become the 
+   * largest column in our datagrid.
+   */
   _first:bool:true
+
+  /*
+   * Looping through each [field] declaration in "app-manifest.hl" file for app.
+   */
   for-each:x:/@load-file/*/*/field
 
     /*
@@ -167,6 +177,10 @@ if:x:/@load-file/*/*/show-headers?value
         foo
           class:capitalize
 
+
+
+
+
 /*
  * Verifying user is allowed to edit data, and if not, removing edit widgets
  * from our form.
@@ -180,8 +194,8 @@ if:x:/@whoami/*/role?value
     !=:x:/whoami/*/role?value
 
   /*
-   * Making sure all other parts of our system knows the user is not allowed to edit data
-   * in the system.
+   * Making sure all other parts of our system knows the user is NOT allowed 
+   * to edit data in the system.
    */
   p5.web.viewstate.set:camphora.editing-allowed
     src:bool:false
@@ -191,7 +205,40 @@ if:x:/@whoami/*/role?value
    */
   set:x:/../*/create-widget/**/button/=camphora-add-new-record-button
 
+  /*
+   * Removing the "import CSV file button".
+   */
+  set:x:/../*/create-widget/**/button/=camphora-import-csv-file
+
+  /*
+   * Removing obscurer, since it's only used when files are uploaded.
+   */
+  set:x:/../*/create-widget/**/micro.widgets.obscurer/=camphora-upload-obscurer
+
 else
+
+  /*
+   * Checking if current request is trying to upload a CSV file, and if so,
+   * invoking file responsible for handling our upload, and returning early.
+   */
+  if:x:/@split/*?count
+    =:int:2
+    and:x:/@split/1?name
+      =:upload
+
+    /*
+     * Evaluating file responsible for handling our upload, and returning early,
+     * to avoid evaluation of the rest of our file.
+     */
+    eval-x:x:/+/*/app-name
+    micro.evaluate.file:/modules/{0}/helpers/upload-file.hl
+      :x:/@split/0?name
+      app-name:x:/@split/0?name
+
+    /*
+     * Returning early to avoid evaluation of the rest of our file.
+     */
+    return
 
   /*
    * Creating Edit row header, but only if headers are supposed to be shown.
@@ -209,6 +256,16 @@ else
   p5.web.viewstate.set:camphora.editing-allowed
     src:bool:true
 
+  /*
+   * Making sure we create a CSV file dropzone out of our page.
+   */
+  eval-x:x:/+/*/url
+  micro.page.create-dropzone
+    url:{0}/upload
+      :x:/../*/split/[0,1]/0?name
+    .onfinish:@"function(uid, no_files, no_errors) {window.location.replace(window.location.href);}"
+    .onbegin:@"function() {p5.$('camphora-upload-obscurer').el.style.display = 'block';}"
+
 
 
 
@@ -220,6 +277,14 @@ eval-x:x:/+/**(/_folder|/_url)
 create-widget
   class:container
   widgets
+
+    /*
+     * Obscurer show when files are uploaded.
+     */
+    micro.widgets.obscurer:camphora-upload-obscurer
+      style:"display:none;"
+      message:"Please wait while we upload your file(s) ..."
+
     div
       class:row
       widgets
@@ -228,7 +293,7 @@ create-widget
           widgets
             div
               class:right
-              style:"min-width:470px;"
+              style:"min-width:520px;"
               widgets
                 div
                   class:strip
@@ -295,6 +360,10 @@ create-widget
                         micro.evaluate.file:/modules/{0}/helpers/create-item.hl
                           :x:/@_url?value
 
+                    button:camphora-import-csv-file
+                      innerValue:@"<span class=""icon-upload""></span>"
+                      title:Import a CSV file from your local disc
+                      onclick:@"p5.dropzone.browse();event.stopPropagation(true);return false;"
                     button
                       innerValue:@"<span class=""icon-download""></span>"
                       title:Download items as CSV file

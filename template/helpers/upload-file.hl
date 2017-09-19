@@ -1,0 +1,121 @@
+
+/*
+ * File responsible for uploading a CSV file.
+ *
+ * Expects [app-name] being the name of our app.
+ */
+
+
+
+
+
+/*
+ * Parsing request content as MIME.
+ */
+p5.web.request.parse-mime
+  attachment-folder:~/temp/
+
+
+
+
+
+/*
+ * Loading file, and creating lambda object from it.
+ */
+load-file:{0}{1}{2}
+  :x:/@p5.web.request.parse-mime/*/multipart/=form-data/*/text/=csv/*/filename/*/folder?value
+  :x:/@p5.web.request.parse-mime/*/multipart/=form-data/*/text/=csv/*/filename/*/prefix?value
+  :x:/@p5.web.request.parse-mime/*/multipart/=form-data/*/text/=csv/*/filename?value
+
+
+
+
+
+/*
+ * Creating our SQL fields definition, by figuring out which columns CSV file actually has.
+ */
+_cols
+_pars
+.cols
+for-each:x:/@load-file/*/*/[0,1]/*?name
+
+  /*
+   * Adding column to SQL.
+   */
+  set:x:/@_cols?value
+    src:{0},{1}
+      :x:/@_cols?value
+      :x:/@_dp?value
+  set:x:/@_pars?value
+    src:{0},@{1}
+      :x:/@_pars?value
+      :x:/@_dp?value
+  add:x:/@.cols
+    src:x:/@_dp?value
+
+
+
+
+
+/*
+ * Trimming away redundant "," on columns declaration.
+ */
+set:x:/@_cols?value
+  trim:x:/@_cols?value
+    chars:,
+set:x:/@_pars?value
+  trim:x:/@_pars?value
+    chars:,
+
+
+
+
+
+/*
+ * Opening up database connection, and inserting items into database.
+ */
+p5.mysql.connect:[camphora]
+
+  /*
+   * Making sure we create a transaction wrapping insertion, to avoid having partially
+   * imported datasets in database.
+   */
+  p5.mysql.transaction.begin
+
+    /*
+     * Looping through each item from our dataset, eliminating the first record,
+     * assuming it's our header declaration.
+     */
+    for-each:x:/@load-file/*/*/[1,]
+
+      /*
+       * Adding parameters to SQL inserting.
+       */
+      _no:int:0
+      while:x:/@.cols/{0}
+        :x:/@_no?value
+        set:x:/+2/*/*?name
+          src:@{0}
+            :x:/@.cols/{0}?name
+              :x:/@_no?value
+        eval-x:x:/+/*/*
+        add:x:/..for-each/*/p5.mysql.insert
+          src
+            foo:x:/@_dp/#/{0}?name
+              :x:/@_no?value
+        set:x:/@_no?value
+          +:x:/@_no?value
+            _:1
+
+      /*
+       * Doing actual insertion of items.
+       */
+      p5.mysql.insert:@"insert into {0} ({1}) values ({2})"
+        :x:/../*/app-name?value
+        :x:/@_cols?value
+        :x:/@_pars?value
+
+    /*
+     * Committing transaction.
+     */
+    p5.mysql.transaction.commit
