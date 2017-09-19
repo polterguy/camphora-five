@@ -15,8 +15,10 @@
  */
 if
   fetch:x:/0/0?value
-    file-exists:~/temp/sql.csv
-  delete-file:~/temp/sql.csv
+    file-exists:~/temp/{0}.csv
+      :x:/../*/app-name?value
+  delete-file:~/temp/{0}.csv
+    :x:/../*/app-name?value
 
 
 
@@ -74,7 +76,8 @@ p5.mysql.connect:[camphora]
   /*
    * Saving CSV content to file in user's "/temp/" folder.
    */
-  save-file:~/temp/sql.csv
+  save-file:~/temp/{0}.csv
+    :x:/../*/app-name?value
     src:x:/@p5.csv.lambda2csv?value
 
 
