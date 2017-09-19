@@ -290,6 +290,21 @@ create-widget
       widgets
         div
           class:col-100
+          oninit
+
+            /*
+             * Including JavaScript to determine is user is at the bottom of page,
+             * at which point we "auto-feed" grid with more items.
+             */
+            p5.web.include-javascript:@"
+window.onscroll = function() {
+  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+    if (!p5.camphora_end_of_dataset) {
+      var el = p5.$('camphora-crud-grid');
+      el.raise('.onfeed');
+    }
+  }
+};"
           widgets
             div
               class:right
@@ -404,6 +419,17 @@ create-widget
               widgets
                 micro.widgets.grid:camphora-crud-grid
                   class:spaced lg-headers hover
+                  .onfeed
+
+                    /*
+                     * Feeding grid with more items.
+                     */
+                    _folder:/modules/{0}/
+                      :x:/@split/0?name
+                    micro.evaluate.file:{0}helpers/databind-grid.hl
+                      :x:/@_folder?value
+                      feed-more:bool:true
+
                   columns
                   oninit
 

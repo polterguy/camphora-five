@@ -4,6 +4,10 @@
  *
  * Optionally requires [filter] or [.id], at which the latter case, only the 
  * specified database [id] item will be re-databound.
+ *
+ * You can also pass in [feed-more] and set its value to boolean "trus", 
+ * at which point the existing items will not be cleared, but rather the grid 
+ * will have 25 more items appended to itself.
  */
 
 
@@ -26,6 +30,7 @@ micro.lambda.contract.optional:x:/..
   filter:string
   offset:long
   id:long
+  feed-more:bool
 
 
 
@@ -266,9 +271,13 @@ p5.web.viewstate.get:camphora.editing-allowed
 
 
 /*
- * Opening database connection, and executing our SQL query.
+ * Opening database connection.
  */
 p5.mysql.connect:[camphora]
+
+  /*
+   * Executing SQL query, now parametrized accordingly.
+   */
   p5.mysql.select:@"select id, {0} from `{1}`{2}{3} order by id limit 25 offset @offset"
     :x:/@_cols?value
     :x:/../*/split/[0,1]/0/-2?name
@@ -422,6 +431,18 @@ if:x:/../*/id?value
   add:x:/../*/micro.widgets.grid.databind/*/*/.row
     src
       .replace:x:/@p5.web.widgets.find/*/*?value
+
+
+
+
+
+/*
+ * Checking if this is a "feed more" invocation, at which point we don't clean
+ * out existing items in grid.
+ */
+add:x:/../*/micro.widgets.grid.databind
+  src
+    keep-items:bool:true
 
 
 
