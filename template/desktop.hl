@@ -1,0 +1,33 @@
+
+/*
+ * Desktop widget file for Camphora generated apps.
+ */
+container
+  element:a
+  class:desktop-app shaded rounded air-inner
+  oninit
+
+    /*
+     * Getting URL to point correctly.
+     */
+    get-widget-property:x:/../*/_event?value
+      .app-name
+    set-widget-property:x:/../*/_event?value
+      href:/{0}
+        :x:/@get-widget-property/*/*?value
+
+  widgets
+    literal
+      element:span
+      class:desktop-app-name
+      oninit
+
+        /*
+         * Making sure we figure out app's name, and modifiy icon accordingly.
+         */
+        p5.web.widgets.get-parent:x:/../*/_event?value
+        get-widget-property:x:/-/*/*?value
+          .app-name
+        set-widget-property:x:/../*/_event?value
+          innerValue:@"<span class=""icon-th desktop-app-icon""></span><span class=""capitalize"" style=""position:absolute;top:5px;right:5px;font-size:.7rem;"">{0}</span>"
+            :x:/@get-widget-property/*/*?value

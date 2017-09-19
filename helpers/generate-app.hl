@@ -77,6 +77,24 @@ for-each:x:/-/*?name
 
 
 /*
+ * Loading and modifying app's "desktop.hl" file, to make sure it's got knowledge
+ * about which app this actually is.
+ */
+load-file:/modules/{0}/desktop.hl
+  :x:/@split/0/-2?name
+eval-x:x:/+/*/*
+add:x:/@load-file/*/*
+  src
+    .app-name:x:/@split/0/-2?name
+save-file:/modules/{0}/desktop.hl
+  :x:/@split/0/-2?name
+  src:x:/@load-file/*/*
+
+
+
+
+
+/*
  * Copying file that declares our app into folder for app.
  */
 copy-file:x:/../*/filename?value
