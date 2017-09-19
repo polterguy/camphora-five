@@ -527,9 +527,15 @@ if:x:/../*/id?value
  * Checking if this is a "feed more" invocation, at which point we don't clean
  * out existing items in grid.
  */
-add:x:/../*/micro.widgets.grid.databind
-  src
-    keep-items:bool:true
+if:x:/../*/feed-more?value
+
+  /*
+   * User requested to have more items fed to the grid, and not to databind grid
+   * all over again, by emptying it first
+   */
+  add:x:/../*/micro.widgets.grid.databind
+    src
+      keep-items:bool:true
 
 
 
