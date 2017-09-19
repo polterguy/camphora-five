@@ -212,6 +212,11 @@ if:x:/@whoami/*/role?value
   set:x:/../*/create-widget/**/button/=camphora-import-csv-file
 
   /*
+   * Removing the "delete all button".
+   */
+  set:x:/../*/create-widget/**/button/=camphora-delete-all-button
+
+  /*
    * Removing obscurer, since it's only used when files are uploaded.
    */
   set:x:/../*/create-widget/**/micro.widgets.obscurer/=camphora-upload-obscurer
@@ -431,7 +436,7 @@ window.onscroll = function() {
                           :x:/@_url?value
                           app-name:x:/@_url?value
 
-                    button
+                    button:camphora-delete-all-button
                       innerValue:@"<span class=""icon-trash""></span>"
                       title:Deletes all items in your database
                       onclick
