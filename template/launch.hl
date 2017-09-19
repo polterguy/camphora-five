@@ -432,6 +432,75 @@ window.onscroll = function() {
                           app-name:x:/@_url?value
 
                     button
+                      innerValue:@"<span class=""icon-trash""></span>"
+                      title:Deletes all items in your database
+                      onclick
+
+                        /*
+                         * Forward evaluated above.
+                         */
+                        _url:x:/@split/0?name
+
+                        /*
+                         * Asking user to confirm action.
+                         */
+                        eval-x:x:/+/*/*/*/p/*/innerValue
+                        create-widgets
+                          micro.widgets.modal:camphora-delete-all-records
+                            widgets
+                              h3
+                                innerValue:Please confirm action
+                              p
+                                innerValue:These will delete all records in your database of type '{0}', are you sure you wish to continue?
+                                  :x:/@_url?value
+                              div
+                                class:right
+                                widgets
+                                  div
+                                    class:strip
+                                    style:"display:inline-block;"
+                                    widgets
+                                      button
+                                        innerValue:Yes
+                                        style:"margin-bottom:0;"
+                                        oninit
+
+                                          /*
+                                           * Setting initial focus to "Yes" button.
+                                           */
+                                          micro.page.set-focus:x:/../*/_event?value
+
+                                        onclick
+
+                                          /*
+                                           * Forward evaluated above.
+                                           */
+                                          _url:x:/@split/0?name
+
+                                          /*
+                                           * Deleting all records from database.
+                                           */
+                                          p5.mysql.connect:[camphora]
+                                            p5.mysql.delete:@"delete from {0}"
+                                              :x:/@_url?value
+
+                                          /*
+                                           * Reloading root location for simplicity.
+                                           */
+                                          p5.web.set-location:/{0}
+                                            :x:/@_url?value
+
+                                      button
+                                        innerValue:No
+                                        style:"margin-bottom:0;"
+                                        onclick
+
+                                          /*
+                                           * Deleting modal widget.
+                                           */
+                                          delete-widget:camphora-delete-all-records
+
+                    button
                       innerValue:@"<span class=""icon-home""></span>"
                       title:Return to home
                       onclick
