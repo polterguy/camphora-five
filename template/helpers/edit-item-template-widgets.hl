@@ -87,6 +87,7 @@ Edit
             p5.web.get-location
             split:x:/@p5.web.get-location?value
               =:/
+              =:?
             p5.web.widgets.find-first-ancestor:x:/../*/_event?value
               .id
             get-widget-property:x:/-/*/*?value
