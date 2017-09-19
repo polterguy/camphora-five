@@ -4,14 +4,8 @@
  * and returns the result to the caller.
  *
  * Notice, the path used to generate #hash-tags here is dynamically created.
- */
-
-
-
-
-
-/*
- * Creating our event.
+ *
+ * Requires [app-name] as argument.
  */
 create-event:camphora._internals.html.create-hyperlinks-and-tags
 
@@ -20,18 +14,16 @@ create-event:camphora._internals.html.create-hyperlinks-and-tags
    */
   micro.lambda.contract.min:x:/..
     _arg:string
+    app-name:string
 
   /*
    * Replacing all "#xxx" occurrencies in content, into a relative URL, leading
    * to "/tag/xxx"
    */
-  p5.web.get-location
-  split:x:/-?value
-    =:/
   replace:x:/../*/_arg?value
     src:regex:@"/(\B)(#(\w[-\w]+))/i"
     dest:@"$1<a href=""/{0}/tag/$3"">$2</a>"
-      :x:/@split/0/-?name
+      :x:/../*/app-name?value
 
   /*
    * Using regular expression to convert anything that resembles a hyperlink, that
@@ -42,7 +34,7 @@ create-event:camphora._internals.html.create-hyperlinks-and-tags
    * websites, to know the origin of the request.
    */
   replace:x:/@replace?value
-    src:regex:@"/(\(|<|\[|\s|>)+(http|https|ftp)(\://)([a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3})((:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*)/"
+    src:regex:@"/(\(|<|\[|\s|>)+(http|https|ftp)(\://)([a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3})((:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\(\)\-\._\?\,\'/\\\+&amp;%\$#\=~])*)/"
     dest:@"$1<a rel=""noreferrer"" target=""_blank"" href=""$2$3$4$5""><strong>$4</strong>$5</a>"
 
   /*

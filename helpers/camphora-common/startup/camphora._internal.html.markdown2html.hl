@@ -2,14 +2,8 @@
 /*
  * Creates the Active Event that transforms Markdown to HTML, 
  * adding #hash-tag links in the process, and adding up rel="noreferrer", etc.
- */
-
-
-
-
-
-/*
- * Creating our event.
+ *
+ * Requires [app-name] as argument.
  */
 create-event:camphora._internal.html.markdown2html
 
@@ -18,6 +12,7 @@ create-event:camphora._internal.html.markdown2html
    */
   micro.lambda.contract.min:x:/..
     _arg:string
+    app-name:string
 
   /*
    * Transforming Markdown to HTML.
@@ -117,7 +112,9 @@ create-event:camphora._internal.html.markdown2html
    *
    * Notice, this invocation will ignore any hyperlinks already created by our above [markdown2html] invocation.
    */
+  eval-x:x:/+/*
   camphora._internals.html.create-hyperlinks-and-tags:x:/@lambda2html?value
+    app-name:x:/../*/app-name?value
 
   /*
    * Returning HTML created above.

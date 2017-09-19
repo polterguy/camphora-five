@@ -23,6 +23,7 @@ set-widget-property:cnt
  */
 split:x:/../*/url?value
   =:/
+  =:?
 
 
 
@@ -271,6 +272,26 @@ else
 
 
 /*
+ * Figuring out if a query search parameter was supplied.
+ */
+p5.web.query.get:q
+if:x:/@p5.web.query.get/*?value
+
+  /*
+   * Query parameter was given.
+   */
+  eval-x:x:/+/*/*/value
+  add:x:/../*/create-widget/**/input/=camphora-search-query
+    src
+      value:x:/@p5.web.query.get/*?value
+      oninit
+        micro.page.set-focus:x:/../*/_event?value
+
+
+
+
+
+/*
  * Creating main wire-frame grid.
  */
 eval-x:x:/+/**(/_folder|/_url)
@@ -348,7 +369,8 @@ window.onscroll = function() {
                         _url:x:/@split/0?name
 
                         /*
-                         * Databinding grid, now with [filter].
+                         * Redirecting client to make sure we pass in query
+                         * parameter being the search condition.
                          */
                         get-widget-property:camphora-search-query
                           value
@@ -358,23 +380,17 @@ window.onscroll = function() {
                           /*
                            * Filter was given.
                            */
-                          eval-x:x:/+/*/filter
-                          micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
+                          p5.html.url-encode:x:/@get-widget-property/*/*?value
+                          p5.web.set-location:{0}?q={1}
                             :x:/@_url?value
-                            filter:x:/@get-widget-property/*/*?value
+                            :x:/@p5.html.url-encode?value
 
                         else
 
                           /*
                            * Filter was removed.
                            */
-                          micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
-                            :x:/@_url?value
-
-                        /*
-                         * Setting focus to search textbox for simplicity.
-                         */
-                        micro.page.set-focus:camphora-search-query
+                          p5.web.set-location:x:/@_url?value
 
                     button:camphora-add-new-record-button
                       innerValue:@"<span class=""icon-plus""></span>"

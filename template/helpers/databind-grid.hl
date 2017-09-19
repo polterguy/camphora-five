@@ -2,10 +2,10 @@
 /*
  * File responsible for databinding the grid for a Camphora Five generated app.
  *
- * Optionally requires [filter] or [.id], at which the latter case, only the 
- * specified database [id] item will be re-databound.
+ * Optionally pass in [id], at which case, only the specified database [id] item 
+ * will be re-databound, and no other items will be touched.
  *
- * You can also pass in [feed-more] and set its value to boolean "trus", 
+ * You can also pass in [feed-more] and set its value to boolean "true", 
  * at which point the existing items will not be cleared, but rather the grid 
  * will have 25 more items appended to itself.
  */
@@ -27,7 +27,6 @@
  * Sanity checking arguments.
  */
 micro.lambda.contract.optional:x:/..
-  filter:string
   offset:long
   id:long
   feed-more:bool
@@ -41,6 +40,15 @@ micro.lambda.contract.optional:x:/..
  */
 .defaults
   offset:long:0
+
+
+
+
+
+/*
+ * Figuring out if a query search parameter was supplied.
+ */
+p5.web.query.get:q
 
 
 
@@ -117,7 +125,7 @@ set:x:/@_cols?value
 
 
 /*
- * Creating our SQL "where" statement, according to [filter] and "tag" requested.
+ * Creating our SQL "where" statement, according to [p5.web.query.get] and "tag" requested.
  */
 _where
 _tag
@@ -148,15 +156,16 @@ for-each:x:/@load-file/*/*/field
       eval-x:x:/+/*/*
       add:x:/../*/p5.mysql.connect/*/p5.mysql.select
         src
-          @tag:x:/@split/2?name
+          @tag:#{0}
+            :x:/@split/2?name
 
   /*
-   * Checking if we have a [filter] condition.
+   * Checking if we have a [p5.web.query.get] condition.
    */
-  if:x:/../*/filter?value
+  if:x:/@p5.web.query.get/*?value
 
     /*
-     * Filter was given, making sure we create our "where" condition.
+     * Query parameter was given, making sure we create our "where" condition.
      */
     if:x:/@_where?value
 
@@ -181,7 +190,7 @@ for-each:x:/@load-file/*/*/field
       add:x:/../*/p5.mysql.connect/*/p5.mysql.select
         src
           @filter:"%{0}%"
-            :x:/../*/filter?value
+            :x:/@p5.web.query.get/*?value
 
     /*
      * Adding up "where" for currently iterated column.
@@ -322,6 +331,16 @@ if:x:/../*/feed-more?value
 
 
 /*
+ * Loading file containing edit-template widgets.
+ */
+load-file:/modules/{0}/helpers/edit-item-template-widgets.hl
+  :x:/../*/split/[0,1]/0/-2?name
+
+
+
+
+
+/*
  * Opening database connection.
  */
 p5.mysql.connect:[camphora]
@@ -346,6 +365,14 @@ p5.mysql.connect:[camphora]
     src:x:/@p5.mysql.select/0/-/*/id?value
 
   /*
+   * Checking if this is the end of our dataset, and if so, informing client to
+   * stop polling server for new data when scrolling to the bottom occurs.
+   */
+  if:x:/@p5.mysql.select/*?count
+    =:int:0
+    p5.web.send-javascript:"p5.camphora_end_of_dataset = true;"
+
+  /*
    * Looping through above results, and creating a row in grid for each row in database.
    */
   for-each:x:/@p5.mysql.select/*
@@ -365,7 +392,7 @@ p5.mysql.connect:[camphora]
       /*
        * Special handling of "checkbox" type of items, to create some candy.
        */
-      if:x:/@load-file/*/*/field/*/name/={0}/./*/type?value
+      if:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
         :x:/@_dp/#?name
         =:checkbox
 
@@ -397,14 +424,16 @@ p5.mysql.connect:[camphora]
               foo:""
                 style:"width:5px;"
 
-      else-if:x:/@load-file/*/*/field/*/name/={0}/./*/type?value
+      else-if:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
         :x:/@_dp/#?name
         =:textarea
 
         /*
          * Textarea's content is turned into Markdown using intelligent parsing.
          */
+        eval-x:x:/+/*
         camphora._internal.html.markdown2html:x:/@_dp/#?value
+          app-name:x:/../*/split/[0,1]/1?name
 
         /*
          * Adding item to grid's databind invocation.
@@ -417,13 +446,13 @@ p5.mysql.connect:[camphora]
             foo:x:/@camphora._internal.html.markdown2html?value
               .data-field:x:/@_dp/#?name
 
-      else-if:x:/@load-file/*/*/field/*/name/={0}/./*/type?value
+      else-if:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
         :x:/@_dp/#?name
         =:text
-        or:x:/@load-file/*/*/field/*/name/={0}/./*/type?value
+        or:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
           :x:/@_dp/#?name
           =:radio
-        or:x:/@load-file/*/*/field/*/name/={0}/./*/type?value
+        or:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
           :x:/@_dp/#?name
           =:select
 
@@ -455,8 +484,6 @@ p5.mysql.connect:[camphora]
        * User is allowed to edit rows, loading our file that contains our "Edit row"
        * template, and adding it into invocation that adds row to grid.
        */
-      load-file:/modules/{0}/helpers/edit-item-template-widgets.hl
-        :x:/../*/split/[0,1]/0/-2?name
       add:x:/..for-each/*/add/[1,2]/*/src
         src:x:/@load-file/*/*
 
