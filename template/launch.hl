@@ -281,6 +281,13 @@ create-widget
     /*
      * Obscurer show when files are uploaded.
      */
+    micro.widgets.obscurer:camphora-feed-more-obscurer
+      style:"display:none;"
+      message:"Please wait while we fetch more items ..."
+
+    /*
+     * Obscurer show when files are uploaded.
+     */
     micro.widgets.obscurer:camphora-upload-obscurer
       style:"display:none;"
       message:"Please wait while we upload your file(s) ..."
@@ -300,8 +307,19 @@ create-widget
 window.onscroll = function() {
   if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
     if (!p5.camphora_end_of_dataset) {
+      if(p5.camphora_ongoing_scroll) {
+        return;
+      }
+      p5.camphora_ongoing_scroll = true;
+      var obsc = p5.$('camphora-feed-more-obscurer').el;
+      obsc.style.display = 'block';
       var el = p5.$('camphora-crud-grid');
-      el.raise('.onfeed');
+      el.raise('.onfeed',{
+        onsuccess:function() {
+          p5.camphora_ongoing_scroll = false;
+          obsc.style.display = 'none';
+        }
+      });
     }
   }
 };"

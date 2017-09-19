@@ -271,6 +271,57 @@ p5.web.viewstate.get:camphora.editing-allowed
 
 
 /*
+ * Checking if this is a [feed-more] invocation, at which point we add an argument
+ * to our SQL, which only selects items with a lower ID than what was previously selected.
+ */
+_feed
+if:x:/../*/feed-more?value
+
+  /*
+   * Caller requested to feed grid with additional items, and not to re-databind grid.
+   *
+   * First checking if we have some other filtering arguments, which helps us to
+   * determine how to dynamically build our "id >" argument.
+   */
+  if:x:/@_where?value
+    or:x:/@_tag?value
+
+    /*
+     * Adding additional argument to SQL.
+     */
+    set:x:/@_feed?value
+      src:" and "
+
+  else
+
+    /*
+     * Feed argument is only argument.
+     */
+    set:x:/@_feed?value
+      src:" where "
+
+  /*
+   * Retrieving last seen database ID, and parametrizing our SQL accordingly.
+   */
+  p5.web.viewstate.get:camphora.last-item
+  set:x:/@_feed?value
+    src:{0}{1}
+      :x:/@_feed?value
+      :@"id > @id"
+
+  /*
+   * Adding parameter to SQL invocation.
+   */
+  eval-x:x:/+/*/*
+  add:x:/../**/p5.mysql.select
+    src
+      @id:x:/@p5.web.viewstate.get/*?value
+
+
+
+
+
+/*
  * Opening database connection.
  */
 p5.mysql.connect:[camphora]
@@ -278,12 +329,21 @@ p5.mysql.connect:[camphora]
   /*
    * Executing SQL query, now parametrized accordingly.
    */
-  p5.mysql.select:@"select id, {0} from `{1}`{2}{3} order by id limit 25 offset @offset"
+  p5.mysql.select:@"select id, {0} from `{1}`{2}{3}{4} order by id limit 25 offset @offset"
     :x:/@_cols?value
     :x:/../*/split/[0,1]/0/-2?name
     :x:/@_where?value
     :x:/@_tag?value
+    :x:/@_feed?value
     @offset:x:(/../*/offset|/../*/.defaults/*/offset)/$?value
+
+  /*
+   * Storing ID from last record from above SQL in viewstate, to be able to know
+   * from which point we should keep on feeding items, if file is invoked later with
+   * a [feed-more] argument.
+   */
+  p5.web.viewstate.set:camphora.last-item
+    src:x:/@p5.mysql.select/0/-/*/id?value
 
   /*
    * Looping through above results, and creating a row in grid for each row in database.
