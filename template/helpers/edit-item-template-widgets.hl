@@ -69,6 +69,7 @@ Edit
                     p5.web.get-location
                     split:x:/@p5.web.get-location?value
                       =:/
+                      =:?
                     eval-x:x:/+/*(/parent|/id)
                     micro.evaluate.file:/modules/{0}/helpers/edit-item.hl
                       :x:/@split/2?name
