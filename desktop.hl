@@ -31,4 +31,4 @@ container
   widgets
     span
       class:desktop-app-name
-      innerValue:@"<span class=""icon-th desktop-app-icon""></span><span style=""position:absolute;top:5px;right:5px;font-size:.7rem;"">Camphora</span>"
+      innerValue:@"<span class=""icon-th-large desktop-app-icon""></span><span style=""position:absolute;top:5px;right:5px;font-size:.7rem;"">Camphora</span>"
