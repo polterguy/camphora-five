@@ -170,24 +170,53 @@ for-each:x:/@load-file/*/*/field
   if:x:/@p5.web.query.get/*?value
 
     /*
-     * Query parameter was given, making sure we create our "where" condition.
+     * Checking if user is filtering on a specific column.
      */
-    if:x:/@_where?value
+    split:x:/@p5.web.query.get/*?value
+      =:":"
+    if:x:/@split/*?count
+      =:int:2
 
       /*
-       * Adding "or" parts to SQL.
+       * Filtering criteria is specifying a column, now checking if currently 
+       * iterated column is that column.
        */
-      set:x:/@_where?value
-        src:"{0} or "
-          :x:/@_where?value
+      if:x:/@_dp/#/*/name?value
+        =:x:/@split/0?name
+
+        /*
+         * Currently iterated column is requested filtering column.
+         */
+        set:x:/@_where?value
+          src:" where ({0} = @exact"
+            :x:/@split/0?name
+        eval-x:x:/+/*/*
+        add:x:/../**/p5.mysql.select
+          src
+            @exact:x:/@split/1?name
 
     else
 
       /*
-       * Adding first parts of our "where" clause.
+       * Query parameter was given, and it was not filtering on a specific column,
+       * making sure we create our "where" condition.
        */
-      set:x:/@_where?value
-        src:" where ("
+      if:x:/@_where?value
+
+        /*
+         * Adding "or" parts to SQL.
+         */
+        set:x:/@_where?value
+          src:"{0} or "
+            :x:/@_where?value
+
+      else
+
+        /*
+         * Adding first parts of our "where" clause.
+         */
+        set:x:/@_where?value
+          src:" where ("
 
       /*
        * Making sure we pass in [@filter] to [p5.mysql.select]
@@ -197,20 +226,20 @@ for-each:x:/@load-file/*/*/field
           @filter:"%{0}%"
             :x:/@p5.web.query.get/*?value
 
-    /*
-     * Adding up "where" for currently iterated column.
-     */
-    set:x:/@_where?value
-      src:@"{0}`{1}` like @filter"
-        :x:/@_where?value
-        :x:/@_dp/#/*/name?value
+      /*
+       * Adding up "where" for currently iterated column.
+       */
+      set:x:/@_where?value
+        src:@"{0}`{1}` like @filter"
+          :x:/@_where?value
+          :x:/@_dp/#/*/name?value
 
 
 
 
 
 /*
- * Adding closing ")" to where clause.
+ * Adding closing ")" to where clause, if there is a where clause.
  */
 if:x:/@_where?value
   set:x:/@_where?value
@@ -227,10 +256,19 @@ if:x:/@_where?value
 if:x:/@_tag?value
   if:x:/@_where?value
     or:x:/../*/id?value
+
+    /*
+     * There's either a tag declaration or an id request, hence we'll need to
+     * add condition as "AND".
+     */
     set:x:/@_tag?value
       src:" and {0}"
         :x:/@_tag?value
   else
+
+    /*
+     * Tag is the only "where" parts, hence adding it as "WHERE" condition.
+     */
     set:x:/@_tag?value
       src:" where {0}"
         :x:/@_tag?value
@@ -455,12 +493,6 @@ p5.mysql.connect:[camphora]
       else-if:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
         :x:/@_dp/#?name
         =:text
-        or:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
-          :x:/@_dp/#?name
-          =:radio
-        or:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
-          :x:/@_dp/#?name
-          =:select
 
         /*
          * Text widgets, select widget, and radio widgets are rendered as "nowrap", 
@@ -479,6 +511,41 @@ p5.mysql.connect:[camphora]
             foo:x:/@p5.html.html-encode?value
               .data-field:x:/@_dp/#?name
               style:"white-space:nowrap;"
+
+      else-if:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
+        :x:/@_dp/#?name
+        =:radio
+        or:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
+          :x:/@_dp/#?name
+          =:select
+
+        /*
+         * Radio or select type of column, making sure we create clickable widgets,
+         * which will automatically filter on value when clicked.
+         */
+        p5.html.html-encode:x:/@_dp/#?value
+
+        /*
+         * Adding item to grid's databind invocation.
+         */
+        p5.html.url-encode:"{0}:{1}"
+          :x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/name?value
+            :x:/@_dp/#?name
+          :x:/@_dp/#?value
+        eval-x:x:/+2/*/**(/innerValue|/.data-field|/href)
+        set:x:/+/*/*?name
+          src:x:/@_dp/#?name
+        add:x:/../*/micro.widgets.grid.databind/0/-
+          src
+            foo
+              style:"white-space:nowrap;"
+              widgets
+                a
+                  innerValue:x:/@p5.html.html-encode?value
+                  .data-field:x:/@_dp/#?name
+                  href:{0}?q={1}
+                    :x:/@split/0?name
+                    :x:/@p5.html.url-encode?value
 
     /*
      * Checking if user is allowed to edit items in system, and if he is, 
@@ -508,7 +575,8 @@ p5.mysql.connect:[camphora]
 
 /*
  * Checking if this is a "replace" operation, at which point an [id] argument
- * was specified.
+ * was specified, and we're supposed to keep our existing items, and simply replace
+ * a single record in datagrid.
  */
 if:x:/../*/id?value
 
