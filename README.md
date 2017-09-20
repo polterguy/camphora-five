@@ -22,9 +22,25 @@ and which skin to use. Below is a screenshot of how Camphora looks like when you
 ![alt screenshot](media/screenshots/screenshot-3.png)
 
 Editing of items happens _"inline"_, by creating a form for your items content, which is injected into the page,
-just beneath the item itself. Making the editing experience of items a very pleasent experience.
+just beneath the item itself. Making editing of items a very pleasent experience.
 
 ![alt screenshot](media/screenshots/screenshot-2.png)
+
+The apps you create using Camphora will be a _"real"_ Phosphorus Five application, and Camphora will create it as a separate
+module, which you can distribute as you wish, using for instance [Hyperbuild](https://github.com/polterguy/hyperbuild). This allows
+you to rapidly create a CRUD app, package it, and distribute it as you see fit, according to your needs.
+
+## Features of a CRUD app
+
+* Never ending scrolling to feed your grid with new items
+* Import of CSV files at least partially matching your CRUD app's schema
+* Export of your database items into CSV files, allowing you to edit and manipulate the items in e.g. Excel or Numbers
+* Many different column types, including _"textarea"_, "text"_ (single line text), _"created date timestamp"_, _"number"_, etc.
+* The _"textarea"_ column type support both Markdown and __#hash-tags__
+* Searching to filter away items, both generically, and according to the value of some specific column
+* Deleting all records at once
+* Role based management of who are allowed to edit your data, and who are allowed to only see your data
+* And of course, all 4 CRUD operations, such as Create items, Read items, Update items and Delete items
 
 
 
