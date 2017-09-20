@@ -108,6 +108,8 @@ else
     src:/users/{0}/documents/private/camphora/{1}.hl
       :x:/@whoami/*/username?value
       :x:/@.defaults/*/name?value
+  set:x:/@.file-values/*/show-headers?value
+    src:bool:true
 
 
 
@@ -203,6 +205,37 @@ create-widget
                            * Setting initial focus to name textbox.
                            */
                           micro.page.set-focus:x:/../*/_event?value
+
+                        onchange
+
+                          /*
+                           * Sanity checking value.
+                           */
+                          get-widget-property:x:/../*/_event?value
+                            value
+                          match:x:/@get-widget-property/*/*?value
+                            src:regex:"/^[-_a-z]{3,20}$/"
+                          if:x:/@match/*?count
+                            =:int:0
+                            or:x:/@match/0?name
+                              =:
+
+                            /*
+                             * Not an acceptable name of app.
+                             */
+                            micro.windows.info:Not an acceptable name. Use only a-z, '_' and/or '-' in your app's name
+                              class:micro-windows-info warning
+                            set-widget-property:x:/../*/_event?value
+                              class:error
+
+                          else
+
+                            /*
+                             * Name was accepted.
+                             */
+                            delete-widget-property:x:/../*/_event?value
+                              class
+                            micro.page.set-focus:x:/../*/_event?value
 
                   /*
                    * Role that is allowed to see the data.
@@ -485,7 +518,7 @@ create-widget
                            * Sanity checking name of app.
                            */
                           match:x:/@micro.form.serialize/*/name?value
-                            src:regex:@"/^[-a-z]{3,}$/"
+                            src:regex:@"/^[-_a-z]{3,20}$/"
                           if:x:/@match/0?name
                             =:
                             or:x:/@match/*?count
@@ -512,7 +545,7 @@ create-widget
                             /*
                              * App's name is not accepted.
                              */
-                            micro.windows.info:Your app can only have a-z and hyphens (-) in your app's name, and the name must be 3 characters or longer. It must also not be an existing module, and it must be unique.
+                            micro.windows.info:Your app can only have a-z and hyphens/underscores (-/_) in your app's name, and the name must be 3 characters or longer, and no more than 20 characters. It must also not be an existing module, and it must be unique.
                               class:micro-windows-info warning
                             p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
                               .data-field:name
@@ -564,7 +597,7 @@ create-widget
                              * 3 characters long, and not more than 20 characters long.
                              */
                             match:x:/@_dp/#/@field-name?value
-                              src:regex:@"/^[-a-z]{3,20}$/"
+                              src:regex:@"/^[_a-z]{3,20}$/"
                             if:x:/@match/*?count
                               =:int:0
                               or:x:/@match/0?name
@@ -620,7 +653,7 @@ create-widget
                                  * Sanity checking option value.
                                  */
                                 match:x:/@_dp?value
-                                  src:regex:@"/^[-a-z]{3,20}$/"
+                                  src:regex:@"/^[_a-z]{3,20}$/"
                                 if:x:/@match/*?count
                                   =:int:0
                                   or:x:/@match/0?name
@@ -629,7 +662,7 @@ create-widget
                                   /*
                                    * Oops, option value was not accepted.
                                    */
-                                  micro.windows.info:Your options for radio and select columns must be separated by ',', be between 3 and 20 characters long, and not contain anything but a-z and '-' characters.
+                                  micro.windows.info:Your options for radio and select columns must be separated by ',', be between 3 and 20 characters long, and not contain anything but a-z and '_' characters.
                                     class:micro-windows-info warning
                                   return:bool:false
 

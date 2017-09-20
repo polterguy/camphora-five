@@ -400,7 +400,7 @@ window.onscroll = function() {
                          * Modifying placeholder to contain record count.
                          */
                         p5.mysql.connect:[camphora]
-                          p5.mysql.scalar:@"select count(*) from {0}"
+                          p5.mysql.scalar:@"select count(*) from `{0}`"
                             :x:/@_url?value
                           set-widget-property:x:/../*/_event?value
                             placeholder:Search amongst {0} records ...

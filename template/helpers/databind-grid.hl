@@ -110,7 +110,7 @@ for-each:x:/@load-file/*/*/field
      * Adding column to SQL.
      */
     set:x:/@_cols?value
-      src:{0},{1}
+      src:{0},`{1}`
         :x:/@_cols?value
         :x:/@_dp/#/*/name?value
 
@@ -156,7 +156,7 @@ for-each:x:/@load-file/*/*/field
        * specific #hash-tag - Making sure we add our #hash-tag condition.
        */
       set:x:/@_tag?value
-        src:"{0} regexp @tag"
+        src:"`{0}` regexp @tag"
           :x:/@_dp/#/*/name?value
       eval-x:x:/+/*/*
       add:x:/../*/p5.mysql.connect/*/p5.mysql.select
@@ -188,7 +188,7 @@ for-each:x:/@load-file/*/*/field
          * Currently iterated column is requested filtering column.
          */
         set:x:/@_where?value
-          src:" where ({0} = @exact"
+          src:" where (`{0}` = @exact"
             :x:/@split/0?name
         eval-x:x:/+/*/*
         add:x:/../**/p5.mysql.select
@@ -363,7 +363,7 @@ if:x:/../*/feed-more?value
   set:x:/@_feed?value
     src:{0}{1}
       :x:/@_feed?value
-      :@"id > @id"
+      :"id > @id"
 
   /*
    * Adding parameter to SQL invocation.
@@ -518,6 +518,9 @@ p5.mysql.connect:[camphora]
       else-if:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
         :x:/@_dp/#?name
         =:text
+        or:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
+          :x:/@_dp/#?name
+          =:number
 
         /*
          * Text widgets, select widget, and radio widgets are rendered as "nowrap", 

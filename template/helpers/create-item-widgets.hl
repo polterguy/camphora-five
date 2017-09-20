@@ -61,6 +61,7 @@ for-each:x:/@load-file/*/*/field
      * Single line textbox type of data.
      */
     case:text
+    case:number
 
       /*
        * Checking if this is our first iteration.
@@ -89,6 +90,20 @@ for-each:x:/@load-file/*/*/field
               :x:/@_dp/#/*/name?value
 
       /*
+       * Checking if this is a "number" type of field.
+       */
+      if:x:/@_dp/#/*/type?value
+        =:number
+        add:x:/..case/*/add/*/*/*/*/input
+          src
+            type:number
+      else
+        add:x:/..case/*/add/*/*/*/*/input
+          src
+            type:text
+            maxlength:256
+
+      /*
        * Adding widget to modal window.
        */
       eval-x:x:/+/*/*/*/*(/input|/*(/for|/innerValue|/placeholder|/.data-field))
@@ -104,8 +119,6 @@ for-each:x:/@load-file/*/*/field
                 class:capitalize
               input:{0}-widget
                 :x:/@_dp/#/*/name?value
-                type:text
-                maxlength:256
                 placeholder:{0} ...
                   :x:/@_dp/#/*/name?value
                 .data-field:x:/@_dp/#/*/name?value

@@ -53,6 +53,7 @@ for-each:x:/@load-file/*/*/field
             :x:/@split/0/-3?name
             :x:/@_dp/#/*/name?value
     case:checkbox
+    case:number
       set:x:/@_cols?value
         src:{0}{1}
           :x:/@_cols?value
