@@ -1,7 +1,7 @@
 
 # Camphora Five - A CRUD app creator for Phosphorus Five
 
-Camphora Five is a CRUD app generator for Phosphorus Five. It allows you to create simple CRUD apps, without
+Camphora Five is a CRUD app generator for [Phosphorus Five](https://github.com/polterguy/phosphorusfive). It allows you to create simple CRUD apps, without
 ever having done any previous coding at all. You simply declare which data columns your apps should have,
 and the type of columns, for then to generate your app. The results becomes a nice CRUD app, with lots of
 features, allowing you to Create, Read, Update and Delete data items from your MySQL database.
@@ -60,6 +60,14 @@ user to add a new record to the database.
 Then how the app will look like as you're browsing through your items.
 
 ![alt screenshot](media/screenshots/screenshot-7.png)
+
+## Modifying your app
+
+After you have created your app, it is very easy to modify it, since it's basically just a plain normal Hyperlambda module, inside
+of your _"/modules/"_ folder in Phosphorus Five. This implies that it is easily customized as you see fit, and you can edit the
+app, using your favourite text editor, and/or Visual Studio, to add custom features. This allows you to use your generated app
+as a _"template"_ for creating your own apps, and apply your own customization afterwards, such as your design, additional features,
+etc, etc, etc.
 
 ## License
 
