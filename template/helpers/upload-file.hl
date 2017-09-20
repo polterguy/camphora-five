@@ -40,6 +40,21 @@ _pars
 for-each:x:/@load-file/*/*/[0,1]/*?name
 
   /*
+   * Sanity checking column name, to avoid SQL injection attacks.
+   */
+  match:x:/@_dp?value
+    src:regex:"/^[-a-z]{3,}$/i"
+  if:x:/@match/*?count
+    =:int:0
+    or:x:/@match/0?name
+      =:
+
+    /*
+     * Malformed column name in CSV file.
+     */
+    throw:Malformed column name in CSV file.
+
+  /*
    * Adding column to SQL.
    */
   set:x:/@_cols?value
