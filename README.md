@@ -4,7 +4,7 @@
 Camphora Five is a CRUD app generator for Phosphorus Five. It allows you to create simple CRUD apps, without
 ever having done any previous coding at all. You simply declare which data columns your apps should have,
 and the type of columns, for then to generate your app. The results becomes a nice CRUD app, with lots of
-features, allowing you to Create, Read, Update and Delete data items from a MySQL database.
+features, allowing you to Create, Read, Update and Delete data items from your MySQL database.
 
 ![alt screenshot](media/screenshots/screenshot-1.png)
 
@@ -15,9 +15,10 @@ MySQL database which your apps use to store their data. In the above screenshot,
 column type, has support for both Markdown, in addition to **#hash-tags** for its items. The latter allows
 you to easily categorise your items as you see fit, using hash tags.
 
-When you create your apps, there are many different settings you can choose from, to make sure your app becomes
-just as you want it to be. For instance, you can choose if you'd like to show the headers for your data grid or not,
-and which skin to use. Below is a screenshot of how Camphora looks like when you're creating your apps.
+When you create your apps, there are many different settings you can choose from, to make sure your apps becomes
+exactly as you want them to be. For instance, you can choose if you'd like to show the headers for your data grid or not,
+and which skin to use. You can also create as many CRUS apps as you wish with Camphora. Below is a screenshot of how Camphora 
+looks like when you're creating your apps. 
 
 ![alt screenshot](media/screenshots/screenshot-3.png)
 
@@ -26,11 +27,12 @@ just beneath the item itself. Making editing of items a very pleasent experience
 
 ![alt screenshot](media/screenshots/screenshot-2.png)
 
-The apps you create using Camphora will be a _"real"_ Phosphorus Five application, and Camphora will create it as a separate
+The apps you create using Camphora will be a _real_ Phosphorus Five application, and Camphora will create it as a separate
 module, which you can distribute as you wish, using for instance [Hyperbuild](https://github.com/polterguy/hyperbuild). This allows
-you to rapidly create a CRUD app, package it, and distribute it as you see fit, according to your needs.
+you to rapidly create a CRUD app, package it, and distribute it as you see fit, according to your needs. Just remember to please also
+distribute the _"camphora-common"_ module if you do.
 
-## Features of a CRUD app
+## Features of your CRUD apps
 
 * Never ending scrolling to feed your grid with new items
 * Import of CSV files at least partially matching your CRUD app's schema
@@ -42,5 +44,7 @@ you to rapidly create a CRUD app, package it, and distribute it as you see fit, 
 * Role based management of who are allowed to edit your data, and who are allowed to only see your data
 * And of course, all 4 CRUD operations, such as Create items, Read items, Update items and Delete items
 
+## License
 
-
+Camphora Five is licensed as GPL version 3, but proprietary licenses exists, that allows you to create proprietary apps.
+Read the [lisence terms here](https://gaiasoul.com/license).
