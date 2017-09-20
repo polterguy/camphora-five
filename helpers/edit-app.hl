@@ -569,9 +569,12 @@ create-widget
 
                             /*
                              * Sanity checking field-name before we add it into resulting lambda.
+                             *
+                             * [fiels]'s [name] must only contain "-" or a-z characters, and be at least
+                             * 3 characters long, and not more than 20 characters long.
                              */
                             match:x:/@_dp/#/@field-name?value
-                              src:regex:@"/^[-a-z]{3,}$/"
+                              src:regex:@"/^[-a-z]{3,20}$/"
                             if:x:/@match/*?count
                               =:int:0
                               or:x:/@match/0?name
@@ -580,7 +583,7 @@ create-widget
                               /*
                                * Oops, not an accepted name!
                                */
-                              micro.windows.info:The names of your fields must only contain lowercase letters [a-z], hyphens (-), and be minimum 3 characters long
+                              micro.windows.info:The names of your fields must only contain lowercase letters [a-z], hyphens (-), and be minimum 3 characters long, and maximum 20 characters long
                                 class:micro-windows-info warning
                               return:bool:false
 
@@ -591,7 +594,10 @@ create-widget
                                   name:x:/@_dp/#/@field-name?value
                                   type:x:/@_dp/#/@field-type?value
                                   show:x:/@_dp/#/@show-in-grid?value
-                            if:x:/@_dp/#/@options?value
+                            if:x:/@_dp/#/@field-type?value
+                              =:radio
+                              or:x:/@_dp/#/@field-type?value
+                                =:select
 
                               /*
                                * Splitting up options semantically for each "," found
@@ -600,7 +606,43 @@ create-widget
                               split:x:/@_dp/#/@options?value
                                 =:,
                                 trim:true
+
+                              /*
+                               * Sanity checking option value(s), and that there are
+                               * at least two different options.
+                               */
+                              if:x:/@split/*?count
+                                <:int:2
+
+                                /*
+                                 * Not a valid option element.
+                                 */
+                                micro.windows.info:You must have at least two different options for radio and select items, and your options must be separated by ','
+                                  class:micro-windows-info warning
+                                return:bool:false
+
+                              /*
+                               * Looping through each option value.
+                               */
                               for-each:x:/@split/*?name
+
+                                /*
+                                 * Sanity checking option value.
+                                 */
+                                match:x:/@_dp?value
+                                  src:regex:@"/^[-a-z]{3,20}$/"
+                                if:x:/@match/*?count
+                                  =:int:0
+                                  or:x:/@match/0?name
+                                    =:
+
+                                  /*
+                                   * Oops, option value was not accepted.
+                                   */
+                                  micro.windows.info:Your options for radio and select columns must be separated by ',', be between 3 and 20 characters long, and not contain anything but a-z and '-' characters.
+                                    class:micro-windows-info warning
+                                  return:bool:false
+
                                 add:x:/@.data/0/-/*/type
                                   src:x:/@_dp?value
 
