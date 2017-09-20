@@ -452,6 +452,22 @@ window.onscroll = function() {
                         _url:x:/@split/0?name
 
                         /*
+                         * Making sure user is not editing another item, since this will
+                         * raise an exception, due to static IDs in widgets.
+                         */
+                        p5.web.widgets.find
+                          .edit
+                        if:x:/@p5.web.widgets.find/*/*?value
+
+                          /*
+                           * Warning use that he needs to finish up editing existing item,
+                           * before he can create new items.
+                           */
+                          micro.windows.info:You have to finish editing your item, before you can create a new item
+                            class:micro-windows-info warning
+                          return
+
+                        /*
                          * Evaluating file responsible for creating a new record.
                          */
                         micro.evaluate.file:/modules/{0}/helpers/create-item.hl
