@@ -222,10 +222,11 @@ if:x:/@_where?value
 
 
 /*
- * Checking if user requested a tag, and massaging "where" parts accordingly.
+ * Checking if user requested a tag, and/or an ID, and massaging "where" parts accordingly.
  */
 if:x:/@_tag?value
   if:x:/@_where?value
+    or:x:/../*/id?value
     set:x:/@_tag?value
       src:" and {0}"
         :x:/@_tag?value
