@@ -219,12 +219,15 @@ for-each:x:/@load-file/*/*/field
           src:" where ("
 
       /*
-       * Making sure we pass in [@filter] to [p5.mysql.select]
+       * Making sure we pass in [@filter] to [p5.mysql.select], unless it has already
+       * been added.
        */
-      add:x:/../*/p5.mysql.connect/*/p5.mysql.select
-        src
-          @filter:"%{0}%"
-            :x:/@p5.web.query.get/*?value
+      if:x:/../*/p5.mysql.connect/*/p5.mysql.select/*/\@filter
+        not
+        add:x:/../*/p5.mysql.connect/*/p5.mysql.select
+          src
+            @filter:"%{0}%"
+              :x:/@p5.web.query.get/*?value
 
       /*
        * Adding up "where" for currently iterated column.
