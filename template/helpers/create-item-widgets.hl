@@ -112,6 +112,25 @@ for-each:x:/@load-file/*/*/field
                 onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-save-record-button').raise('onclick');return false;}"
 
     /*
+     * Timestamp for when record was created.
+     */
+    case:created
+
+      /*
+       * Adding widget to modal window.
+       */
+      p5.types.date.format:x:/@.signal/--/{0}?value
+        :x:/@_dp/#/*/name?value
+        format:"ddd d. MMM yyyy - HH:mm"
+      eval-x:x:/+/*/*/*
+      add:x:/../*/return
+        src
+          p
+            class:camphora-date-edit-item
+            innerValue:"Created - {0}"
+              :x:/@p5.types.date.format?value
+
+    /*
      * Multi line textbox type of data.
      */
     case:textarea

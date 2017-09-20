@@ -67,6 +67,21 @@ for-each:x:/@load-file/*/*/field
   alter table `{0}` add `{1}` INT(10) NULL;"
             :x:/@split/0/-3?name
             :x:/@_dp/#/*/name?value
+    case:created
+      set:x:/@_cols?value
+        src:{0}{1}
+          :x:/@_cols?value
+          :@"`{0}` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "
+            :x:/@_dp/#/*/name?value
+      set:x:/@_cols-changed?value
+        src:{0}{1}
+          :x:/@_cols-changed?value
+          :@"
+  alter table `{0}` modify `{1}` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+  alter table `{0}` add `{1}` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;"
+            :x:/@split/0/-3?name
+            :x:/@_dp/#/*/name?value
     case:textarea
       set:x:/@_cols?value
         src:{0}{1}
@@ -129,22 +144,30 @@ CREATE TABLE IF NOT EXISTS `{0}` (
     p5.mysql.execute:@"
 create procedure {0}camphora_foo ()
 begin
-  declare continue handler for 1060 begin end;{1}
+  declare continue handler for 1060 begin end;
+  declare continue handler for 1054 begin end;{1}
 end"
       :x:/@p5.config.get/*?value
       :x:/@_cols-changed?value
 
     /*
-     * Invokes our "modify tables" procedure.
+     * Making absolutely sure we're able to drop our procedure.
      */
-    p5.mysql.execute:@"call {0}camphora_foo()"
-      :x:/@p5.config.get/*?value
+    try
 
-    /*
-     * Drops our "modify table" procedure.
-     */
-    p5.mysql.execute:@"drop procedure {0}camphora_foo"
-      :x:/@p5.config.get/*?value
+      /*
+       * Invokes our "modify tables" procedure.
+       */
+      p5.mysql.execute:@"call {0}camphora_foo()"
+        :x:/@p5.config.get/*?value
+
+    finally
+
+      /*
+       * Drops our "modify table" procedure.
+       */
+      p5.mysql.execute:@"drop procedure {0}camphora_foo"
+        :x:/@p5.config.get/*?value
 
 catch
 

@@ -105,6 +105,9 @@ create-event:camphora.widgets._internals.field-definition
             option
               innerValue:Radiobuttons
               value:radio
+            option
+              innerValue:Date/time created
+              value:created
         input
           type:text
           placeholder:Options ...

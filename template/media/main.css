@@ -33,4 +33,12 @@
 .camphora-edit-row {
     border-top:none !important;
 }
-
+.camphora-date-column {
+    font-style:italic;
+    color:#aaa;
+}
+.camphora-date-edit-item {
+    font-style: italic;
+    color: #aaa;
+    text-align:right;
+}

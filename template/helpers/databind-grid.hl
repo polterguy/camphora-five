@@ -471,6 +471,28 @@ p5.mysql.connect:[camphora]
               foo:""
                 style:"width:5px;"
 
+      /*
+       * Special handling of "created" type of items, to show the creation date formatted
+       * for when the record was inserted into database.
+       */
+      else-if:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
+        :x:/@_dp/#?name
+        =:created
+
+        /*
+         * Formatting date, before we add it to our grid.
+         */
+        p5.types.date.format:x:/@_dp/#?value
+          format:"ddd d. MMM yyyy - HH:mm"
+        set:x:/+2/*/*?name
+          src:x:/@_dp/#?name
+        eval-x:x:/+/*/*
+        add:x:/../*/micro.widgets.grid.databind/0/-
+          src
+            foo:x:/@p5.types.date.format?value
+              style:"white-space:nowrap;width:5px;"
+              class:camphora-date-column
+
       else-if:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
         :x:/@_dp/#?name
         =:textarea
@@ -513,7 +535,7 @@ p5.mysql.connect:[camphora]
           src
             foo:x:/@p5.html.html-encode?value
               .data-field:x:/@_dp/#?name
-              style:"white-space:nowrap;"
+              style:"white-space:nowrap;width:5px;"
 
       else-if:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
         :x:/@_dp/#?name
