@@ -533,30 +533,6 @@ create-widget
                             return:bool:false
 
                           /*
-                           * Retrieving app's filename, and if it is not null, we delete
-                           * the file.
-                           */
-                          p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                            .filename
-                          get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                            .filename
-                          if:x:/@get-widget-property/*/*?value
-                            !=
-
-                            /*
-                             * Editing mode, making sure we delete existing file,
-                             * if it exists.
-                             */
-                            if
-                              fetch:x:/0/0?value
-                                file-exists:x:/@get-widget-property/*/*?value
-
-                              /*
-                               * File exists, deleting it.
-                               */
-                              delete-file:x:/@get-widget-property/*/*?value
-
-                          /*
                            * Used to hold actual data for our app.
                            */
                           .data
@@ -566,6 +542,20 @@ create-widget
                            * above [.data] lambda.
                            */
                           for-each:x:/@micro.form.serialize/*/.signal
+
+                            /*
+                             * Verifying all [field-name]'s are unique.
+                             */
+                            if:x:/@micro.form.serialize/*/field-name/={0}?count
+                              :x:/@_dp/#/@field-name?value
+                              >:int:1
+
+                              /*
+                               * Two fields have the same name.
+                               */
+                              micro.windows.info:Your fields' names must be unique.
+                                class:micro-windows-info warning
+                              return:bool:false
 
                             /*
                              * Sanity checking field-name before we add it into resulting lambda.
@@ -651,6 +641,30 @@ create-widget
                            */
                           add:x:/../*/.data
                             src:x:/@micro.form.serialize/*(/viewers|/editors|/skin|/show-headers)
+
+                          /*
+                           * Retrieving app's filename, and if it is not null, we delete
+                           * the file.
+                           */
+                          p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                            .filename
+                          get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                            .filename
+                          if:x:/@get-widget-property/*/*?value
+                            !=
+
+                            /*
+                             * Editing mode, making sure we delete existing file,
+                             * if it exists.
+                             */
+                            if
+                              fetch:x:/0/0?value
+                                file-exists:x:/@get-widget-property/*/*?value
+
+                              /*
+                               * File exists, deleting it.
+                               */
+                              delete-file:x:/@get-widget-property/*/*?value
 
                           /*
                            * Saving file.
