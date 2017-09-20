@@ -43,6 +43,23 @@ distribute the _"camphora-common"_ module if you do.
 * Deleting all records at once
 * Role based management of who are allowed to edit your data, and who are allowed to only see your data
 * And of course, all 4 CRUD operations, such as Create items, Read items, Update items and Delete items
+* Creating columns that are only visible when item is edited, and not visible in your grid
+
+## Kitchen sink screenshot
+
+Below you can see a CRUD app that was created with all the bells and whistles of an app turned on. First how such an app will look
+like as you create it.
+
+![alt screenshot](media/screenshots/screenshot-5.png)
+
+Then how it will look like as you create a new item. Notice, when you create an item, a modal window will appear, to allow the
+user to add a new record to the database.
+
+![alt screenshot](media/screenshots/screenshot-6.png)
+
+Then how the app will look like as you're browsing through your items.
+
+![alt screenshot](media/screenshots/screenshot-7.png)
 
 ## License
 
