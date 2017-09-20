@@ -71,9 +71,10 @@ etc, etc, etc.
 
 ## Scalability
 
-Since the underlaying database for your apps is a real database - MySQL that is, it is easily possible to create CRUD apps with 
+Since the underlaying database for your apps is a real database - MySQL that is - It is possible to create CRUD apps with 
 hundreds of thousands of records, while still having your app perform reasonably well during usage. This makes Camphora Five
-highly usable for everything from your private TODO records, to libraries needing to index possibly millions of records and books.
+highly usable for everything from your private TODO records and CD collection, to public libraries needing to index possibly 
+millions of records.
 
 ## License
 
