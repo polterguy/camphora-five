@@ -6,4 +6,4 @@ ever having done any previous coding at all. You simply declare which data colum
 and the type of columns, for then to generate your app. The results becomes a nice CRUD app, with lots of
 features, allowing you to Create, Read, Update and Delete data items from a MySQL database.
 
-![alt screenshot](media/screenshots/screenshot-1)
+![alt screenshot](media/screenshots/screenshot-1.png)
