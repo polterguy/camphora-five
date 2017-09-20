@@ -69,6 +69,12 @@ app, using your favourite text editor, and/or Visual Studio, to add custom featu
 as a _"template"_ for creating your own apps, and apply your own customization afterwards, such as your design, additional features,
 etc, etc, etc.
 
+## Scalability
+
+Since the underlaying database for your apps is a real database - MySQL that is, it is easily possible to create CRUD apps with 
+hundreds of thousands of records, while still having your app perform reasonably well during usage. This makes Camphora Five
+highly usable for everything from your private TODO records, to libraries needing to index possibly millions of records and books.
+
 ## License
 
 Camphora Five is licensed as GPL version 3, but proprietary licenses exists, that allows you to create proprietary apps.
