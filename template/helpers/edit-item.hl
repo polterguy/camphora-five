@@ -164,6 +164,6 @@ add:x:/../*/create-widget/*/widgets
  */
 create-widget
   parent:x:/../*/parent?value
-  class:shaded rounded air-inner air-bottom
+  class:shaded rounded air-inner air-bottom bg
   style:"background-color:#fefefe;"
   widgets
