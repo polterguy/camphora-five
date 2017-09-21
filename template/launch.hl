@@ -30,6 +30,27 @@ split:x:/../*/url?value
 
 
 /*
+ * Checking that we have an actual [url] argument, which is not the case if this
+ * app was launched as our "default app".
+ */
+if:x:/@split/*?count
+  =:int:0
+
+  /*
+   * No [url] given, making sure we "fake" it by splitting path to file instead.
+   */
+  split:x:/..?name
+    =:/
+  set:x:/@split/0
+  set:x:/@split/0/-
+  add:x:/../*/split/[0,1]
+    src:x:/@split/*
+
+
+
+
+
+/*
  * Loading file containing app declaration.
  */
 load-file:/modules/{0}/helpers/app-manifest.hl
@@ -326,7 +347,7 @@ if:x:/@p5.web.query.get/*?value
 /*
  * Creating main wire-frame grid.
  */
-eval-x:x:/+/**(/_folder|/_url)
+eval-x:x:/+/**(/_app-name)
 create-widget
   class:container
   widgets
@@ -394,14 +415,14 @@ window.onscroll = function() {
                         /*
                          * Forward evaluated above.
                          */
-                        _url:x:/@split/0?name
+                        _app-name:x:/@split/0?name
 
                         /*
                          * Modifying placeholder to contain record count.
                          */
                         p5.mysql.connect:[camphora]
                           p5.mysql.scalar:@"select count(*) from `{0}`"
-                            :x:/@_url?value
+                            :x:/@_app-name?value
                           set-widget-property:x:/../*/_event?value
                             placeholder:Search amongst {0} records ...
                               :x:/@p5.mysql.scalar?value
@@ -414,7 +435,7 @@ window.onscroll = function() {
                         /*
                          * Forward evaluated above.
                          */
-                        _url:x:/@split/0?name
+                        _app-name:x:/@split/0?name
 
                         /*
                          * Redirecting client to make sure we pass in query
@@ -430,7 +451,7 @@ window.onscroll = function() {
                            */
                           p5.html.url-encode:x:/@get-widget-property/*/*?value
                           p5.web.set-location:{0}?q={1}
-                            :x:/@_url?value
+                            :x:/@_app-name?value
                             :x:/@p5.html.url-encode?value
 
                         else
@@ -438,7 +459,7 @@ window.onscroll = function() {
                           /*
                            * Filter was removed.
                            */
-                          p5.web.set-location:x:/@_url?value
+                          p5.web.set-location:x:/@_app-name?value
 
                     button:camphora-add-new-record-button
                       innerValue:@"<span class=""icon-plus""></span>"
@@ -449,7 +470,7 @@ window.onscroll = function() {
                         /*
                          * Forward evaluated above.
                          */
-                        _url:x:/@split/0?name
+                        _app-name:x:/@split/0?name
 
                         /*
                          * Making sure user is not editing another item, since this will
@@ -471,7 +492,7 @@ window.onscroll = function() {
                          * Evaluating file responsible for creating a new record.
                          */
                         micro.evaluate.file:/modules/{0}/helpers/create-item.hl
-                          :x:/@_url?value
+                          :x:/@_app-name?value
 
                     button:camphora-import-csv-file
                       innerValue:@"<span class=""icon-upload""></span>"
@@ -485,15 +506,15 @@ window.onscroll = function() {
                         /*
                          * Forward evaluated above.
                          */
-                        _url:x:/@split/0?name
+                        _app-name:x:/@split/0?name
 
                         /*
                          * Evaluating file responsible for exporting items to client.
                          */
                         eval-x:x:/+/*/app-name
                         micro.evaluate.file:/modules/{0}/helpers/export-items.hl
-                          :x:/@_url?value
-                          app-name:x:/@_url?value
+                          :x:/@_app-name?value
+                          app-name:x:/@_app-name?value
 
                     button:camphora-delete-all-button
                       innerValue:@"<span class=""icon-trash""></span>"
@@ -503,7 +524,7 @@ window.onscroll = function() {
                         /*
                          * Forward evaluated above.
                          */
-                        _url:x:/@split/0?name
+                        _app-name:x:/@split/0?name
 
                         /*
                          * Asking user to confirm action.
@@ -516,7 +537,7 @@ window.onscroll = function() {
                                 innerValue:Please confirm action
                               p
                                 innerValue:These will delete all records in your database of type '{0}', are you sure you wish to continue?
-                                  :x:/@_url?value
+                                  :x:/@_app-name?value
                               div
                                 class:right
                                 widgets
@@ -539,20 +560,20 @@ window.onscroll = function() {
                                           /*
                                            * Forward evaluated above.
                                            */
-                                          _url:x:/@split/0?name
+                                          _app-name:x:/@split/0?name
 
                                           /*
                                            * Deleting all records from database.
                                            */
                                           p5.mysql.connect:[camphora]
                                             p5.mysql.delete:@"delete from {0}"
-                                              :x:/@_url?value
+                                              :x:/@_app-name?value
 
                                           /*
                                            * Reloading root location for simplicity.
                                            */
                                           p5.web.set-location:/{0}
-                                            :x:/@_url?value
+                                            :x:/@_app-name?value
 
                                       button
                                         innerValue:No
@@ -591,10 +612,9 @@ window.onscroll = function() {
                     /*
                      * Feeding grid with more items.
                      */
-                    _folder:/modules/{0}/
-                      :x:/@split/0?name
-                    micro.evaluate.file:{0}helpers/databind-grid.hl
-                      :x:/@_folder?value
+                    _app-name:x:/@split/0?name
+                    micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
+                      :x:/@_app-name?value
                       feed-more:bool:true
 
                   columns
@@ -603,14 +623,12 @@ window.onscroll = function() {
                     /*
                      * Forward evaluated above.
                      */
-                    _url:x:/../*/url?value
-                    _folder:/modules/{0}/
-                      :x:/@split/0?name
+                    _app-name:x:/@split/0?name
 
                     /*
                      * Evaluating file responsible for databinding grid.
                      */
                     eval-x:x:/+/*/url
-                    micro.evaluate.file:{0}helpers/databind-grid.hl
-                      :x:/@_folder?value
-                      url:x:/@_url?value
+                    micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
+                      :x:/@_app-name?value
+                      url:x:/@_app-name?value
