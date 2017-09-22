@@ -42,3 +42,8 @@
     color: #aaa;
     text-align:right;
 }
+.camphora-sort-column:after {
+    padding-left:.2rem;
+    font-family:'icomoon' !important;
+    content:'\f0dd';
+}

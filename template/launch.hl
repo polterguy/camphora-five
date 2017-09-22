@@ -204,12 +204,49 @@ if:x:/@load-file/*/*/show-headers?value
     /*
      * Adding a column to our datagrid below.
      */
-    set:x:/+/*/*?name
+    set:x:/+2/*/*?name
       src:x:/@_dp/#/*/name?value
+    eval-x:x:/+/*/*/*/*/*/innerValue
     add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
       src
         foo
           class:capitalize
+          widgets
+            a
+              href:#
+              role:button
+              innerValue:x:/@_dp/#/*/name?value
+              onclick
+
+                /*
+                 * Forward evaluated above.
+                 */
+                _app-name:x:/@split/0?name
+
+                /*
+                 * Storing sort column in ViewState and re-databinding datagrid.
+                 */
+                get-widget-property:x:/../*/_event?value
+                  innerValue
+                p5.web.viewstate.set:camphora.sort-column
+                  src:x:/@get-widget-property/*/*?value
+
+                /*
+                 * Making sure we update CSS class of bugger.
+                 */
+                p5.web.widgets.find-like
+                  class:camphora-sort-column
+                micro.css.delete:x:/@p5.web.widgets.find-like/*/*?value
+                  class:camphora-sort-column
+                micro.css.add:x:/../*/_event?value
+                  class:camphora-sort-column
+
+                /*
+                 * Re-databinding grid, now with an explicit sort order column
+                 * in ViewState.
+                 */
+                micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
+                  :x:/@_app-name?value
 
 
 
