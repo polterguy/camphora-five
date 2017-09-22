@@ -584,6 +584,19 @@ create-widget
                             return:bool:false
 
                           /*
+                           * Making sure app has at least one visible column.
+                           */
+                          if:x:@"/@micro.form.serialize/*/.signal/@show-in-grid/""=:bool:true""?count"
+                            =:int:0
+
+                            /*
+                             * Oops, app has no field declarations visible in grid.
+                             */
+                            micro.windows.info:Your app must have at least one field visible in the grid
+                              class:micro-windows-info warning
+                            return:bool:false
+
+                          /*
                            * Used to hold actual data for our app.
                            */
                           .data
