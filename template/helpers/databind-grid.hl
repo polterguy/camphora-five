@@ -104,7 +104,7 @@ load-file:/{0}/app-manifest.hl
 /*
  * Splitting URL, to figure out which type of request this is.
  *
- * Candidates are "/tag" request for instance.
+ * URL could be "/tag" request for instance.
  */
 p5.web.get-location
 p5.web.get-root-location
