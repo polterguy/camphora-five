@@ -21,6 +21,24 @@ micro.lambda.contract.optional:x:/..
 
 
 /*
+ * Checking if user is editing another app from before.
+ */
+p5.web.widgets.find
+  .data
+if:x:/-/*/*?value
+
+  /*
+   * User can only edit one app at the time.
+   */
+  micro.windows.info:Please finish editing your other app
+    class:micro-windows-info warning
+  return
+
+
+
+
+
+/*
  * Default values.
  */
 .defaults

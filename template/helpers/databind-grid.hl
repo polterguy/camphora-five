@@ -45,9 +45,10 @@ micro.lambda.contract.optional:x:/..
 
 
 /*
- * Sorting column, defaulting to "id".
+ * Sorting column, defaulting to "id" and "ascending".
  */
 .sort-column:id
+.sort-column-direction:asc
 p5.web.viewstate.get:camphora.sort-column
 if:x:/@p5.web.viewstate.get/*?value
 
@@ -55,6 +56,13 @@ if:x:/@p5.web.viewstate.get/*?value
    * Explicit sort column specified.
    */
   set:x:/@.sort-column?value
+    src:x:/@p5.web.viewstate.get/*?value
+
+  /*
+   * Now figuring out direction.
+   */
+  p5.web.viewstate.get:camphora.sort-column-direction
+  set:x:/@.sort-column-direction?value
     src:x:/@p5.web.viewstate.get/*?value
 
 
@@ -379,12 +387,13 @@ p5.mysql.connect:[camphora]
   /*
    * Executing SQL query, now parametrized accordingly.
    */
-  p5.mysql.select:@"select id, {0} from `{1}`{2}{3} order by `{4}` limit 20 offset @offset"
+  p5.mysql.select:@"select id, {0} from `{1}`{2}{3} order by `{4}` {5} limit 20 offset @offset"
     :x:/@_cols?value
     :x:/../*/split/[0,1]/0/-2?name
     :x:/@_where?value
     :x:/@_tag?value
     :x:/../*/.sort-column?value
+    :x:/../*/.sort-column-direction?value
     @offset:x:/../*/.offset?value
 
   /*

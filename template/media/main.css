@@ -43,7 +43,12 @@
     text-align:right;
 }
 .camphora-sort-column:after {
-    padding-left:.2rem;
+    padding-left:.5rem;
     font-family:'icomoon' !important;
-    content:'\f0dd';
+}
+.camphora-sort-column-asc:after {
+    content: '\f063';
+}
+.camphora-sort-column-desc:after {
+    content: '\f062';
 }
