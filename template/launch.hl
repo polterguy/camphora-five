@@ -518,8 +518,8 @@ window.onscroll = function() {
                         _app-name:x:/@split/0?name
 
                         /*
-                         * Redirecting client to make sure we pass in query
-                         * parameter being the search condition.
+                         * Figuring out filter, setting it to viewstate,
+                         * and re-databinding grid.
                          */
                         get-widget-property:camphora-search-query
                           value
@@ -527,19 +527,44 @@ window.onscroll = function() {
                           !=:
 
                           /*
-                           * Filter was given.
+                           * Filter was given, storing it in ViewState before re-databinding grid.
                            */
-                          p5.html.url-encode:x:/@get-widget-property/*/*?value
-                          p5.web.set-location:{0}?q={1}
-                            :x:/@_app-name?value
-                            :x:/@p5.html.url-encode?value
+                          p5.web.viewstate.set:camphora.filter
+                            src:x:/@get-widget-property/*/*?value
 
                         else
 
                           /*
-                           * Filter was removed.
+                           * Filter was NOT given, removing it from ViewState before re-databinding grid.
                            */
-                          p5.web.set-location:x:/@_app-name?value
+                          p5.web.viewstate.set:camphora.filter
+
+                        /*
+                         * Re-databinding grid.
+                         */
+                        micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
+                          :x:/@_app-name?value
+
+                        /*
+                         * Selecting textbox content, and setting focus to it.
+                         */
+                        micro.page.set-focus:camphora-search-query
+
+                    button:camphora-remove-all-filters
+                      innerValue:@"<span class=""icon-remove""></span>"
+                      title:Remove all search and tag filters
+                      onclick
+
+                        /*
+                         * Forward evaluated above.
+                         */
+                        _app-name:x:/@split/0?name
+
+                        /*
+                         * To clear out any viewstate and tags, we simply re-direct
+                         * the client to base URL of app.
+                         */
+                        p5.web.set-location:x:/@_app-name?value
 
                     button:camphora-add-new-record-button
                       innerValue:@"<span class=""icon-plus""></span>"

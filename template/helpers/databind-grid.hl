@@ -70,9 +70,9 @@ if:x:/@p5.web.viewstate.get/*?value
 
 
 /*
- * Figuring out if a query search parameter was supplied.
+ * Figuring out if a filter exists.
  */
-p5.web.query.get:q
+p5.web.viewstate.get:camphora.filter
 
 
 
@@ -154,7 +154,7 @@ set:x:/@_cols?value
 
 
 /*
- * Creating our SQL "where" statement, according to [p5.web.query.get] and "tag" requested.
+ * Creating our SQL "where" statement, according to filter and "tag" requested.
  */
 _where
 _tag
@@ -189,14 +189,14 @@ for-each:x:/@load-file/*/*/field
             :x:/@split/2?name
 
   /*
-   * Checking if we have a [p5.web.query.get] condition.
+   * Checking if we have a filter.
    */
-  if:x:/@p5.web.query.get/*?value
+  if:x:/../*/p5.web.viewstate.get/*/camphora.filter?value
 
     /*
      * Checking if user is filtering on a specific column.
      */
-    split:x:/@p5.web.query.get/*?value
+    split:x:/../*/p5.web.viewstate.get/*/camphora.filter?value
       =:":"
     if:x:/@split/*?count
       =:int:2
@@ -215,7 +215,7 @@ for-each:x:/@load-file/*/*/field
           src:" where (`{0}` = @exact"
             :x:/@split/0?name
         eval-x:x:/+/*/*
-        add:x:/../**/p5.mysql.select
+        add:x:/../*/p5.mysql.connect/*/p5.mysql.select
           src
             @exact:x:/@split/1?name
 
@@ -243,23 +243,28 @@ for-each:x:/@load-file/*/*/field
           src:" where ("
 
       /*
-       * Making sure we pass in [@filter] to [p5.mysql.select], unless it has already
-       * been added.
-       */
-      if:x:/../*/p5.mysql.connect/*/p5.mysql.select/*/\@filter
-        not
-        add:x:/../*/p5.mysql.connect/*/p5.mysql.select
-          src
-            @filter:"%{0}%"
-              :x:/@p5.web.query.get/*?value
-
-      /*
        * Adding up "where" for currently iterated column.
        */
       set:x:/@_where?value
         src:@"{0}`{1}` like @filter"
           :x:/@_where?value
           :x:/@_dp/#/*/name?value
+
+      /*
+       * Making sure we pass in [@filter] to [p5.mysql.select], unless it has already
+       * been added.
+       */
+      if:x:/../*/p5.mysql.connect/*/p5.mysql.select/*/\@filter
+        not
+
+        /*
+         * First column we're adding a filter for.
+         */
+        eval-x:x:/+/*/*
+        add:x:/../*/p5.mysql.connect/*/p5.mysql.select
+          src
+            @filter:"%{0}%"
+              :x:/../*/p5.web.viewstate.get/*/camphora.filter?value
 
 
 
