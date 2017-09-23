@@ -8,9 +8,9 @@
 
 
 /*
- * Making sure we set the CSS class for our main wrapper widget correctly.
+ * Creating main content container.
  */
-set-widget-property:cnt
+create-container-widget:camphora-main-container
   class:container
 
 
@@ -433,7 +433,7 @@ if:x:/@p5.web.query.get/*?value
  */
 eval-x:x:/+/**(/_app-name)
 create-widget
-  class:container
+  parent:camphora-main-container
   widgets
 
     /*

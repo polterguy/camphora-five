@@ -160,6 +160,7 @@ if:x:/@p5.web.widgets.find/*/*?value
  */
 eval-x:x:/+/*/.filename|/+/**/micro.widgets.wizard-form/*/*/value|/+/**(/.file-values/*)
 create-widget
+  parent:camphora-main-container
   class:row
   .filename:x:/@.defaults/*/filename?value
   events

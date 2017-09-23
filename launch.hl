@@ -63,11 +63,20 @@ if
 
 
 /*
+ * Creating main content container.
+ */
+create-container-widget:camphora-main-container
+  class:container
+
+
+
+
+
+/*
  * Creating main wire-frame for Camphora.
  */
-set-widget-property:cnt
-  class:container
 create-widget
+  parent:camphora-main-container
   class:row
   widgets
     div
