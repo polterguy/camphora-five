@@ -61,37 +61,6 @@ create-event:camphora.widgets._internals.field-definition
           title:Name of field
           .data-field:field-name
           value:x:/@.signal/--/name?value
-          onchange
-
-            /*
-             * Sanity checking value.
-             */
-            get-widget-property:x:/../*/_event?value
-              value
-            match:x:/@get-widget-property/*/*?value
-              src:regex:"/^[_a-z]{3,20}$/"
-            if:x:/@match/*?count
-              =:int:0
-              or:x:/@match/0?name
-                =:
-
-              /*
-               * Not an acceptable name of app.
-               */
-              micro.windows.info:Not an acceptable name of field. Use only a-z and/or '_' in your field's name
-                class:micro-windows-info warning
-              set-widget-property:x:/../*/_event?value
-                class:error
-              micro.page.set-focus:x:/../*/_event?value
-
-            else
-
-              /*
-               * Name was accepted.
-               */
-              delete-widget-property:x:/../*/_event?value
-                class
-
         select
           .data-field:field-type
           title:Type of field

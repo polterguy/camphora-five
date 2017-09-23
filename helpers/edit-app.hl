@@ -622,22 +622,18 @@ create-widget
                               return:bool:false
 
                             /*
-                             * Sanity checking field-name before we add it into resulting lambda.
-                             *
-                             * [fiels]'s [name] must only contain "-" or a-z characters, and be at least
-                             * 3 characters long, and not more than 20 characters long.
+                             * Trimming field name and sanity checking it before we add it into resulting lambda.
                              */
-                            match:x:/@_dp/#/@field-name?value
-                              src:regex:@"/^[_a-z]{3,20}$/"
-                            if:x:/@match/*?count
-                              =:int:0
-                              or:x:/@match/0?name
-                                =:
+                            set:x:/@_dp/#/@field-name?value
+                              trim:x:/@_dp/#/@field-name?value
+                            if
+                              length:x:/@_dp/#/@field-name?value
+                              <:int:2
 
                               /*
                                * Oops, not an accepted name!
                                */
-                              micro.windows.info:The names of your fields must only contain lowercase letters [a-z], hyphens (-), and be minimum 3 characters long, and maximum 20 characters long
+                              micro.windows.info:The name of your fields must be at least 1 character
                                 class:micro-windows-info warning
                               return:bool:false
 
@@ -676,27 +672,9 @@ create-widget
                                 return:bool:false
 
                               /*
-                               * Looping through each option value.
+                               * Looping through each option value, and adding it to [.data] lambda.
                                */
                               for-each:x:/@split/*?name
-
-                                /*
-                                 * Sanity checking option value.
-                                 */
-                                match:x:/@_dp?value
-                                  src:regex:@"/^[_a-z]{3,20}$/"
-                                if:x:/@match/*?count
-                                  =:int:0
-                                  or:x:/@match/0?name
-                                    =:
-
-                                  /*
-                                   * Oops, option value was not accepted.
-                                   */
-                                  micro.windows.info:Your options for radio and select columns must be separated by ',', be between 3 and 20 characters long, and not contain anything but a-z and '_' characters.
-                                    class:micro-windows-info warning
-                                  return:bool:false
-
                                 add:x:/@.data/0/-/*/type
                                   src:x:/@_dp?value
 
@@ -747,7 +725,7 @@ create-widget
                             innerValue:x:/@micro.form.serialize/*/name?value
 
                           /*
-                           * Updating [.filename] to signal we're in "edit mode".
+                           * Updating [.filename] to signal we're now in "edit mode".
                            */
                           whoami
                           set-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value

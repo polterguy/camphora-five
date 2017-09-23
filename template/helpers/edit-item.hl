@@ -105,18 +105,23 @@ add:x:/../*/create-widget/*/widgets
                  * Figuring out column names for database table, and parametrizing update SQL.
                  */
                 _cols
+                _no:int:0
                 for-each:x:/@micro.form.serialize/*
                   set:x:/@_cols?value
-                    src:{0},`{1}`=@{1}
+                    src:{0},`{1}`=@no{2}
                       :x:/@_cols?value
                       :x:/@_dp/#?name
+                      :x:/@_no?value
                   eval-x:x:/+2/*/*
                   set:x:/+/*/*?name
-                    src:@{0}
-                      :x:/@_dp/#?name
+                    src:@no{0}
+                      :x:/@_no?value
                   add:x:/../*/p5.mysql.connect/*/p5.mysql.update
                     src
                       foo:x:/@_dp/#?value
+                  set:x:/@_no?value
+                    +:x:/@_no?value
+                      _:1
                 set:x:/@_cols?value
                   trim:x:/@_cols?value
                     chars:,

@@ -415,6 +415,11 @@ p5.mysql.connect:[camphora]
    */
   if:x:/@p5.mysql.select/*?count
     =:int:0
+
+    /*
+     * Signaling to client that there's no point int allowing user to poll server
+     * for more records as he continues scrolling.
+     */
     p5.web.send-javascript:"p5.camphora_end_of_dataset = true;"
 
   /*

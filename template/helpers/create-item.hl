@@ -87,22 +87,26 @@ create-widgets
                   _cols
                   _pars
                   _par-names
+                  _no:int:0
                   for-each:x:/@micro.form.serialize/*
                     set:x:/@_cols?value
                       src:{0},`{1}`
                         :x:/@_cols?value
                         :x:/@_dp/#?name
                     set:x:/@_par-names?value
-                      src:{0},@{1}
+                      src:{0},@no{1}
                         :x:/@_par-names?value
-                        :x:/@_dp/#?name
+                        :x:/@_no?value
                     eval-x:x:/+2/*/*
                     set:x:/+/*/*?name
-                      src:@{0}
-                        :x:/@_dp/#?name
+                      src:@no{0}
+                        :x:/@_no?value
                     add:x:/@_pars
                       src
                         foo:x:/@_dp/#?value
+                    set:x:/@_no?value
+                      +:x:/@_no?value
+                        _:1
 
                   /*
                    * Trimming away additional ",".
