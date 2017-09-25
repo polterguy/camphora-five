@@ -16,18 +16,33 @@ container
       href:/{0}
         :x:/@get-widget-property/*/*?value
 
-  widgets
-    literal
-      element:span
-      class:desktop-app-name
-      oninit
+    /*
+     * Figuring out if user is allowed to view data for current app, and if not,
+     * we delete the icon for the app in its entirety.
+     */
+    load-file:/modules/{0}/helpers/app-manifest.hl
+      :x:/@get-widget-property/*/*?value
+    whoami
+    if:x:/@whoami/*/role?value
+      !=:root
+      and:x:/@whoami/*/role?value
+        !=:x:/@load-file/*/*/viewers?value
 
-        /*
-         * Making sure we figure out app's name, and modifiy icon accordingly.
-         */
-        p5.web.widgets.get-parent:x:/../*/_event?value
-        get-widget-property:x:/-/*/*?value
-          .app-name
-        set-widget-property:x:/../*/_event?value
-          innerValue:@"<span class=""icon-th desktop-app-icon""></span><span class=""capitalize"" style=""position:absolute;top:5px;right:5px;font-size:.7rem;"">{0}</span>"
-            :x:/@get-widget-property/*/*?value
+      /*
+       * User is not allowed to see current app's data, hence deleting desktop
+       * widget in its entirety.
+       */
+      delete-widget:x:/../*/_event?value
+
+    else
+
+      /*
+       * User is allowed to see data for current app, hence we continue creating
+       * our desktop icon.
+       */
+      create-widget
+        element:span
+        class:desktop-app-name
+        parent:x:/../*/_event?value
+        innerValue:@"<span class=""icon-th desktop-app-icon""></span><span class=""capitalize"" style=""position:absolute;top:5px;right:5px;font-size:.7rem;"">{0}</span>"
+          :x:/@get-widget-property/*/*?value
