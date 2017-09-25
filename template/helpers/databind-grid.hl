@@ -200,13 +200,17 @@ for-each:x:/@load-file/*/*/field
       =:":"
     if:x:/@split/*?count
       =:int:2
+      and:x:@"/@load-file/*/*/field/*/name/""=:regex:/^{0}$/i"""
+        :x:/@split/0?name
 
       /*
-       * Filtering criteria is specifying a column, now checking if currently 
-       * iterated column is that column.
+       * Filtering criteria is specifying a column, and column exists.
+       * Now checking if currently iterated column is that column, making sure
+       * our check is case insensitive.
        */
+      to-lower:x:/@split/0?name
       if:x:/@_dp/#/*/name?value
-        =:x:/@split/0?name
+        =:x:/@to-lower?value
 
         /*
          * Currently iterated column is requested filtering column.
@@ -263,7 +267,7 @@ for-each:x:/@load-file/*/*/field
         eval-x:x:/+/*/*
         add:x:/../*/p5.mysql.connect/*/p5.mysql.select
           src
-            @filter:"%{0}%"
+            @filter:@"%{0}%"
               :x:/../*/p5.web.viewstate.get/*/camphora.filter?value
 
 
