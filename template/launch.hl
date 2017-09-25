@@ -74,7 +74,6 @@ p5.web.page.set-title:'{0}' items
  * Including Micro, adding Awesome Fonts, and adding app's chosen skin.
  */
 p5.web.include-css-file:@MICRO/media/main.css
-p5.web.include-css-file:@MICRO/media/ext.css
 p5.web.include-css-file:@MICRO/media/fonts.css
 p5.web.include-css-file:@MICRO/media/skins/{0}.css
   :x:/@load-file/*/*/skin?value
