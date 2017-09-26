@@ -37,7 +37,7 @@ for-each:x:/@load-file/*/*/field
    * Adding column to SQL.
    */
   set:x:/@_cols?value
-    src:{0},{1}
+    src:{0},`{1}`
       :x:/@_cols?value
       :x:/@_dp/#/*/name?value
 
@@ -64,7 +64,7 @@ p5.mysql.connect:[camphora]
   /*
    * Runninq query.
    */
-  p5.mysql.select:@"select {0} from {1}"
+  p5.mysql.select:@"select {0} from `{1}`"
     :x:/@_cols?value
     :x:/../*/app-name?value
 

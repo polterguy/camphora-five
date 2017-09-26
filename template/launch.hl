@@ -687,7 +687,7 @@ window.onscroll = function() {
                                                * Deleting all records from database.
                                                */
                                               p5.mysql.connect:[camphora]
-                                                p5.mysql.delete:@"delete from {0}"
+                                                p5.mysql.delete:@"delete from `{0}`"
                                                   :x:/@_app-name?value
 
                                               /*

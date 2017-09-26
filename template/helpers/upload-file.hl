@@ -37,36 +37,26 @@ load-file:{0}{1}{2}
 _cols
 _pars
 .cols
+_no:int:0
 for-each:x:/@load-file/*/*/[0,1]/*?name
-
-  /*
-   * Sanity checking column name, to avoid SQL injection attacks.
-   */
-  match:x:/@_dp?value
-    src:regex:"/^[_a-z]{3,}$/i"
-  if:x:/@match/*?count
-    =:int:0
-    or:x:/@match/0?name
-      =:
-
-    /*
-     * Malformed column name in CSV file.
-     */
-    throw:Malformed column name in CSV file.
 
   /*
    * Adding column to SQL.
    */
   set:x:/@_cols?value
-    src:{0},{1}
+    src:{0},`{1}`
       :x:/@_cols?value
       :x:/@_dp?value
   set:x:/@_pars?value
     src:{0},@{1}
       :x:/@_pars?value
-      :x:/@_dp?value
+      :x:/@_no?value
   add:x:/@.cols
-    src:x:/@_dp?value
+    src:@{0}
+      :x:/@_no?value
+  set:x:/@_no?value
+    +:x:/@_no?value
+      _:1
 
 
 
@@ -125,7 +115,7 @@ p5.mysql.connect:[camphora]
       /*
        * Doing actual insertion of items.
        */
-      p5.mysql.insert:@"insert into {0} ({1}) values ({2})"
+      p5.mysql.insert:@"insert into `{0}` ({1}) values ({2})"
         :x:/../*/app-name?value
         :x:/@_cols?value
         :x:/@_pars?value
