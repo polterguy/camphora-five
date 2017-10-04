@@ -47,8 +47,8 @@
     font-family:'icomoon' !important;
 }
 .camphora-sort-column-asc:after {
-    content: '\f063';
+    content: '\f078';
 }
 .camphora-sort-column-desc:after {
-    content: '\f062';
+    content: '\f077';
 }
