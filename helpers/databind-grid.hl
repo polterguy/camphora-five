@@ -70,6 +70,12 @@ for-each:x:/@list-files/*?name
                             innerValue:Confirm deletion of app
                           p
                             innerValue:Are you sure you want to delete this app? This action is permanent, and your application will also be uninstalled.
+                          label
+                            widgets
+                              input:delete-data
+                                type:checkbox
+                              span
+                                innerValue:Also delete the data for app
                           div
                             class:right
                             widgets
@@ -95,13 +101,6 @@ for-each:x:/@list-files/*?name
                                       _filename:x:/@_dp?value
 
                                       /*
-                                       * Deleting app declaration file, for then to simply
-                                       * delete modal widget.
-                                       */
-                                      delete-file:x:/@_filename?value
-                                      delete-widget:camphora-confirm-deletion
-
-                                      /*
                                        * Making sure we also uninstall app.
                                        */
                                       split:x:/@_filename?value
@@ -109,6 +108,29 @@ for-each:x:/@list-files/*?name
                                         =:.
                                       desktop.uninstall-app:/modules/{0}/
                                         :x:/@split/0/-2?name
+
+                                      /*
+                                       * Then checking if we should delete the database table for our app.
+                                       */
+                                      get-widget-property:delete-data
+                                        checked
+                                      if:x:/@get-widget-property/*/*
+
+                                        /*
+                                         * Opening up database connection to camphora, and deleting the table, making
+                                         * sure we wrap it in a try/catch block, in case it doesn't exist, or some other 
+                                         * error occurs.
+                                         */
+                                        p5.mysql.connect:[camphora]
+                                          p5.mysql.execute:@"drop table `{0}`"
+                                            :x:/@split/0/-2?name
+
+                                      /*
+                                       * Deleting app declaration file, for then to simply
+                                       * delete modal widget.
+                                       */
+                                      delete-file:x:/@_filename?value
+                                      delete-widget:camphora-confirm-deletion
 
                                       /*
                                        * Re-databinding grid.
