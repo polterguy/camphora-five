@@ -85,12 +85,12 @@ create-widget
           class:right
           widgets
             div
-              class:strip
+              class:strip toolbar
               style:"display:inline-block;"
               widgets
                 button
                   innerValue:@"<span class=""icon-plus""></span>"
-                  style:"padding-left:35px;padding-right:35px;"
+                  style:"padding-left:45px;padding-right:45px;"
                   onclick
 
                     /*
