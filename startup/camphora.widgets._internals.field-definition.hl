@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Creates our "field definition widget".
  *
@@ -149,7 +149,7 @@ create-event:camphora.widgets._internals.field-definition
           type:hidden
           .data-field:.signal
         button
-          innerValue:@"<span class=""icon-close""></span>"
+          innerValue:@"<span class=""icon-cross""></span>"
           title:Delete field
           onclick
 

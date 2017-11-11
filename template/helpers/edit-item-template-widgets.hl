@@ -77,7 +77,7 @@ Edit
                       id:x:/@get-widget-property/*/*?value
 
         button
-          innerValue:@"<span class=""icon-trash""></span>"
+          innerValue:@"<span class=""icon-bin""></span>"
           style:"margin-bottom:0;"
           title:Delete item
           onclick

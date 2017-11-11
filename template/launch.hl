@@ -1,4 +1,4 @@
-
+﻿
 /*
  * Launcher file for Camphora Five generated app.
  */
@@ -560,7 +560,7 @@ window.onscroll = function() {
                             micro.page.set-focus:camphora-search-query
 
                         button:camphora-remove-all-filters
-                          innerValue:@"<span class=""icon-remove""></span>"
+                          innerValue:@"<span class=""icon-cross""></span>"
                           title:Remove all search and tag filters
                           onclick
 
@@ -616,11 +616,11 @@ window.onscroll = function() {
                       style:"float:right;"
                       widgets
                         button:camphora-import-csv-file
-                          innerValue:@"<span class=""icon-upload""></span>"
+                          innerValue:@"<span class=""icon-upload2""></span>"
                           title:Import a CSV file from your local disc
                           onclick:@"p5.dropzone.browse();event.stopPropagation(true);return false;"
                         button
-                          innerValue:@"<span class=""icon-download""></span>"
+                          innerValue:@"<span class=""icon-download2""></span>"
                           title:Download items as CSV file
                           onclick
 
@@ -638,7 +638,7 @@ window.onscroll = function() {
                               app-name:x:/@_app-name?value
 
                         button:camphora-delete-all-button
-                          innerValue:@"<span class=""icon-trash""></span>"
+                          innerValue:@"<span class=""icon-bin""></span>"
                           title:Deletes all items in your database
                           onclick
 
@@ -707,7 +707,7 @@ window.onscroll = function() {
                                               delete-widget:camphora-delete-all-records
 
                         button
-                          innerValue:@"<span class=""icon-home""></span>"
+                          innerValue:@"<span class=""icon-home3""></span>"
                           title:Return to home
                           onclick
 

@@ -1,4 +1,4 @@
-
+﻿
 /*
  * File responsible for starting Camphora.
  */
@@ -103,7 +103,7 @@ create-widget
                     micro.evaluate.file:@CAMPHORA/helpers/edit-app.hl
 
                 button
-                  innerValue:@"<span class=""icon-home""></span>"
+                  innerValue:@"<span class=""icon-home3""></span>"
                   onclick
 
                     /*

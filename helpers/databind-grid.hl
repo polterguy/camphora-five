@@ -56,7 +56,7 @@ for-each:x:/@list-files/*?name
 
                 button
                   style:"margin-bottom:0;"
-                  innerValue:@"<span class=""icon-trash""></span>"
+                  innerValue:@"<span class=""icon-bin""></span>"
                   onclick
 
                     /*
