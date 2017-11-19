@@ -383,7 +383,7 @@ else
     add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
       src
         Edit
-          style:"width:5px;text-align:center;"
+          style:"width:5px;text-align:right;"
 
   /*
    * Making sure all other parts of our system knows the user is allowed to edit data
@@ -728,7 +728,7 @@ window.onscroll = function() {
               class:camphora-crud-grid-wrapper
               widgets
                 micro.widgets.grid:camphora-crud-grid
-                  class:spaced lg-headers hover
+                  class:spaced lg-headers striped
                   .onfeed
 
                     /*
