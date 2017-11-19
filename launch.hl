@@ -72,8 +72,10 @@ create-container-widget:camphora-main-container
 
 
 /*
- * Creating main wire-frame for Camphora.
+ * Creating main wire-frame for Camphora, making sure we also set page's title 
+ * in the process.
  */
+p5.web.page.set-title:Camphora Five
 create-widget
   parent:camphora-main-container
   class:row
