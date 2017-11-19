@@ -536,17 +536,23 @@ window.onscroll = function() {
                               !=:
 
                               /*
-                               * Filter was given, storing it in ViewState before re-databinding grid.
+                               * Filter was given, storing it in ViewState before re-databinding grid,
+                               * and making sure we enable our "clear filter button".
                                */
                               p5.web.viewstate.set:camphora.filter
                                 src:x:/@get-widget-property/*/*?value
+                              delete-widget-property:camphora-remove-all-filters
+                                disabled
 
                             else
 
                               /*
-                               * Filter was NOT given, removing it from ViewState before re-databinding grid.
+                               * Filter was NOT given, removing it from ViewState before re-databinding grid,
+                               * and making sure we disable our "clear filter button".
                                */
                               p5.web.viewstate.set:camphora.filter
+                              set-widget-property:camphora-remove-all-filters
+                                disabled
 
                             /*
                              * Re-databinding grid.
@@ -562,6 +568,7 @@ window.onscroll = function() {
                         button:camphora-remove-all-filters
                           innerValue:@"<span class=""icon-cross""></span>"
                           title:Remove all search and tag filters
+                          disabled
                           onclick
 
                             /*
