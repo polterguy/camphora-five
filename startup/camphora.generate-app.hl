@@ -1,0 +1,30 @@
+﻿
+/*
+ * Creates the Active Event that will generate an app.
+ *
+ * Expects [manifest] being the manifest declaration for app and [_arg] being name of app.
+ */
+create-event:camphora.generate-app
+
+  /*
+   * Sanity check.
+   */
+  micro.lambda.contract.min:x:/..
+    _arg:string
+    manifest
+
+  /*
+   * Saving app's manifest to user's documents.
+   */
+  lambda2hyper:x:/../*/manifest/*
+  save-file:~/documents/private/camphora/{0}.hl
+    :x:/../*/_arg?value
+    src:x:/@lambda2hyper?value
+
+  /*
+   * Generating app.
+   */
+  eval-x:x:/+/*
+  micro.evaluate.file:@CAMPHORA/helpers/generate-app.hl
+    filename:~/documents/private/camphora/{0}.hl
+      :x:/../*/_arg?value
