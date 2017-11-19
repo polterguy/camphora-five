@@ -77,18 +77,34 @@ for-each:x:/-/*?name
 
 
 /*
- * Loading and modifying app's "desktop.hl" file, to make sure it's got knowledge
- * about which app this actually is.
+ * Checking if manifest for application specified that we should create a 
+ * desktop icon, or not
  */
-load-file:/modules/{0}/desktop.hl
-  :x:/@split/0/-2?name
-eval-x:x:/+/*/*
-add:x:/@load-file/*/*
-  src
-    .app-name:x:/@split/0/-2?name
-save-file:/modules/{0}/desktop.hl
-  :x:/@split/0/-2?name
-  src:x:/@load-file/*/*
+load-file:x:/../*/filename?value
+if:x:/@load-file/*/*/desktop-icon?value
+  =:bool:false
+
+  /*
+   * Deleting desktop icon for app, since it obviously should not have one.
+   */
+  delete-file:/modules/{0}/desktop.hl
+    :x:/@split/0/-2?name
+
+else
+
+  /*
+   * Loading and modifying app's "desktop.hl" file, to make sure it's got knowledge
+   * about which app this actually is.
+   */
+  load-file:/modules/{0}/desktop.hl
+    :x:/@split/0/-2?name
+  eval-x:x:/+/*/*
+  add:x:/@load-file/*/*
+    src
+      .app-name:x:/@split/0/-2?name
+  save-file:/modules/{0}/desktop.hl
+    :x:/@split/0/-2?name
+    src:x:/@load-file/*/*
 
 
 
