@@ -57,6 +57,7 @@ if:x:/-/*/*?value
   editors
   skin
   show-headers
+  desktop-icon
 
 
 
@@ -96,6 +97,8 @@ if:x:/../*/filename?value
     src:x:/@load-file/*/*/skin?value
   set:x:/@.file-values/*/show-headers?value
     src:x:/@load-file/*/*/show-headers?value
+  set:x:/@.file-values/*/desktop-icon?value
+    src:x:/@load-file/*/*/desktop-icon?value
 
   /*
    * Looping through each [field] from file, and creating a wrapper widget for it.
@@ -127,6 +130,8 @@ else
       :x:/@whoami/*/username?value
       :x:/@.defaults/*/name?value
   set:x:/@.file-values/*/show-headers?value
+    src:bool:true
+  set:x:/@.file-values/*/desktop-icon?value
     src:bool:true
 
 
@@ -461,6 +466,36 @@ create-widget
                       innerValue:Show headers
                       style:"margin-top:6px;margin-bottom:10px;display:inline-block;"
 
+                /*
+                 * Desktop icon checkbox.
+                 */
+                div
+                  class:col-33
+                  widgets
+                    input:camphora-desktop-icon
+                      type:checkbox
+                      .data-field:desktop-icon
+                      style:"margin-top:6px;margin-bottom:10px;"
+                      oninit
+
+                        /*
+                         * Forward evaluated before creation of widget.
+                         */
+                        .file-values
+                          desktop-icon:x:/../*/.file-values/*/desktop-icon?value
+                        if:x:/@.file-values/*/desktop-icon?value
+
+                          /*
+                           * Widget should be initially checked.
+                           */
+                          set-widget-property:x:/../*/_event?value
+                            checked
+
+                    label
+                      for:camphora-desktop-icon
+                      innerValue:Desktop icon
+                      style:"margin-top:6px;margin-bottom:10px;display:inline-block;"
+
             hr
             div
               .fields
@@ -683,7 +718,7 @@ create-widget
                            * Adding other types of settings for app.
                            */
                           add:x:/../*/.data
-                            src:x:/@micro.form.serialize/*(/viewers|/editors|/skin|/show-headers)
+                            src:x:/@micro.form.serialize/*(/viewers|/editors|/skin|/show-headers|/desktop-icon)
 
                           /*
                            * Retrieving app's filename, and if it is not null, we delete
