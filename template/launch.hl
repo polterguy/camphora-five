@@ -612,13 +612,9 @@ window.onscroll = function() {
                   class:col
                   widgets
                     div
-                      class:strip
+                      class:strip toolbar
                       style:"float:right;"
                       widgets
-                        button:camphora-import-csv-file
-                          innerValue:@"<span class=""icon-upload2""></span>"
-                          title:Import a CSV file from your local disc
-                          onclick:@"p5.dropzone.browse();event.stopPropagation(true);return false;"
                         button
                           innerValue:@"<span class=""icon-download2""></span>"
                           title:Download items as CSV file
@@ -636,6 +632,11 @@ window.onscroll = function() {
                             micro.evaluate.file:/modules/{0}/helpers/export-items.hl
                               :x:/@_app-name?value
                               app-name:x:/@_app-name?value
+
+                        button:camphora-import-csv-file
+                          innerValue:@"<span class=""icon-upload2""></span>"
+                          title:Import a CSV file from your local disc
+                          onclick:@"p5.dropzone.browse();event.stopPropagation(true);return false;"
 
                         button:camphora-delete-all-button
                           innerValue:@"<span class=""icon-bin""></span>"

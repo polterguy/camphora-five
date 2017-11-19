@@ -44,5 +44,5 @@ container
         element:span
         class:desktop-app-name
         parent:x:/../*/_event?value
-        innerValue:@"<span class=""icon-th desktop-app-icon""></span><span class=""capitalize"" style=""position:absolute;top:5px;right:5px;font-size:.7rem;"">{0}</span>"
+        innerValue:@"<span class=""icon-paragraph-justify desktop-app-icon""></span><span class=""capitalize"" style=""position:absolute;top:5px;right:5px;font-size:.7rem;"">{0}</span>"
           :x:/@get-widget-property/*/*?value
