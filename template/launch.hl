@@ -94,7 +94,7 @@ if:x:/@whoami/*/role?value
   and:x:/@load-file/*/*/viewers?value
     !=:guest
   and:x:/@load-file/*/*/viewers?value
-    !=:x:/whoami/*/role?value
+    !=:x:/@whoami/*/role?value
 
   /*
    * Forcing user to log in, and returning early.
