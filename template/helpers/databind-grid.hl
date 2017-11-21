@@ -463,7 +463,7 @@ p5.mysql.connect:[camphora]
             src:x:/@_dp/#?name
           add:x:/../*/micro.widgets.grid.databind/0/-
             src
-              foo:@"<span class=""icon-check""></span>"
+              foo:@"<span class=""icon-checkmark""></span>"
                 style:"text-align:right;width:5px;font-size:1.5rem;"
 
         else
