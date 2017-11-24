@@ -111,7 +111,7 @@ if:x:/../*/filename?value
     join:x:/@_dp/#/*/type/*?name
       sep:", "
     eval-x:x:/+/*/*/*
-    add:x:/../*/create-widget/**/div/*/.fields/./*/widgets
+    insert-before:x:/../*/create-widget/**/div/*/.fields/./*/widgets/*/div
       src
         camphora.widgets._internals.field-definition
           name:x:/@_dp/#/*/name?value
@@ -142,9 +142,16 @@ if:x:/../*/filename?value
                   type:text
                   value:x:/@_dp/#?name
                   .data-field:view-name
+            hypereval.widgets.hyperlambda-textarea
+              value:x:/@_dp/#?value
+              .data-field:view-content
+            div
+              class:right
+              widgets
                 button
                   innerValue:@"<span class=""icon-bin""></span>"
                   title:Delete view
+                  style:"padding-left:35px;padding-right:35px;"
                   onclick
 
                     /*
@@ -154,13 +161,9 @@ if:x:/../*/filename?value
                     p5.web.widgets.find-first-ancestor:x:/../*/_event?value
                       .view
                     delete-widget:x:/-/*/*?value
-
-            label
-              innerValue:Hyperlambda for view
-              style:"margin-bottom:0;"
-            hypereval.widgets.hyperlambda-textarea
-              value:x:/@_dp/#?value
-              .data-field:view-content
+                    micro.windows.info:View was deleted
+                      class:micro-windows-info success
+            hr
 
 else
 
@@ -556,29 +559,12 @@ unless you create your own custom view."
 many fields as you wish in your app, and you can choose if you want to display each field in the datagrid or not. Each field is also
 expected to be of a specific type, such as single line textbox, checkbox type, etc. Your app must at the very least have one field to be valid.
 Notice, some field types such as select dropdown and radiobutton fields have additional properties for which values are possible to select."
-
-            hr
-            div
-              .views
-              widgets
-                h3
-                  innerValue:Views
-                p
-                  innerValue:@"Additional views for your app. A view is basically an additional page, where you have full control over every aspect of 
-what happens as it is requested. Each view gets its own unique URL, accessible through <em>'/my-app/my-view'</em>, which you can fill with whatever 
-Hyperlambda you wish, to create any custom type of logic, associated with your app. To create a view, is considered an <em>'advanced topic'</em>,
-requiring you to understand Hyperlambda, which you can learn <a href=""https://github.com/polterguy/phosphorusfive-dox"" target=""_blank"">here</a>."
-
-            div
-              class:right
-              widgets
                 div
-                  class:strip
-                  style:"display:inline-block;"
+                  class:right
                   widgets
                     button
-                      style:"margin-bottom:0;"
                       innerValue:@"<span class=""icon-plus""></span>"
+                      style:"padding-left:35px;padding-right:35px;"
                       title:Adds another field to your CRUD app
                       onclick
 
@@ -593,14 +579,29 @@ requiring you to understand Hyperlambda, which you can learn <a href=""https://g
                         /*
                          * Creating widget wrapping field definition.
                          */
+                        p5.web.widgets.get-parent:x:/../*/_event?value
                         eval-x:x:/+/*/*
                         create-widgets
                           camphora.widgets._internals.field-definition
-                            parent:x:/@p5.web.widgets.find/*/*?value
+                            before:x:/@p5.web.widgets.get-parent/*/*?value
 
+            hr
+            div
+              .views
+              widgets
+                h3
+                  innerValue:Views
+                p
+                  innerValue:@"Additional views for your app. A view is basically an additional page, where you have full control over every aspect of 
+what happens as it is requested. Each view gets its own unique URL, accessible through <em>'/my-app/my-view'</em>, which you can fill with whatever 
+Hyperlambda you wish, to create any custom type of logic, associated with your app. To create a view, is considered an <em>'advanced topic'</em>,
+requiring you to understand Hyperlambda, which you can learn <a href=""https://github.com/polterguy/phosphorusfive-dox"" target=""_blank"">here</a>."
+                div
+                  class:right
+                  widgets
                     button
-                      style:"margin-bottom:0;"
                       innerValue:@"<span class=""icon-eye-plus""></span>"
+                      style:"padding-left:35px;padding-right:35px;"
                       title:Adds another view to your CRUD app
                       onclick
 
@@ -623,23 +624,8 @@ requiring you to understand Hyperlambda, which you can learn <a href=""https://g
                                   type:text
                                   value:view-name
                                   .data-field:view-name
-                                button
-                                  innerValue:@"<span class=""icon-bin""></span>"
-                                  title:Delete view
-                                  onclick
-
-                                    /*
-                                     * Since views are anyways dynamically fetched during save, all
-                                     * we need to do, is to delete widget wrapping view.
-                                     */
-                                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                                      .view
-                                    delete-widget:x:/-/*/*?value
-
-                            label
-                              innerValue:Hyperlambda for view
-                              style:"margin-bottom:0;"
                             hypereval.widgets.hyperlambda-textarea
+                              .data-field:view-value
                               value:@"/*
  * Although you can do whatever you wish from within your view,
  * the most common task is probably to view records, or create 
@@ -681,8 +667,32 @@ p5.mysql.connect:[camphora]
     create-widget
       parent:my-column
       innerValue:x:/@_dp/#/*/name?value"
-                              .data-field:view-value
+                            div
+                              class:right
+                              widgets
+                                button
+                                  innerValue:@"<span class=""icon-bin""></span>"
+                                  style:"padding-left:35px;padding-right:35px;"
+                                  title:Delete view
+                                  onclick
 
+                                    /*
+                                     * Since views are anyways dynamically fetched during save, all
+                                     * we need to do, is to delete widget wrapping view.
+                                     */
+                                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                                      .view
+                                    delete-widget:x:/-/*/*?value
+                                    micro.windows.info:View was deleted
+                                      class:micro-windows-info success
+
+            div
+              class:right
+              widgets
+                div
+                  class:strip
+                  style:"display:inline-block;"
+                  widgets
                     button
                       style:"margin-bottom:0;"
                       innerValue:@"<span class=""icon-floppy-disk""></span>"
@@ -813,14 +823,14 @@ p5.mysql.connect:[camphora]
                              * Making sure view's name doesn't contain "illegal characters".
                              */
                             match:x:/@_dp/#?value
-                              src:regex:"/^[-_a-z]{3,20}$/"
+                              src:regex:"/^[-_a-z0-9]{3,20}$/"
                             if:x:/@match/*?count
                               =:int:0
 
                               /*
                                * View name was not valid.
                                */
-                              micro.windows.info:Your view can only contain a-z, - and _ in its name, and must be between 3 and 20 characters long.
+                              micro.windows.info:Your view can only contain a-z. 0-9, - and _ in its name, and must be between 3 and 20 characters long.
                                 class:micro-windows-info warning
                               return:bool:false
 
@@ -869,18 +879,17 @@ p5.mysql.connect:[camphora]
                               return:bool:false
 
                             /*
-                             * Trimming field name and sanity checking it before we add it into resulting lambda.
+                             * Sanity checking field's name.
                              */
-                            set:x:/@_dp/#/@field-name?value
-                              trim:x:/@_dp/#/@field-name?value
-                            if
-                              length:x:/@_dp/#/@field-name?value
-                              <:int:2
+                            match:x:/@_dp/#/@field-name?value
+                              src:regex:"/^[-_a-z0-9_]{2,20}$/"
+                            if:x:/@match/*?count
+                              =:int:0
 
                               /*
                                * Oops, not an accepted name!
                                */
-                              micro.windows.info:The name of your fields must be at least 1 character
+                              micro.windows.info:The name of your fields must contain only a-z, 0-9, _ and - characters, and be between 2 and 20 characters long
                                 class:micro-windows-info warning
                               return:bool:false
 
