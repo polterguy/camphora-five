@@ -51,7 +51,7 @@ create-event:camphora.widgets._internals.field-definition
   eval-x:x:/+/*/*/*/*/*/*/*/*/value
   return
     container
-      class:air-inner rounded shaded
+      class:air-inner rounded shaded emphasized
       style:"padding-bottom:0 !important;margin-bottom:2rem;"
       widgets
         container
