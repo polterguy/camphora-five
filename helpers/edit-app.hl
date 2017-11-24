@@ -119,6 +119,49 @@ if:x:/../*/filename?value
           options:x:/@join?value
           show:x:/@_dp/#/*/show?value
 
+  /*
+   * Looping through each [view] from file, and creating an editor wrapper for its Hyperlambda.
+   */
+  for-each:x:/@load-file/*/*/views/*
+
+    /*
+     * Adding a CodeMirror widget for currently iterated view.
+     */
+    eval-x:x:/+/*/*/*/*/*|/+/*/*/*/*/*/*/*
+    add:x:/../*/create-widget/**/div/*/.views/./*/widgets
+      src
+        div
+          .view
+          widgets
+            div
+              class:strip fill
+              widgets
+                label
+                  innerValue:Name
+                input
+                  type:text
+                  value:x:/@_dp/#?name
+                  .data-field:view-name
+                button
+                  innerValue:@"<span class=""icon-bin""></span>"
+                  title:Delete view
+                  onclick
+
+                    /*
+                     * Since views are anyways dynamically fetched during save, all
+                     * we need to do, is to delete widget wrapping view.
+                     */
+                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                      .view
+                    delete-widget:x:/-/*/*?value
+
+            label
+              innerValue:Hyperlambda for view
+              style:"margin-bottom:0;"
+            hypereval.widgets.hyperlambda-textarea
+              value:x:/@_dp/#?value
+              .data-field:view-content
+
 else
 
   /*
@@ -440,7 +483,7 @@ create-widget
                  * Show headers checkbox.
                  */
                 div
-                  class:col-33
+                  class:col
                   widgets
                     input:camphora-show-headers
                       type:checkbox
@@ -466,12 +509,9 @@ create-widget
                       innerValue:Show headers
                       style:"margin-top:6px;margin-bottom:10px;display:inline-block;"
 
-                /*
-                 * Desktop icon checkbox.
-                 */
-                div
-                  class:col-33
-                  widgets
+                    /*
+                     * Desktop icon checkbox.
+                     */
                     input:camphora-desktop-icon
                       type:checkbox
                       .data-field:desktop-icon
@@ -503,6 +543,13 @@ create-widget
                 h4
                   innerValue:Fields
 
+            hr
+            div
+              .views
+              widgets
+                h4
+                  innerValue:Views
+
             div
               class:right
               widgets
@@ -513,7 +560,7 @@ create-widget
                     button
                       style:"margin-bottom:0;"
                       innerValue:@"<span class=""icon-plus""></span>"
-                      title:Adds another field to your CRUD form
+                      title:Adds another field to your CRUD app
                       onclick
 
                         /*
@@ -534,7 +581,53 @@ create-widget
 
                     button
                       style:"margin-bottom:0;"
-                      innerValue:Save
+                      innerValue:@"<span class=""icon-eye""></span>"
+                      title:Adds another view to your CRUD app
+                      onclick
+
+                        /*
+                         * Finds our "view wrapper", and adds another CodeMirror wrapper, and a wrapper
+                         * for the view's name.
+                         */
+                        p5.web.widgets.find
+                          .views
+                        create-widget
+                          parent:x:/@p5.web.widgets.find/*/*?value
+                          .view
+                          widgets
+                            div
+                              class:strip fill
+                              widgets
+                                label
+                                  innerValue:Name
+                                input
+                                  type:text
+                                  value:view-name
+                                  .data-field:view-name
+                                button
+                                  innerValue:@"<span class=""icon-bin""></span>"
+                                  title:Delete view
+                                  onclick
+
+                                    /*
+                                     * Since views are anyways dynamically fetched during save, all
+                                     * we need to do, is to delete widget wrapping view.
+                                     */
+                                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                                      .view
+                                    delete-widget:x:/-/*/*?value
+
+                            label
+                              innerValue:Hyperlambda for view
+                              style:"margin-bottom:0;"
+                            hypereval.widgets.hyperlambda-textarea
+                              value:// Hyperlambda goes here ...
+                              .data-field:view-value
+
+                    button
+                      style:"margin-bottom:0;"
+                      innerValue:@"<span class=""icon-floppy-disk""></span>"
+                      title:Save your app declaration
                       .save-button
                       onclick
 
@@ -636,10 +729,52 @@ create-widget
                            * Used to hold actual data for our app.
                            */
                           .data
+                            views
 
                           /*
-                           * Iterating through each field, and adding as field into
-                           * above [.data] lambda.
+                           * Iterating through each view, and adding it into above [.data]/[views] lambda.
+                           */
+                          for-each:x:/@micro.form.serialize/*/view-name
+
+                            /*
+                             * Making sure view name is unique, and that it contains only legal characters.
+                             */
+                            if:x:/@_dp/#/./*/view-name/={0}?count
+                              :x:/@_dp/#?value
+                              >:int:1
+
+                              /*
+                               * View name is not unique.
+                               */
+                              micro.windows.info:Your view must have unique names
+                                class:micro-windows-info warning
+                              return:bool:false
+
+                            /*
+                             * Making sure view's name doesn't contain "illegal characters".
+                             */
+                            match:x:/@_dp/#?value
+                              src:regex:"/^[-_a-z]{3,20}$/"
+                            if:x:/@match/*?count
+                              =:int:0
+
+                              /*
+                               * View name was not valid.
+                               */
+                              micro.windows.info:Your view can only contain a-z, - and _ in its name, and must be between 3 and 20 characters long.
+                                class:micro-windows-info warning
+                              return:bool:false
+
+                            /*
+                             * Adding view to above [.data]/[views].
+                             */
+                            add:x:/@.data/*/views
+                              src:x:/@_dp/#?value
+                            set:x:/@.data/*/views/0/-?value
+                              src:x:/@_dp/#/+?value
+
+                          /*
+                           * Iterating through each field, and adding it into our above [.data] lambda.
                            */
                           for-each:x:/@micro.form.serialize/*/.signal
 
@@ -782,7 +917,8 @@ create-widget
 
                     button
                       style:"margin-bottom:0;"
-                      innerValue:Generate
+                      innerValue:@"<span class=""icon-magic-wand""></span>"
+                      title:Generates your app
                       onclick
 
                         /*
@@ -915,7 +1051,8 @@ create-widget
 
                     button
                       style:"margin-bottom:0;"
-                      innerValue:Close
+                      innerValue:@"<span class=""icon-cross""></span>"
+                      title:Close editor for app
                       onclick
 
                         /*
