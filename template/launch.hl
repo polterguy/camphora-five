@@ -48,19 +48,15 @@ if:x:/@split/*?count
 
 else-if:x:/@split/*?count
   >:int:1
-
-  /*
-   * Checking if this is a request for a "view".
-   */
-  if:x:/@split/*?count
-    >:int:1
   and:x:/@split/1?name
     !=:download
   and:x:/@split/1?name
     !=:upload
+  and:x:/@split/1?name
+    !=:tag
 
   /*
-   * Probably q request for a "view", making sure the view actually exists, before 
+   * Probably a request for a "view", making sure the view actually exists, before 
    * we evaluate it, and return early.
    */
   if:x:/@load-file/*/*/views/*/{0}
@@ -606,6 +602,20 @@ window.onscroll = function() {
                           innerValue:@"<span class=""icon-cross""></span>"
                           title:Remove all search and tag filters
                           disabled
+                          oninit
+
+                            /*
+                             * Checking if current URL is a request for items with
+                             * a specific "hash tag", at which point we enable the clear button.
+                             */
+                            p5.web.get-location-url
+                            split:x:/@p5.web.get-location-url?value
+                              =:/
+                            if:x:/@split/0/-2?name
+                              =:tag
+                              delete-widget-property:x:/../*/_event?value
+                                disabled
+
                           onclick
 
                             /*
