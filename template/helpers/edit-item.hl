@@ -83,7 +83,8 @@ add:x:/../*/create-widget/*/widgets
           style:"display:inline-block;"
           widgets
             button:camphora-save-record-button
-              innerValue:Save
+              innerValue:@"<span class=""icon-floppy-disk""></span>"
+              title:Save record to database
               style:"margin-bottom:0;"
               onclick
 
@@ -149,7 +150,8 @@ add:x:/../*/create-widget/*/widgets
                 delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 
             button
-              innerValue:Close
+              innerValue:@"<span class=""icon-cross""></span>"
+              title:Close editor for record
               style:"margin-bottom:0;"
               onclick
 
