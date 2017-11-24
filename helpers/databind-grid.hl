@@ -40,6 +40,7 @@ for-each:x:/@list-files/*?name
                 button
                   style:"margin-bottom:0;"
                   innerValue:@"<span class=""icon-pencil""></span>"
+                  title:Edit your app
                   onclick
 
                     /*
@@ -56,7 +57,29 @@ for-each:x:/@list-files/*?name
 
                 button
                   style:"margin-bottom:0;"
+                  innerValue:@"<span class=""icon-loop2""></span>"
+                  title:Copy app
+                  onclick
+
+                    /*
+                     * Forward evaluated above.
+                     */
+                    _filename:x:/@_dp?value
+
+                    /*
+                     * Copying file, and re-databinding grid.
+                     */
+                    split:x:/@_filename?value
+                      =:.
+                    copy-file:x:/@_filename?value
+                      dest:{0}-copy.hl
+                        :x:/@split/0?name
+                    micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
+
+                button
+                  style:"margin-bottom:0;"
                   innerValue:@"<span class=""icon-bin""></span>"
+                  title:Delete your app entirely
                   onclick
 
                     /*
