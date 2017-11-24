@@ -8,22 +8,22 @@
 
 
 /*
- * Creating main content container.
- */
-create-container-widget:camphora-main-container
-  class:container
-
-
-
-
-
-/*
  * Splitting URL, to figure out which type of request this is, and to get the
  * inclusion of our CSS file(s) correctly.
  */
 split:x:/../*/url?value
   =:/
   =:?
+
+
+
+
+
+/*
+ * Loading file containing app declaration.
+ */
+load-file:/modules/{0}/helpers/app-manifest.hl
+  :x:/@split/0?name
 
 
 
@@ -46,15 +46,52 @@ if:x:/@split/*?count
   add:x:/../*/split/[0,1]
     src:x:/@split/*
 
+else-if:x:/@split/*?count
+  >:int:1
+
+  /*
+   * Checking if this is a request for a "view".
+   */
+  if:x:/@split/*?count
+    >:int:1
+  and:x:/@split/1?name
+    !=:download
+  and:x:/@split/1?name
+    !=:upload
+
+  /*
+   * Probably q request for a "view", making sure the view actually exists, before 
+   * we evaluate it, and return early.
+   */
+  if:x:/@load-file/*/*/views/*/{0}
+    :x:/@split/1?name
+
+    /*
+     * View exists, transforming to Hyperlambda, evaluating it, and returning early.
+     */
+    hyper2lambda:x:/@load-file/*/*/views/*/{0}?value
+      :x:/@split/1?name
+    eval:x:/@hyper2lambda
+    return
+
+  else
+
+    /*
+     * View didn't exist, returning 404 to client.
+     */
+    p5.web.response.set-status-code:404
+    p5.web.echo:This is where URLs go to die
+    return
+
 
 
 
 
 /*
- * Loading file containing app declaration.
+ * Creating main content container.
  */
-load-file:/modules/{0}/helpers/app-manifest.hl
-  :x:/@split/0?name
+create-container-widget:camphora-main-container
+  class:container
 
 
 
@@ -63,7 +100,7 @@ load-file:/modules/{0}/helpers/app-manifest.hl
 /*
  * Defaulting title of page.
  */
-p5.web.page.set-title:'{0}' items
+p5.web.page.set-title:{0}
   :x:/@split/0?name
 
 

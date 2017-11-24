@@ -766,6 +766,21 @@ create-widget
                               return:bool:false
 
                             /*
+                             * Making sure view is not named "upload" or "download".
+                             */
+                            if:x:/@_dp/#?value
+                              =:upload
+                              or:x:/@_dp/#?value
+                                =:upload
+
+                              /*
+                               * View name was not valid.
+                               */
+                              micro.windows.info:Your view cannot be named neithe 'upload' nor 'download'.
+                                class:micro-windows-info warning
+                              return:bool:false
+
+                            /*
                              * Adding view to above [.data]/[views].
                              */
                             add:x:/@.data/*/views
