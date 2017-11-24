@@ -6,7 +6,7 @@
     margin-bottom:150px;
 }
 .strip > label:first-child {
-    min-width: 150px;
+    min-width: 100px;
 }
 .camphora-crud-grid-wrapper {
     display:inline-block;
