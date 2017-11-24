@@ -50,6 +50,9 @@ if:x:/@whoami/*/role?value
 if
   hypereval.version
   <:decimal:1.4
+  or
+    hypereval.version
+    not
 
   /*
    * Warning user that he has to install Hypereval 1.4 to continue.
@@ -83,7 +86,8 @@ if
                 p5.web.set-location:x:/-?value
 
   /*
-   * Returning early to abort evaluation of the rest of our file.
+   * Returning early to abort evaluation of the rest of our file, since required
+   * Hypereval version is not installed.
    */
   return
 
