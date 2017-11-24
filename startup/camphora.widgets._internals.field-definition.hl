@@ -161,4 +161,7 @@ create-event:camphora.widgets._internals.field-definition
                      */
                     p5.web.widgets.get-parent:x:/../*/_event?value
                     p5.web.widgets.get-parent:x:/-/*/*?value
+                    p5.web.widgets.get-parent:x:/-/*/*?value
                     delete-widget:x:/-/*/*?value
+                    micro.windows.info:Field was deleted
+                      class:micro-windows-info success
