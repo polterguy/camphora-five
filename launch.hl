@@ -44,6 +44,54 @@ if:x:/@whoami/*/role?value
 
 
 /*
+ * Making sure we have at least version 1.4 of Hypereval installed, before proceeding,
+ * since Camphora is dependent upon Hypereval to function.
+ */
+if
+  hypereval.version
+  <:decimal:1.4
+
+  /*
+   * Warning user that he has to install Hypereval 1.4 to continue.
+   */
+  create-widgets
+    micro.widgets.modal:camphora-hypereval-warning
+      widgets
+        h3
+          innerValue:Pre-requisites for Camphora not met
+        p
+          innerValue:Camphora Five is dependent upon Hypereval, version 1.4 or more to correctly function. Please install or upgrade Hypereval before continuing.
+        div
+          class:right
+          widgets
+            button
+              innerValue:OK
+              style:"margin-bottom:0;"
+              oninit
+
+                /*
+                 * Setting initial focus to "OK" button.
+                 */
+                micro.page.set-focus:x:/../*/_event?value
+
+              onclick
+
+                /*
+                 * Redirecting user to root URL.
+                 */
+                p5.web.get-root-location
+                p5.web.set-location:x:/-?value
+
+  /*
+   * Returning early to abort evaluation of the rest of our file.
+   */
+  return
+
+
+
+
+
+/*
  * Making sure user has a folder where we can store his apps, if it doesn't
  * exist from before.
  */
