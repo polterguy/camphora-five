@@ -248,8 +248,12 @@ create-widget
           class:shaded rounded air-inner
           .data
           widgets
-            h4
+            h3
               innerValue:General
+            p
+              innerValue:@"General information about your app, such as its name, and who are allowed to view and edit records in it.
+Notice, the Viewers and the Editors are expected to be roles within your system, which are allowed to view and edit your items. The name
+becomes the name of your app, in addition to the name of its database, and the URL to launch your app."
             micro.widgets.wizard-form
               collection
                 class:row
@@ -418,8 +422,13 @@ create-widget
                 div
                   class:col-100
                   widgets
-                    h4
+                    h3
                       innerValue:Styling
+                    p
+                      innerValue:@"What skin you want to use for your app, and whether or not you want to display column headers, 
+and/or have a desktop icon created for it or not to launch it. Notice, even without a desktop icon, you can still launch your app
+directly, if you know its URL. Also realise that without column headers, there is no way to sort your items when viewing them,
+unless you create your own custom view."
                 div
                   class:col-33
                   widgets
@@ -540,15 +549,24 @@ create-widget
             div
               .fields
               widgets
-                h4
+                h3
                   innerValue:Fields
+                p
+                  innerValue:@"What fields or columns you want your app to contain. These are basically columns in your database. You can have as
+many fields as you wish in your app, and you can choose if you want to display each field in the datagrid rendered or not. Each field is also
+expected to be of a specific type, such as single line text, checkbox field type, etc. Your app must at the very least have one field to be valid."
 
             hr
             div
               .views
               widgets
-                h4
+                h3
                   innerValue:Views
+                p
+                  innerValue:@"Additional views for your app. A view is basically an additional page, where you have full control over every aspect of 
+what happens as it is requested. Each view gets its own unique URL, accessible through <em>'/my-app/my-view'</em>, which you can fill with whatever 
+Hyperlambda you wish, to create any custom type of logic, associated with your app. To create a view, is considered an <em>'advanced topic'</em>,
+requiring you to understand Hyperlambda, which you can learn <a href=""https://github.com/polterguy/phosphorusfive-dox"" target=""_blank"">here</a>."
 
             div
               class:right
@@ -581,7 +599,7 @@ create-widget
 
                     button
                       style:"margin-bottom:0;"
-                      innerValue:@"<span class=""icon-eye""></span>"
+                      innerValue:@"<span class=""icon-eye-plus""></span>"
                       title:Adds another view to your CRUD app
                       onclick
 
@@ -621,7 +639,47 @@ create-widget
                               innerValue:Hyperlambda for view
                               style:"margin-bottom:0;"
                             hypereval.widgets.hyperlambda-textarea
-                              value:// Hyperlambda goes here ...
+                              value:@"/*
+ * Although you can do whatever you wish from within your view,
+ * the most common task is probably to view records, or create 
+ * some sort of custom editor for your items, not necessarily 
+ * resembling the default editor/viewer.
+ *
+ * Below is an example of how to create a widget for each `name` 
+ * item in your `my-app` app.
+ *
+ * First we include our CSS files.
+ */
+p5.web.include-css-file:@MICRO/media/main.css
+p5.web.include-css-file:@MICRO/media/fonts.css
+p5.web.include-css-file:@MICRO/media/skins/serious.css
+
+
+/*
+ * Then we create our main wire frame widget hierarchy.
+ */
+create-widget
+  class:container
+  widgets
+    div
+      class:row
+      widgets
+        div:my-column
+          class:col
+          widgets
+
+
+/*
+ * Then we connect to our database, select all records from `my-table`,
+ * and create one paragraph for each `name`, injecting it into our column 
+ * created above.
+ */
+p5.mysql.connect:[camphora]
+  p5.mysql.select:select * from `my-app`
+  for-each:x:/@p5.mysql.select/*
+    create-widget
+      parent:my-column
+      innerValue:x:/@_dp/#/*/name?value"
                               .data-field:view-value
 
                     button
