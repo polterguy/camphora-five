@@ -245,7 +245,7 @@ create-widget
       class:col
       widgets
         div
-          class:shaded rounded air-inner
+          class:shaded bg rounded air-inner
           .data
           widgets
             h3
@@ -553,8 +553,9 @@ unless you create your own custom view."
                   innerValue:Fields
                 p
                   innerValue:@"What fields or columns you want your app to contain. These are basically columns in your database. You can have as
-many fields as you wish in your app, and you can choose if you want to display each field in the datagrid rendered or not. Each field is also
-expected to be of a specific type, such as single line text, checkbox field type, etc. Your app must at the very least have one field to be valid."
+many fields as you wish in your app, and you can choose if you want to display each field in the datagrid or not. Each field is also
+expected to be of a specific type, such as single line textbox, checkbox type, etc. Your app must at the very least have one field to be valid.
+Notice, some field types such as select dropdown and radiobutton fields have additional properties for which values are possible to select."
 
             hr
             div

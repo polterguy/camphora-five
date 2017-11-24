@@ -48,120 +48,117 @@ create-event:camphora.widgets._internals.field-definition
   /*
    * Returning widget to caller.
    */
-  eval-x:x:/+/*/*/*/*/*/*/value
+  eval-x:x:/+/*/*/*/*/*/*/*/*/value
   return
     container
-      class:row
+      class:air-inner rounded shaded
+      style:"padding-bottom:0 !important;"
       widgets
         container
-          class:col-50 strip fill
+          class:row
           widgets
-            label
-              innerValue:Field
-            input
-              type:text
-              placeholder:Name ...
-              title:Name of field
-              .data-field:field-name
-              value:x:/@.signal/--/name?value
-        container
-          class:col-50 strip fill
-          widgets
-            select
-              .data-field:field-type
-              title:Type of field
-              onchange
-
-                /*
-                 * Retrieving our "options" textbox.
-                 */
-                p5.web.widgets.get-parent:x:/../*/_event?value
-                p5.web.widgets.find:x:/-/*/*?value
-                  .data-field:options
-
-                /*
-                 * Checking if we should enable our "options" textbox.
-                 */
-                get-widget-property:x:/../*/_event?value
-                  value
-                if:x:/@get-widget-property/*/*?value
-                  =:select
-                  or:x:/@get-widget-property/*/*?value
-                    =:radio
-
-                  /*
-                   * Enabling our "options" textbox.
-                   */
-                  set-widget-property:x:/@p5.web.widgets.find/*/*?value
-                    visible:true
-
-                else
-
-                  /*
-                   * Disabling our "options" textbox.
-                   */
-                  set-widget-property:x:/@p5.web.widgets.find/*/*?value
-                    visible:false
-
+            container
+              class:col strip fill
               widgets
-                option
-                  innerValue:Singleline text
-                  value:text
-                option
-                  innerValue:Multiline text
-                  value:textarea
-                option
-                  innerValue:Checkbox
-                  value:checkbox
-                option
-                  innerValue:Number
-                  value:number
-                option
-                  innerValue:Select dropdown
-                  value:select
-                option
-                  innerValue:Radiobuttons
-                  value:radio
-                option
-                  innerValue:Date/time created
-                  value:created
-            input
-              type:text
-              placeholder:Options ...
-              title:Options, separated by comma
-              .data-field:options
-              value:x:/@.signal/--/options?value
-            label
-              innerValue:Show
-              oninit
-
-                /*
-                 * Finding checkbox, and associating widget with it.
-                 */
-                p5.web.widgets.get-parent:x:/../*/_event?value
-                p5.web.widgets.find:x:/-/*/*?value
-                  type:checkbox
-                set-widget-property:x:/../*/_event?value
-                  for:x:/@p5.web.widgets.find/*/*?value
-
-            span
-              widgets
+                label
+                  innerValue:Name
                 input
-                  type:checkbox
-                  title:Show in grid
-                  .data-field:show-in-grid
-                  checked
-            input
-              type:hidden
-              .data-field:.signal
-            button
-              innerValue:@"<span class=""icon-cross""></span>"
-              title:Delete field
-              onclick
+                  type:text
+                  placeholder:Name ...
+                  title:Name of field
+                  .data-field:field-name
+                  value:x:/@.signal/--/name?value
+                label
+                  innerValue:Show
+                span
+                  widgets
+                    input
+                      type:checkbox
+                      style:"margin-bottom:0;"
+                      title:Show field in grid
+                      .data-field:show-in-grid
+                      checked
+            container
+              class:col strip fill
+              widgets
+                label
+                  innerValue:Type
+                  style:"margin-bottom:0;"
+                select
+                  .data-field:field-type
+                  title:Type of field
+                  onchange
 
-                /*
-                 * Retrieving parent widget, and simply deleting it.
-                 */
-                p5.web.widgets.get-parent:x:/../*/_event?value
-                p5.web.widgets.get-parent:x:/-/*/*?value
-                delete-widget:x:/-/*/*?value
+                    /*
+                     * Retrieving our "options" textbox.
+                     */
+                    p5.web.widgets.get-parent:x:/../*/_event?value
+                    p5.web.widgets.find:x:/-/*/*?value
+                      .data-field:options
+
+                    /*
+                     * Checking if we should enable our "options" textbox.
+                     */
+                    get-widget-property:x:/../*/_event?value
+                      value
+                    if:x:/@get-widget-property/*/*?value
+                      =:select
+                      or:x:/@get-widget-property/*/*?value
+                        =:radio
+
+                      /*
+                       * Enabling our "options" textbox.
+                       */
+                      set-widget-property:x:/@p5.web.widgets.find/*/*?value
+                        visible:true
+
+                    else
+
+                      /*
+                       * Disabling our "options" textbox.
+                       */
+                      set-widget-property:x:/@p5.web.widgets.find/*/*?value
+                        visible:false
+
+                  widgets
+                    option
+                      innerValue:Singleline text
+                      value:text
+                    option
+                      innerValue:Multiline text
+                      value:textarea
+                    option
+                      innerValue:Checkbox
+                      value:checkbox
+                    option
+                      innerValue:Number
+                      value:number
+                    option
+                      innerValue:Select dropdown
+                      value:select
+                    option
+                      innerValue:Radiobuttons
+                      value:radio
+                    option
+                      innerValue:Date/time created
+                      value:created
+                input
+                  type:text
+                  placeholder:Options ...
+                  title:Options, separated by comma
+                  .data-field:options
+                  value:x:/@.signal/--/options?value
+                input
+                  type:hidden
+                  .data-field:.signal
+                button
+                  innerValue:@"<span class=""icon-bin""></span>"
+                  title:Delete field
+                  onclick
+
+                    /*
+                     * Retrieving parent widget, and simply deleting it.
+                     */
+                    p5.web.widgets.get-parent:x:/../*/_event?value
+                    p5.web.widgets.get-parent:x:/-/*/*?value
+                    delete-widget:x:/-/*/*?value
