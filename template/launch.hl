@@ -518,7 +518,7 @@ window.onscroll = function() {
               class:row
               widgets
                 div
-                  class:col-70 right
+                  class:col-50 right
                   widgets
                     div
                       class:strip fill
@@ -629,6 +629,13 @@ window.onscroll = function() {
                              */
                             p5.web.set-location:x:/@_app-name?value
 
+                div
+                  class:col
+                  widgets
+                    div
+                      class:strip toolbar
+                      style:"float:right;"
+                      widgets
                         button:camphora-add-new-record-button
                           innerValue:@"<span class=""icon-plus""></span>"
                           style:"padding-left:35px;padding-right:35px;"
@@ -662,13 +669,6 @@ window.onscroll = function() {
                             micro.evaluate.file:/modules/{0}/helpers/create-item.hl
                               :x:/@_app-name?value
 
-                div
-                  class:col
-                  widgets
-                    div
-                      class:strip toolbar
-                      style:"float:right;"
-                      widgets
                         button
                           innerValue:@"<span class=""icon-download2""></span>"
                           title:Download items as CSV file
