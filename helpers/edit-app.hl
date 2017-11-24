@@ -245,7 +245,7 @@ create-widget
       class:col
       widgets
         div
-          class:shaded bg rounded air-inner
+          class:shaded rounded air-inner bg
           .data
           widgets
             h3
