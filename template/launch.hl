@@ -65,9 +65,9 @@ else-if:x:/@split/*?count
     /*
      * View exists, transforming to Hyperlambda, evaluating it, and returning early.
      */
-    hyper2lambda:x:/@load-file/*/*/views/*/{0}?value
+    micro.evaluate.file:/modules/{0}/{1}.hl
+      :x:/@split/0?name
       :x:/@split/1?name
-    eval:x:/@hyper2lambda
     return
 
   else
