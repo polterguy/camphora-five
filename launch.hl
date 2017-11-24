@@ -182,6 +182,7 @@ create-widget
               innerValue:CRUD apps
             micro.widgets.grid:camphora-apps
               style:"margin-bottom:0px;"
+              class:striped
               oninit
 
                 /*
