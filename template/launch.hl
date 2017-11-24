@@ -461,6 +461,81 @@ if:x:/@p5.web.query.get/*?value
 
 
 /*
+ * Checking if we have alternative views, and if so, making sure we display our
+ * "view views" button.
+ */
+if:x:/@load-file/*/*/views/*?count
+  >:int:0
+
+  /*
+   * There are alternative views, making sure we inject our "view views" button.
+   *
+   * First injecting a datagrid item for each view in app.
+   */
+  for-each:x:/@load-file/*/*/views/*?name
+    eval-x:x:/+/*/*/*/*/*/*
+    add:x:/..if/*/insert-after/**/micro.widgets.grid/*/rows
+      src
+        item
+          View
+            widgets
+              a
+                target:_blank
+                innerValue:x:/@_dp?value
+                style:"display:block;"
+                href:/{0}/{1}
+                  :x:/@split/0?name
+                  :x:/@_dp?value
+
+  /*
+   * Then inserting our open modal window button, that allows the user to select
+   * a specific view.
+   */
+  insert-after:x:/../*/create-widget/**/widgets/=toolbar/0
+    src
+      button
+        innerValue:@"<span class=""icon-eye""></span>"
+        title:View alternative views
+        onclick
+
+          /*
+           * Showing a modal window, allowing user to open up alternative views for app.
+           */
+          create-widgets
+            micro.widgets.modal:camphora-view-views
+              widgets
+                h3
+                  innerValue:Alternative views
+                micro.widgets.grid
+                  class:hover striped
+                  rows
+                div
+                  class:right
+                  widgets
+                    button
+                      innerValue:Close
+                      title:Close window
+                      style:"margin-bottom:0;"
+                      oninit
+
+                        /*
+                         * Setting initial focus to "close" button.
+                         */
+                        micro.page.set-focus:x:/../*/_event?value
+
+                      onclick
+
+                        /*
+                         * Closing "view views" modal window.
+                         */
+                        delete-widget:camphora-view-views
+  
+
+
+
+
+
+/*
  * Creating main wire-frame grid.
  */
 eval-x:x:/+/**(/_app-name)
@@ -635,7 +710,7 @@ window.onscroll = function() {
                     div
                       class:strip toolbar
                       style:"float:right;"
-                      widgets
+                      widgets:toolbar
                         button:camphora-add-new-record-button
                           innerValue:@"<span class=""icon-plus""></span>"
                           style:"padding-left:35px;padding-right:35px;"
