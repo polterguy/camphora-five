@@ -771,12 +771,14 @@ create-widget
                             if:x:/@_dp/#?value
                               =:upload
                               or:x:/@_dp/#?value
-                                =:upload
+                                =:download
+                              or:x:/@_dp/#?value
+                                =:tag
 
                               /*
                                * View name was not valid.
                                */
-                              micro.windows.info:Your view cannot be named neithe 'upload' nor 'download'.
+                              micro.windows.info:Your view cannot be named 'upload', 'download' or 'tag'.
                                 class:micro-windows-info warning
                               return:bool:false
 
