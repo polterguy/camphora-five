@@ -58,7 +58,7 @@ for-each:x:/@list-files/*?name
                 button
                   style:"margin-bottom:0;"
                   innerValue:@"<span class=""icon-loop2""></span>"
-                  title:Copy app
+                  title:Create a copy of your app
                   onclick
 
                     /*
@@ -75,6 +75,28 @@ for-each:x:/@list-files/*?name
                       dest:{0}-copy.hl
                         :x:/@split/0?name
                     micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
+
+                button
+                  style:"margin-bottom:0;"
+                  innerValue:@"<span class=""icon-download2""></span>"
+                  title:Download app
+                  onclick
+
+                    /*
+                     * Forward evaluated above.
+                     */
+                    _filename:x:/@_dp?value
+
+                    /*
+                     * Downloading Hyperlambda file wrapping app.
+                     */
+                    split:x:/@_filename?value
+                      =:/
+                    eval-x:x:/+/*
+                    micro.download.file:x:/@_filename?value
+                      Content-Type:application/x-hyperlambda
+                      Content-Disposition:@"attachment; filename=""{0}"""
+                        :x:/@split/0/-?name
 
                 button
                   style:"margin-bottom:0;"
