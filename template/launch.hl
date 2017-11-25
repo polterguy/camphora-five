@@ -63,7 +63,8 @@ else-if:x:/@split/*?count
     :x:/@split/1?name
 
     /*
-     * View exists, transforming to Hyperlambda, evaluating it, and returning early.
+     * View exists, evaluating its associated file, and returning early, 
+     * to avoid evaluation of the rest of our lambda.
      */
     micro.evaluate.file:/modules/{0}/{1}.hl
       :x:/@split/0?name
@@ -480,7 +481,6 @@ if:x:/@load-file/*/*/views/*?count
           View
             widgets
               a
-                target:_blank
                 innerValue:x:/@_dp?value
                 style:"display:block;"
                 href:/{0}/{1}
