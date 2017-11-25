@@ -696,8 +696,10 @@ p5.mysql.connect:[camphora]
                     button
                       style:"margin-bottom:0;"
                       innerValue:@"<span class=""icon-floppy-disk""></span>"
-                      title:Save your app declaration
+                      title:Save your app declaration, keyboard shortcut S
+                      style:"padding-left:35px;padding-right:35px;margin-bottom:0;"
                       .save-button
+                      accesskey:S
                       onclick
 
                         /*
@@ -989,13 +991,15 @@ p5.mysql.connect:[camphora]
                           /*
                            * Notifying user.
                            */
-                          micro.windows.info:App was saved. To create app, please click the <em>'generate'</em> magic wand button.
+                          micro.windows.info:App was successfully saved
                             class:micro-windows-info success
 
                     button
                       style:"margin-bottom:0;"
                       innerValue:@"<span class=""icon-magic-wand""></span>"
-                      title:Generates your app
+                      title:Generates your app, keyboard shortcut G
+                      style:"margin-bottom:0;"
+                      accesskey:G
                       onclick
 
                         /*
@@ -1130,6 +1134,7 @@ p5.mysql.connect:[camphora]
                       style:"margin-bottom:0;"
                       innerValue:@"<span class=""icon-cross""></span>"
                       title:Close editor for app
+                      style:"margin-bottom:0;"
                       onclick
 
                         /*
