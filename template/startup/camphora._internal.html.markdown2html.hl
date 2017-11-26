@@ -43,36 +43,10 @@ create-event:camphora._internal.html.markdown2html
         @style:"float:left;border-radius:5px;margin-right:15px;max-width:70%;"
 
   /*
-   * Running through each hyperlink, and making sure every hyperlink displays its
-   * actual domain as a part of its anchor text, in addition to a rel="noreferrer" 
-   * attribute.
-   *
-   * Notice, this is a security feature, which prevents a malicous file editor/user
-   * to create hyperlinks, leading to URLs, which are "cloaked".
-   *
-   * Although this is technically unlikely to occur, since only registered users
-   * can edit files - In theory, an unintentional link, leading to a malicous website,
-   * could sneak in, through a user account, allowed to edit files here in the system.
-   *
-   * By simply displaying the root domain for each URL, we reduce the risk of 
-   * such phishing" attacks significantly, by displaying the domain all links
-   * leads to, to a user, before he clicks the links.
-   *
-   * In addition, we add up an explicit rel='noreferrer' to all hyperlinks, to
-   * make sure any links visited, never knows the origin of the visitor, and which
-   * website the visitor comes from.
-   *
-   * This is basically super defensive coding" in practive!!
+   * Running through each hyperlink, and making sure every hyperlink has a 
+   * rel="noreferrer" attribute.
    */
   for-each:x:/@html2lambda/**/a
-    split:x:/@_dp/#/*/\@href?value
-      =:"//"
-    split:x:/@split/0/-?name
-      =:/
-    set:x:/@_dp/#/*/\#text?value
-      src:{0} (<strong>{1}</strong>)
-        :x:/@_dp/#/*/\#text?value
-        :x:/@split/0?name
 
     /*
      * Removing any previous "rel" attributes, before we add our own.
