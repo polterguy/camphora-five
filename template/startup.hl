@@ -201,3 +201,14 @@ catch
      * Returning early, to avoid evaluating the rest of our file twice.
      */
     return
+
+
+
+
+
+/*
+ * Evaluates all other startup files.
+ */
+micro.evaluate.folder:/modules/{0}/startup/
+  :x:/@split/0/-3?name
+

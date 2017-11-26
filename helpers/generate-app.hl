@@ -163,38 +163,6 @@ if:x:/../*/delete-data?value
 
 
 /*
- * Creating "camphora-common" component, which is shared among all camphora 
- * generated apps.
- */
-if
-  fetch:x:/0/0?value
-    folder-exists:/modules/camphora-common/
-  delete-folder:/modules/camphora-common/
-
-
-
-
-
-/*
- * Copying "/camphora-common/" folder, such that it becomes a module.
- */
-copy-folder:@CAMPHORA/helpers/camphora-common/
-  dest:/modules/camphora-common/
-
-
-
-
-
-/*
- * Evaluating "camphora-common" startup file.
- */
-micro.evaluate.file:/modules/camphora-common/startup.hl
-
-
-
-
-
-/*
  * Evaluating startup file.
  */
 micro.evaluate.file:/modules/{0}/startup.hl

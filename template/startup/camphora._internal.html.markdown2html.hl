@@ -90,8 +90,8 @@ create-event:camphora._internal.html.markdown2html
    * Notice, our sub-set of legal HTML elements here, is quite small.
    * For instance, it is not legally allowed to display images in any ways!
    */
-  load-file:/modules/camphora-common/html-whitelist.hl
-    :x:/@_app-name?value
+  load-file:/modules/{0}/configuration/html-whitelist.hl
+    :x:/@app-name?value
   for-each:x:/@html2lambda/**
     if:x:/@load-file/*/*/\{0}
       :x:/@_dp/#?name
