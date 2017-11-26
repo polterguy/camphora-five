@@ -71,14 +71,14 @@ p5.mysql.connect:[camphora]
   /*
    * Creating CSV content out of query's result.
    */
-  p5.csv.lambda2csv:x:/@p5.mysql.select/*
+  lambda2csv:x:/@p5.mysql.select/*
 
   /*
    * Saving CSV content to file in user's "/temp/" folder.
    */
   save-file:~/temp/{0}.csv
     :x:/../*/app-name?value
-    src:x:/@p5.csv.lambda2csv?value
+    src:x:/@lambda2csv?value
 
 
 
