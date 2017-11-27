@@ -1,0 +1,29 @@
+
+/*
+ * File responsible for handling an upload request, of a Hyperlambda file,
+ * containing an app declaration.
+ */
+
+
+
+
+
+/*
+ * Parsing HTTP request, downloading file attachments to user's "temp" folder.
+ */
+p5.web.request.parse-mime
+  attachment-folder:~/temp/
+
+
+
+
+
+/*
+ * Saving file to user's Camphora app declaration folder.
+ */
+copy-file:{0}{1}{2}
+  :x:/@p5.web.request.parse-mime/*/multipart/=form-data/**/filename/*/folder?value
+  :x:/@p5.web.request.parse-mime/*/multipart/=form-data/**/filename/*/prefix?value
+  :x:/@p5.web.request.parse-mime/*/multipart/=form-data/**/filename?value
+  dest:~/documents/private/camphora/{0}
+    :x:/@p5.web.request.parse-mime/*/multipart/=form-data/**/filename?value

@@ -44,6 +44,29 @@ if:x:/@whoami/*/role?value
 
 
 /*
+ * Checking if user is trying to upload a file.
+ */
+p5.web.get-location-url
+split:x:/@p5.web.get-location-url?value
+  =:/
+if:x:/@split/0/-?name
+  =:upload
+
+  /*
+   * Saving file by invoking file responsible for handling uploads to system.
+   */
+  micro.evaluate.file:@CAMPHORA/helpers/upload-app.hl
+
+  /*
+   * Returning early to avoid evaluation of the rest of our lambda.
+   */
+  return
+
+
+
+
+
+/*
  * Making sure we have at least version 1.4 of Hypereval installed, before proceeding,
  * since Camphora is dependent upon Hypereval to function.
  */
@@ -80,10 +103,11 @@ if
               onclick
 
                 /*
-                 * Redirecting user to root URL.
+                 * Redirecting user to URL for the Bazar.
                  */
                 p5.web.get-root-location
-                p5.web.set-location:x:/-?value
+                p5.web.set-location:{0}/bazar
+                  :x:/@p5.web.get-root-location?value
 
   /*
    * Returning early to abort evaluation of the rest of our file, since required
@@ -124,10 +148,34 @@ create-container-widget:camphora-main-container
 
 
 /*
- * Creating main wire-frame for Camphora, making sure we also set page's title 
- * in the process.
+ * Setting page title.
  */
 p5.web.page.set-title:Camphora Five
+
+
+
+
+
+/*
+ * Creating dropzone to allow user to drag and drop upload app declaration files.
+ */
+split:x:/@p5.web.get-location-url?value
+  =:/
+eval-x:x:/+/*
+micro.page.create-dropzone
+  filter:hl
+  url:/{0}/upload
+    :x:/@split/2?name
+  .onfinish:@"function(uid, no_files, no_errors) {{window.location.replace('{0}');}}"
+    :x:/@split/2?name
+
+
+
+
+
+/*
+ * Creating main wire-frame for Camphora.
+ */
 create-widget
   parent:camphora-main-container
   class:row
@@ -144,7 +192,7 @@ create-widget
               widgets
                 button
                   innerValue:@"<span class=""icon-plus""></span>"
-                  style:"padding-left:45px;padding-right:45px;"
+                  style:"padding-left:35px;padding-right:35px;"
                   onclick
 
                     /*
@@ -155,6 +203,12 @@ create-widget
                      * into "new app mode".
                      */
                     micro.evaluate.file:@CAMPHORA/helpers/edit-app.hl
+
+                button
+                  innerValue:@"<span class=""icon-upload2""></span>"
+                  title:Upload app declaration file
+                  style:"margin-bottom:0;"
+                  onclick:@"p5.dropzone.browse();event.stopPropagation(true);return false;"
 
                 button
                   innerValue:@"<span class=""icon-home3""></span>"
