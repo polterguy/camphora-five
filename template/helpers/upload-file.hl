@@ -21,6 +21,10 @@ p5.web.request.parse-mime
 
 /*
  * Loading file, and creating lambda object from it.
+ *
+ * Notice, since file's extension is expected to be ".csv", the default CSV parsing
+ * will kick in, and automatically convert file to a lambda object, since we don't
+ * explicitly informs our [load-file] invocation to not do this.
  */
 load-file:{0}{1}{2}
   :x:/@p5.web.request.parse-mime/*/multipart/=form-data/*/text/=csv/*/filename/*/folder?value
@@ -32,25 +36,67 @@ load-file:{0}{1}{2}
 
 
 /*
- * Creating our SQL fields definition, by figuring out which columns CSV file actually has.
+ * This will contain our column definition, used for our insert SQL, in the format
+ * of "`col1`, `col2`, etc".
  */
 _cols
+
+
+
+
+
+/*
+ * This will contains our parameter definition, used for our insert SQL, in the format
+ * of "@0, @1, @2, etc".
+ */
 _pars
+
+
+
+
+
+/*
+ * This will contain our parameters, and their values will change for each insert SQL,
+ * and it will have a children collection matching that of the the above [_pars],
+ * e.g. "@0:foo, @1:bar, etc".
+ */
 .cols
+
+
+
+
+
+/*
+ * Iterating through each column from the first row of our lambda object, parsed
+ * from our CSV file, assuming it is the column name for our insert SQL.
+ *
+ * Inside of here, we will dynamically build up everything needed to parametrise
+ * our SQL insert invocation, which includes the column declaration, parameter declaration,
+ * and a parameter collection. The latter will dynamically change for each insert invocation.
+ */
 _no:int:0
 for-each:x:/@load-file/*/*/[0,1]/*?name
 
   /*
-   * Adding column to SQL.
+   * Creating column declaration as value of [_cols] for currently iterated column.
    */
   set:x:/@_cols?value
     src:{0},`{1}`
       :x:/@_cols?value
       :x:/@_dp?value
+
+  /*
+   * Creating SQL parameter declaration as value of [_pars] for currently iterated column.
+   */
   set:x:/@_pars?value
     src:{0},@{1}
       :x:/@_pars?value
       :x:/@_no?value
+
+  /*
+   * Creating a parameter collection inside of [.cols], in format of "@n", where
+   * n is the number of the parameter relative to the other, for currently iterated column.
+   */
   add:x:/@.cols
     src:@{0}
       :x:/@_no?value
@@ -63,7 +109,7 @@ for-each:x:/@load-file/*/*/[0,1]/*?name
 
 
 /*
- * Trimming away redundant "," on columns declaration.
+ * Trimming away redundant "," on columns SQL declaration and parameter SQL declaration.
  */
 set:x:/@_cols?value
   trim:x:/@_cols?value
@@ -95,6 +141,9 @@ p5.mysql.connect:[camphora]
 
       /*
        * Adding parameters to SQL inserting.
+       *
+       * Looping through each parameter existing in [.cols], and changing its value
+       * to the currently iterated value from our CSV file.
        */
       _no:int:0
       while:x:/@.cols/{0}
@@ -102,45 +151,51 @@ p5.mysql.connect:[camphora]
 
         /*
          * Checking if currently iterated column's value is empty '', at which
-         * point we insert a NULL value, to allow the database's DEFAULT value to kick in.
+         * point we insert a null value, to allow the database's default value to kick in.
          */
         if:x:/@_dp/#/{0}?name
           :x:/@_no?value
           =:
 
           /*
-           * Currently iterated value is empty ''.
+           * Currently iterated value is empty '', hence we set its parameter value
+           * to null, to allow the default database value to kick in.
            */
-          set:x:/+/*/*?name
-            src:@{0}
-              :x:/@_no?value
-          add:x:/..for-each/*/p5.mysql.insert
-            src
-              foo
+          set:x:/@.cols/{0}?value
+            :x:/@_no?value
 
         else
 
           /*
-           * Currently iterated value is not empty ('').
+           * Currently iterated value is not empty (''), hence we set our currently
+           * iterated parameter's value to the value of our currently iterated column,
+           * from our currently iterated row.
            */
-          set:x:/+2/*/*?name
-            src:@{0}
+          set:x:/@.cols/{0}?value
+            :x:/@_no?value
+            src:x:/@_dp/#/{0}?name
               :x:/@_no?value
-          eval-x:x:/+/*/*
-          add:x:/..for-each/*/p5.mysql.insert
-            src
-              foo:x:/@_dp/#/{0}?name
-                :x:/@_no?value
 
         /*
-         * Incrementing column counter.
+         * Incrementing column counter, to let the next iteration of our [while] loop
+         * to handle the next column (or the iteration to stop, because there are no more columns).
          */
         set:x:/@_no?value
           +:x:/@_no?value
             _:1
 
       /*
+       * Adding all parameters to our insert SQL invocation, now having their
+       * values changed according to values of currently iterated row.
+       */
+      add:x:/..for-each/*/p5.mysql.insert
+        src:x:/@.cols/*
+
+      /*
        * Doing actual insertion of items.
+       *
+       * At this point, our insert invocation should contain one set of parameters
+       * for each column in our database.
        */
       p5.mysql.insert:@"insert into `{0}` ({1}) values ({2})"
         :x:/../*/app-name?value
