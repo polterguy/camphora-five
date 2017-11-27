@@ -42,8 +42,11 @@ if:x:/@camphora._internal.get-app-url-entities/*?count
    * Probably a request for a "view", making sure the view actually exists, before 
    * we evaluate it, and return early.
    */
-  if:x:/@load-file/*/*/views/*/{0}
-    :x:/@camphora._internal.get-app-url-entities/1?name
+  if
+    fetch:x:/0/0?value
+      file-exists:/modules/{0}/{1}.hl
+        :x:/@camphora._internal.get-app-url-entities/0?name
+        :x:/@camphora._internal.get-app-url-entities/1?name
 
     /*
      * View exists, evaluating its associated file, and returning early, 
