@@ -99,15 +99,42 @@ p5.mysql.connect:[camphora]
       _no:int:0
       while:x:/@.cols/{0}
         :x:/@_no?value
-        set:x:/+2/*/*?name
-          src:@{0}
-            :x:/@.cols/{0}?name
+
+        /*
+         * Checking if currently iterated column's value is empty '', at which
+         * point we insert a NULL value, to allow the database's DEFAULT value to kick in.
+         */
+        if:x:/@_dp/#/{0}?name
+          :x:/@_no?value
+          =:
+
+          /*
+           * Currently iterated value is empty ''.
+           */
+          set:x:/+/*/*?name
+            src:@{0}
               :x:/@_no?value
-        eval-x:x:/+/*/*
-        add:x:/..for-each/*/p5.mysql.insert
-          src
-            foo:x:/@_dp/#/{0}?name
+          add:x:/..for-each/*/p5.mysql.insert
+            src
+              foo
+
+        else
+
+          /*
+           * Currently iterated value is not empty ('').
+           */
+          set:x:/+2/*/*?name
+            src:@{0}
               :x:/@_no?value
+          eval-x:x:/+/*/*
+          add:x:/..for-each/*/p5.mysql.insert
+            src
+              foo:x:/@_dp/#/{0}?name
+                :x:/@_no?value
+
+        /*
+         * Incrementing column counter.
+         */
         set:x:/@_no?value
           +:x:/@_no?value
             _:1
