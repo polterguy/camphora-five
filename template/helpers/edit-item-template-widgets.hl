@@ -166,7 +166,7 @@ Edit
                                * Giving user some visual feedback.
                                */
                               micro.windows.info:Record was deleted
-                                class:micro-windows-info
+                                class:micro-windows-info success
 
                               /*
                                * Making sure we delete modal confirmation widget.
