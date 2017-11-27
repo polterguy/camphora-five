@@ -48,7 +48,7 @@ micro.lambda.contract.optional:x:/..
  * Sorting column, defaulting to "id" and "ascending".
  */
 .sort-column:id
-.sort-column-direction:asc
+.sort-column-direction:desc
 p5.web.viewstate.get:camphora.sort-column
 if:x:/@p5.web.viewstate.get/*?value
 
