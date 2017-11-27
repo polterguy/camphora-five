@@ -130,18 +130,30 @@ for-each:x:/@load-file/*/*/field
     case:created
 
       /*
-       * Adding widget to modal window.
+       * Adding widget to modal window, but only if a value for it was actually provided.
+       *
+       * This logic is here since this file is used for both creating new items, and for
+       * editing existing items.
+       * If an item is created, there are no reasons we should display its "created timestamp",
+       * since this value is created only during insertion of an item into our database, and
+       * also not supposed to be possible to modify in any ways.
        */
-      p5.types.date.format:x:/@.signal/--/{0}?value
+      if:x:/@.signal/--/{0}?value
         :x:/@_dp/#/*/name?value
-        format:"ddd d. MMM yyyy - HH:mm"
-      eval-x:x:/+/*/*/*
-      add:x:/../*/return
-        src
-          p
-            class:camphora-date-edit-item
-            innerValue:"Created - {0}"
-              :x:/@p5.types.date.format?value
+
+        /*
+         * A value was provided for our "created" timestamp.
+         */
+        p5.types.date.format:x:/@.signal/--/{0}?value
+          :x:/@_dp/#/*/name?value
+          format:"ddd d. MMM yyyy - HH:mm"
+        eval-x:x:/+/*/*/*
+        add:x:/../*/return
+          src
+            p
+              class:camphora-date-edit-item
+              innerValue:"Created - {0}"
+                :x:/@p5.types.date.format?value
 
     /*
      * Multi line textbox type of data.
