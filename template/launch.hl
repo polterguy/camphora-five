@@ -431,6 +431,7 @@ else
    */
   eval-x:x:/+/*/url
   micro.page.create-dropzone
+    filter:csv
     url:{0}/upload
       :x:/../*/split/[0,1]/0?name
     .onfinish:@"function(uid, no_files, no_errors) {if(no_errors > 0){alert('There were errors when trying to import your file');p5.$('camphora-upload-obscurer').el.style.display = 'none';} else {window.location.replace(window.location.href);}}"
