@@ -75,7 +75,7 @@ for then to visit _"The Bazar"_, and simply install it through the Bazar on your
 However, if you want a more manual installation path, you can download the latest release,
 unzip it, and move the unzipped root folder into your _"core/p5.webapp/modules"_ folder. If you
 choose this path, you should rename the folder, removing any version information, making sure
-your module folder is called exactly _"magic-menu"_. Installation through the Bazar
+your module folder is called exactly _"camphora-five"_. Installation through the Bazar
 also requires you having some sort of GnuPG client on your machine/server. If you don't want
 to fiddle with installing GnuPG, you can resort to download the latest zip file release directly.
 
