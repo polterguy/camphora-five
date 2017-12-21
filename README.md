@@ -1,4 +1,3 @@
-
 # Camphora Five - A CRUD app creator for Phosphorus Five
 
 Camphora Five is a CRUD app generator for [Phosphorus Five](https://github.com/polterguy/phosphorusfive). It allows you to create simple CRUD apps, without
@@ -68,6 +67,17 @@ of your _"/modules/"_ folder in Phosphorus Five. This implies that it is easily 
 app, using your favourite text editor, and/or Visual Studio, to add custom features. This allows you to use your generated app
 as a _"template"_ for creating your own apps, and apply your own customization afterwards, such as your design, additional features,
 etc, etc, etc.
+
+## Installation
+
+The easiest way to install it, is to [install phosphorus five](https://github.com/polterguy/phosphorusfive),
+for then to visit _"The Bazar"_, and simply install it through the Bazar on your local machine/server.
+However, if you want a more manual installation path, you can download the latest release,
+unzip it, and move the unzipped root folder into your _"core/p5.webapp/modules"_ folder. If you
+choose this path, you should rename the folder, removing any version information, making sure
+your module folder is called exactly _"magic-menu"_. Installation through the Bazar
+also requires you having some sort of GnuPG client on your machine/server. If you don't want
+to fiddle with installing GnuPG, you can resort to download the latest zip file release directly.
 
 ## Scalability
 
