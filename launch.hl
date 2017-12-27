@@ -202,7 +202,7 @@ create-widget
       class:col-100
       widgets
         div
-          class:shaded rounded air-inner bg
+          class:shaded rounded air-inner
           style:"position:relative;"
           widgets
             a
