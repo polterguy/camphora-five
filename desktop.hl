@@ -1,11 +1,18 @@
+
 /*
- * Desktop widget for Capmohora Five.
+ * Desktop widget.
  */
 container
   element:a
   class:desktop-app shaded rounded air-inner
-  title:CRUD
+  title:Camphora Five is a CRUD app generator, allowing you to create apps, literally without coding
   widgets
     span
       class:desktop-app-name
-      innerValue:@"<span class=""icon-table2 desktop-app-icon""></span><span style=""position:absolute;top:5px;right:5px;font-size:.7rem;"">Camphora</span>"
+      widgets
+        literal
+          element:span
+          class:icon-table2 desktop-app-icon
+        span
+          class:desktop-app-text
+          innerValue:CRUD
