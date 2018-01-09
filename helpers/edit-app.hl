@@ -1,4 +1,3 @@
-
 /*
  * File responsible for editing and creating new apps.
  *
@@ -266,7 +265,7 @@ becomes the name of your app, in addition to the name of its database, and the U
                    * Name of app.
                    */
                   collection
-                    class:col-33
+                    class:col-50
                     widgets
                       text
                         info:Name
@@ -310,109 +309,6 @@ becomes the name of your app, in addition to the name of its database, and the U
                             delete-widget-property:x:/../*/_event?value
                               class
                             micro.page.set-focus:x:/../*/_event?value
-
-                  /*
-                   * Role that is allowed to see the data.
-                   */
-                  collection
-                    class:col-33
-                    widgets
-                      select
-                        .data-field:viewers
-                        info:Viewers
-                        title:Minimum role that is allowed to see data in your app. Guest means also people who are not logged into the system.
-                        oninit
-
-                          /*
-                           * Forward evaluated before creation of widget.
-                           */
-                          .file-values
-                            viewers:x:/../*/.file-values/*/viewers?value
-
-                          /*
-                           * Creating one option element for each role in system.
-                           */
-                          p5.auth.roles.list
-                          for-each:x:/-/*?name
-
-                            /*
-                             * Checking if this is our currently selected value.
-                             */
-                            if:x:/@.file-values/*/viewers?value
-                              =:x:/@_dp?value
-
-                              /*
-                               * Yup, currently iterated value should be our selected guy.
-                               */
-                              add:x:/..for-each/*/create-widget
-                                src:selected
-
-                            /*
-                             * Creating option element.
-                             */
-                            create-widget
-                              element:option
-                              parent:x:/../*/_event?value
-                              innerValue:x:/@_dp?value
-
-                  /*
-                   * Role that is allowed to edit the data.
-                   */
-                  collection
-                    class:col-33
-                    widgets
-                      select
-                        .data-field:editors
-                        info:Editors
-                        title:Minimum role that is allowed to edit data in your app. Guest means also people who are not logged into the system.
-                        oninit
-
-                          /*
-                           * Forward evaluated before creation of widget.
-                           */
-                          .file-values
-                            editors:x:/../*/.file-values/*/editors?value
-
-                          /*
-                           * Creating one option element for each role in system.
-                           */
-                          p5.auth.roles.list
-                          for-each:x:/-/*?name
-
-                            /*
-                             * Checking if this is our currently selected value.
-                             */
-                            if:x:/@.file-values/*/editors?value
-                              =:x:/@_dp?value
-
-                              /*
-                               * Yup, currently iterated value should be our selected guy.
-                               */
-                              add:x:/..for-each/*/create-widget
-                                src:selected
-
-                            /*
-                             * Checking if there are no currently selected value from file,
-                             * at which point we default our value to a sane default.
-                             */
-                            if:x:/@.file-values/*/editors?value
-                              not
-                              and:x:/@_dp?value
-                                =:root
-
-                              /*
-                               * This guy should be selected by default.
-                               */
-                              add:x:/..for-each/*/create-widget
-                                src:selected
-
-                            /*
-                             * Creating option element.
-                             */
-                            create-widget
-                              element:option
-                              parent:x:/../*/_event?value
-                              innerValue:x:/@_dp?value
 
             hr
             div
