@@ -12,7 +12,7 @@
  * custom CSS file for app.
  */
 micro.css.include
-  skin:off-white
+  skin:serious
 
 
 
