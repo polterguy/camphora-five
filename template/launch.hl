@@ -94,10 +94,9 @@ p5.web.page.set-title:{0}
  * Including Micro, adding Awesome Fonts, adding app's chosen skin, in addition
  * to adding our main CSS file for currently evaluated Camphora app.
  */
-p5.web.include-css-file:@MICRO/media/main.css
-p5.web.include-css-file:@MICRO/media/fonts.css
-p5.web.include-css-file:@MICRO/media/skins/{0}.css
-  :x:/@load-file/*/*/skin?value
+eval-x:x:/+/*
+micro.css.include
+  skin:x:/@load-file/*/*/skin?value
 p5.web.include-css-file:/modules/{0}/media/main.css
   :x:/@camphora._internal.get-app-url-entities/0?name
 
