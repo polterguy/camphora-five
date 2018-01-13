@@ -150,7 +150,7 @@ if:x:/../*/filename?value
                 button
                   innerValue:@"<span class=""icon-bin""></span>"
                   title:Delete view
-                  style:"padding-left:35px;padding-right:35px;"
+                  class:larger
                   onclick
 
                     /*
@@ -460,7 +460,7 @@ Notice, some field types such as select dropdown and radiobutton fields have add
                   widgets
                     button
                       innerValue:@"<span class=""icon-plus""></span>"
-                      style:"padding-left:35px;padding-right:35px;"
+                      class:larger
                       title:Adds another field to your CRUD app
                       onclick
 
@@ -497,7 +497,7 @@ requiring you to understand Hyperlambda, which you can learn <a href=""https://g
                   widgets
                     button
                       innerValue:@"<span class=""icon-eye-plus""></span>"
-                      style:"padding-left:35px;padding-right:35px;"
+                      class:larger
                       title:Adds another view to your CRUD app
                       onclick
 
@@ -568,7 +568,7 @@ p5.mysql.connect:[camphora]
                               widgets
                                 button
                                   innerValue:@"<span class=""icon-bin""></span>"
-                                  style:"padding-left:35px;padding-right:35px;"
+                                  class:larger
                                   title:Delete view
                                   onclick
 
@@ -593,7 +593,8 @@ p5.mysql.connect:[camphora]
                       style:"margin-bottom:0;"
                       innerValue:@"<span class=""icon-floppy-disk""></span>"
                       title:Save your app declaration, keyboard shortcut S
-                      style:"padding-left:35px;padding-right:35px;margin-bottom:0;"
+                      style:"margin-bottom:0;"
+                      class:larger
                       .save-button
                       accesskey:S
                       onclick

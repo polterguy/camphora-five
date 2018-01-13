@@ -166,7 +166,7 @@ create-widget
               widgets
                 button
                   innerValue:@"<span class=""icon-plus""></span>"
-                  style:"padding-left:35px;padding-right:35px;"
+                  class:larger
                   onclick
 
                     /*
