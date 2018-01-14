@@ -66,7 +66,6 @@ if
           widgets
             button
               innerValue:OK
-              style:"margin-bottom:0;"
               oninit
 
                 /*
@@ -181,7 +180,6 @@ create-widget
                 button
                   innerValue:@"<span class=""icon-upload2""></span>"
                   title:Upload app declaration file
-                  style:"margin-bottom:0;"
                   onclick:@"p5.dropzone.browse();event.stopPropagation(true);return false;"
 
                 button
@@ -209,7 +207,6 @@ create-widget
             h3
               innerValue:CRUD apps
             micro.widgets.grid:camphora-apps
-              style:"margin-bottom:0px;"
               class:striped
               oninit
 

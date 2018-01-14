@@ -38,7 +38,6 @@ for-each:x:/@list-files/*?name
               style:"display:inline-block;"
               widgets
                 button
-                  style:"margin-bottom:0;"
                   innerValue:@"<span class=""icon-pencil""></span>"
                   title:Edit your app
                   onclick
@@ -56,7 +55,6 @@ for-each:x:/@list-files/*?name
                       filename:x:/@_filename?value
 
                 button
-                  style:"margin-bottom:0;"
                   innerValue:@"<span class=""icon-loop2""></span>"
                   title:Create a copy of your app
                   onclick
@@ -77,7 +75,6 @@ for-each:x:/@list-files/*?name
                     micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
 
                 button
-                  style:"margin-bottom:0;"
                   innerValue:@"<span class=""icon-download2""></span>"
                   title:Download app
                   onclick
@@ -99,7 +96,6 @@ for-each:x:/@list-files/*?name
                         :x:/@split/0/-?name
 
                 button
-                  style:"margin-bottom:0;"
                   innerValue:@"<span class=""icon-bin""></span>"
                   title:Delete your app entirely
                   onclick
@@ -130,7 +126,6 @@ for-each:x:/@list-files/*?name
                                 widgets
                                   button
                                     innerValue:Yes
-                                    style:"margin-bottom:0;"
                                     oninit
 
                                       /*
@@ -189,7 +184,6 @@ for-each:x:/@list-files/*?name
 
                                   button
                                     innerValue:No
-                                    style:"margin-bottom:0;"
                                     onclick
 
                                       /*

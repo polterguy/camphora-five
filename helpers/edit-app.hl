@@ -141,7 +141,7 @@ if:x:/../*/filename?value
                   type:text
                   value:x:/@_dp/#?name
                   .data-field:view-name
-            hypereval.widgets.hyperlambda-textarea
+            micro.widgets.codemirror
               value:x:/@_dp/#?value
               .data-field:view-content
             div
@@ -393,56 +393,52 @@ unless you create your own custom view."
                 div
                   class:col
                   widgets
-                    input:camphora-show-headers
-                      type:checkbox
-                      .data-field:show-headers
-                      style:"margin-top:6px;margin-bottom:10px;"
-                      oninit
-
-                        /*
-                         * Forward evaluated before creation of widget.
-                         */
-                        .file-values
-                          show-headers:x:/../*/.file-values/*/show-headers?value
-                        if:x:/@.file-values/*/show-headers?value
-
-                          /*
-                           * Widget should be initially checked.
-                           */
-                          set-widget-property:x:/../*/_event?value
-                            checked
-
                     label
-                      for:camphora-show-headers
-                      innerValue:Show headers
-                      style:"margin-top:6px;margin-bottom:10px;display:inline-block;"
+                      widgets
+                        span
+                          innerValue:Show headers
+                        input:camphora-show-headers
+                          type:checkbox
+                          .data-field:show-headers
+                          oninit
+
+                            /*
+                             * Forward evaluated before creation of widget.
+                             */
+                            .file-values
+                              show-headers:x:/../*/.file-values/*/show-headers?value
+                            if:x:/@.file-values/*/show-headers?value
+
+                              /*
+                               * Widget should be initially checked.
+                               */
+                              set-widget-property:x:/../*/_event?value
+                                checked
 
                     /*
                      * Desktop icon checkbox.
                      */
-                    input:camphora-desktop-icon
-                      type:checkbox
-                      .data-field:desktop-icon
-                      style:"margin-top:6px;margin-bottom:10px;"
-                      oninit
-
-                        /*
-                         * Forward evaluated before creation of widget.
-                         */
-                        .file-values
-                          desktop-icon:x:/../*/.file-values/*/desktop-icon?value
-                        if:x:/@.file-values/*/desktop-icon?value
-
-                          /*
-                           * Widget should be initially checked.
-                           */
-                          set-widget-property:x:/../*/_event?value
-                            checked
-
                     label
-                      for:camphora-desktop-icon
-                      innerValue:Desktop icon
-                      style:"margin-top:6px;margin-bottom:10px;display:inline-block;"
+                      widgets
+                        span
+                          innerValue:Desktop icon
+                        input:camphora-desktop-icon
+                          type:checkbox
+                          .data-field:desktop-icon
+                          oninit
+
+                            /*
+                             * Forward evaluated before creation of widget.
+                             */
+                            .file-values
+                              desktop-icon:x:/../*/.file-values/*/desktop-icon?value
+                            if:x:/@.file-values/*/desktop-icon?value
+
+                              /*
+                               * Widget should be initially checked.
+                               */
+                              set-widget-property:x:/../*/_event?value
+                                checked
 
             hr
             div
@@ -520,7 +516,7 @@ requiring you to understand Hyperlambda, which you can learn <a href=""https://g
                                   type:text
                                   value:view-name
                                   .data-field:view-name
-                            hypereval.widgets.hyperlambda-textarea
+                            micro.widgets.codemirror
                               .data-field:view-value
                               value:@"/*
  * Although you can do whatever you wish from within your view,
@@ -590,10 +586,8 @@ p5.mysql.connect:[camphora]
                   style:"display:inline-block;"
                   widgets
                     button
-                      style:"margin-bottom:0;"
                       innerValue:@"<span class=""icon-floppy-disk""></span>"
                       title:Save your app declaration, keyboard shortcut S
-                      style:"margin-bottom:0;"
                       class:larger
                       .save-button
                       accesskey:S
@@ -734,7 +728,7 @@ p5.mysql.connect:[camphora]
                               return:bool:false
 
                             /*
-                             * Making sure view is not named "upload" or "download".
+                             * Making sure view is not named "upload", "download" ot "tag".
                              */
                             if:x:/@_dp/#?value
                               =:upload
@@ -756,7 +750,7 @@ p5.mysql.connect:[camphora]
                             add:x:/@.data/*/views
                               src:x:/@_dp/#?value
                             set:x:/@.data/*/views/0/-?value
-                              src:x:/@_dp/#/+?value
+                              src:x:/@_dp/#/+2?value
 
                           /*
                            * Iterating through each field, and adding it into our above [.data] lambda.
@@ -892,10 +886,8 @@ p5.mysql.connect:[camphora]
                             class:micro-windows-info success
 
                     button
-                      style:"margin-bottom:0;"
                       innerValue:@"<span class=""icon-magic-wand""></span>"
                       title:Generates your app, keyboard shortcut G
-                      style:"margin-bottom:0;"
                       accesskey:G
                       onclick
 
@@ -914,7 +906,6 @@ p5.mysql.connect:[camphora]
                                 innerValue:@"<strong>Notice</strong>, - If you have changed any of your fields to become different types, you might have to delete your data in order to have your app working. If you get weird errors as you run your app, try to re-generate your app, and delete your data as you do."
                               input:camphora-delete-data
                                 type:checkbox
-                                style:"margin-bottom:0;"
                               label
                                 for:camphora-delete-data
                                 innerValue:Delete existing data
@@ -927,7 +918,6 @@ p5.mysql.connect:[camphora]
                                     widgets
                                       button
                                         innerValue:Yes
-                                        style:"margin-bottom:0;"
                                         oninit
 
                                           /*
@@ -1019,7 +1009,6 @@ p5.mysql.connect:[camphora]
 
                                       button
                                         innerValue:No
-                                        style:"margin-bottom:0;"
                                         onclick
 
                                           /*
@@ -1028,10 +1017,8 @@ p5.mysql.connect:[camphora]
                                           delete-widget:camphora-confirm-app-creation
 
                     button
-                      style:"margin-bottom:0;"
                       innerValue:@"<span class=""icon-cross""></span>"
                       title:Close editor for app
-                      style:"margin-bottom:0;"
                       onclick
 
                         /*

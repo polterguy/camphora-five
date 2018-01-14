@@ -14,7 +14,6 @@ Edit
       widgets
         button
           innerValue:@"<span class=""icon-pencil""></span>"
-          style:"margin-bottom:0;"
           title:Edit item
           onclick
 
@@ -78,7 +77,6 @@ Edit
 
         button
           innerValue:@"<span class=""icon-bin""></span>"
-          style:"margin-bottom:0;"
           title:Delete item
           onclick
 
@@ -102,7 +100,6 @@ Edit
                         widgets
                           button
                             innerValue:Yes
-                            style:"margin-bottom:0;"
                             oninit
 
                               /*
@@ -175,7 +172,6 @@ Edit
 
                           button
                             innerValue:No
-                            style:"margin-bottom:0;"
                             onclick
 
                               /*

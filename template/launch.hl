@@ -502,7 +502,6 @@ if:x:/@load-file/*/*/views/*?count
                     button
                       innerValue:Close
                       title:Close window
-                      style:"margin-bottom:0;"
                       oninit
 
                         /*
@@ -789,7 +788,6 @@ window.onscroll = function() {
                                         widgets
                                           button
                                             innerValue:Yes
-                                            style:"margin-bottom:0;"
                                             oninit
 
                                               /*
@@ -819,7 +817,6 @@ window.onscroll = function() {
 
                                           button
                                             innerValue:No
-                                            style:"margin-bottom:0;"
                                             onclick
 
                                               /*

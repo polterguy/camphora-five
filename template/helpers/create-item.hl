@@ -60,7 +60,6 @@ create-widgets
             widgets
               button:camphora-save-record-button
                 innerValue:Save
-                style:"margin-bottom:0;"
                 onclick
 
                   /*
@@ -142,7 +141,6 @@ create-widgets
 
               button
                 innerValue:Cancel
-                style:"margin-bottom:0;"
                 onclick
 
                   /*

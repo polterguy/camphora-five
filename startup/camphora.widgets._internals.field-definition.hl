@@ -1,4 +1,3 @@
-﻿
 /*
  * Creates our "field definition widget".
  *
@@ -58,7 +57,7 @@ create-event:camphora.widgets._internals.field-definition
           class:row
           widgets
             container
-              class:col strip fill
+              class:col-50 strip fill
               widgets
                 label
                   innerValue:Name
@@ -69,21 +68,19 @@ create-event:camphora.widgets._internals.field-definition
                   .data-field:field-name
                   value:x:/@.signal/--/name?value
                 label
-                  innerValue:Show
-                span
                   widgets
+                    span
+                      innerValue:Show
                     input
                       type:checkbox
-                      style:"margin-bottom:0;"
                       title:Show field in grid
                       .data-field:show-in-grid
                       checked
             container
-              class:col strip fill
+              class:col-50 strip fill
               widgets
                 label
                   innerValue:Type
-                  style:"margin-bottom:0;"
                 select
                   .data-field:field-type
                   title:Type of field

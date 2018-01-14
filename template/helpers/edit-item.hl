@@ -85,7 +85,6 @@ add:x:/../*/create-widget/*/widgets
             button:camphora-save-record-button
               innerValue:@"<span class=""icon-floppy-disk""></span>"
               title:Save record to database
-              style:"margin-bottom:0;"
               onclick
 
                 /*
@@ -152,7 +151,6 @@ add:x:/../*/create-widget/*/widgets
             button
               innerValue:@"<span class=""icon-cross""></span>"
               title:Close editor for record
-              style:"margin-bottom:0;"
               onclick
 
                 /*
