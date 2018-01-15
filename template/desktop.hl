@@ -12,6 +12,7 @@ container
           element:span
           class:icon-paragraph-justify desktop-app-icon
         literal
+          element:span
           class:desktop-app-text
           oninit
 

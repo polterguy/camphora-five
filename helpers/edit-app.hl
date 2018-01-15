@@ -150,7 +150,7 @@ if:x:/../*/filename?value
                 button
                   innerValue:@"<span class=""icon-bin""></span>"
                   title:Delete view
-                  class:larger
+                  style:"margin-bottom:0;"
                   onclick
 
                     /*
@@ -308,7 +308,6 @@ becomes the name of your app, in addition to the name of its database, and the U
                              */
                             delete-widget-property:x:/../*/_event?value
                               class
-                            micro.page.set-focus:x:/../*/_event?value
 
             hr
             div
@@ -456,7 +455,7 @@ Notice, some field types such as select dropdown and radiobutton fields have add
                   widgets
                     button
                       innerValue:@"<span class=""icon-plus""></span>"
-                      class:larger
+                      style:"margin-bottom:0;"
                       title:Adds another field to your CRUD app
                       onclick
 
@@ -904,11 +903,12 @@ p5.mysql.connect:[camphora]
                                 innerValue:@"This will delete any existing apps with the same name, and also delete any existing data for these apps, if you choose to check off the <em>'delete data'</em> checkbox. Are you sure you wish to proceed?"
                               p
                                 innerValue:@"<strong>Notice</strong>, - If you have changed any of your fields to become different types, you might have to delete your data in order to have your app working. If you get weird errors as you run your app, try to re-generate your app, and delete your data as you do."
-                              input:camphora-delete-data
-                                type:checkbox
                               label
-                                for:camphora-delete-data
-                                innerValue:Delete existing data
+                                widgets
+                                  span
+                                    innerValue:Delete existing data
+                                  input:camphora-delete-data
+                                    type:checkbox
                               div
                                 class:right
                                 widgets
