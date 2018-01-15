@@ -1,34 +1,22 @@
-
 /*
- * Startup file for Camphora Five.
+ * Startup file.
  *
- * This file simply evaluates all files in the "/startup/" folder, in addition to
- * creating an "IO environment variable".
+ * Creates "path" event and evaluates all files in "/startup/" folder for module.
  */
-
-
-
 
 
 /*
- * Creates the "path" Active Event that points to our "/camphora/" folder.
- * This is done in such a way that we can install Camphora in any folder we wish.
+ * Creates our "path" Active Event for module.
  */
-split:x:/..?name
-  =:/
-set:x:/@split/0/-
-join:x:/@split/*?name
-  sep:/
+micro.path.get-folder:x:/..?name
+trim-right:x:/@micro.path.get-folder?value
+  chars:/
 eval-x:x:/+/*
 create-event:p5.io.unroll-path.@CAMPHORA
-  return:/{0}
-    :x:/@join?value
-
-
-
+  return:x:/@trim-right?value
 
 
 /*
- * Evaluating all other startup scripts.
+ * Evaluating all other startup files.
  */
 micro.evaluate.folder:@CAMPHORA/startup/
