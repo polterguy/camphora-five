@@ -528,7 +528,7 @@ requiring you to understand Hyperlambda, which you can learn <a href=""https://g
  *
  * First we include our CSS files.
  */
-p5.web.include-css-file:@MICRO/media/main.css
+p5.web.include-css-file:@MICRO/media/micro.css
 p5.web.include-css-file:@MICRO/media/fonts.css
 p5.web.include-css-file:@MICRO/media/skins/serious.css
 
@@ -582,7 +582,6 @@ p5.mysql.connect:[camphora]
               widgets
                 div
                   class:strip
-                  style:"display:inline-block;"
                   widgets
                     button
                       innerValue:@"<span class=""icon-floppy-disk""></span>"
@@ -914,7 +913,6 @@ p5.mysql.connect:[camphora]
                                 widgets
                                   div
                                     class:strip
-                                    style:"display:inline-block;"
                                     widgets
                                       button
                                         innerValue:Yes

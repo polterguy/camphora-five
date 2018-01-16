@@ -1,4 +1,3 @@
-
 /*
  * Main CSS file for Camphora Five CRUD app.
  */
@@ -48,4 +47,7 @@
 }
 .camphora-sort-column-desc:after {
     content: '\ea49';
+}
+.camphora-multiline-grid-cell {
+    white-space:pre;
 }

@@ -1,4 +1,3 @@
-
 /*
  * File responsible for creating and returning widgets necessary to edit/create a new item.
  *
@@ -189,9 +188,13 @@ for-each:x:/@load-file/*/*/field
       /*
        * Adding widget to modal window.
        */
-      eval-x:x:/+/*/*/*(/placeholder|/.data-field)
+      eval-x:x:/+/*/*/*(/placeholder|/.data-field|/innerValue)
       add:x:/../*/return
         src
+          label
+            innerValue:x:/@_dp/#/*/name?value
+            class:capitalize
+            style:"margin-bottom:.5rem;"
           literal
             element:textarea
             class:fill

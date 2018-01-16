@@ -160,7 +160,6 @@ create-widget
           widgets
             div
               class:strip toolbar
-              style:"display:inline-block;"
               widgets
                 button
                   innerValue:@"<span class=""icon-plus""></span>"

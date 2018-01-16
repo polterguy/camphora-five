@@ -3,25 +3,23 @@
  */
 container
   element:a
-  class:desktop-app shaded rounded air-inner
+  role:button
+  class:desktop-app button shaded
   widgets
-    span
-      class:desktop-app-name
-      widgets
-        literal
-          element:span
-          class:icon-paragraph-justify desktop-app-icon
-        literal
-          element:span
-          class:desktop-app-text
-          oninit
+    literal
+      element:span
+      class:icon-paragraph-justify desktop-app-icon
+    literal
+      element:span
+      class:desktop-app-text capitalize
+      oninit
 
-            /*
-             * Getting URL to point correctly.
-             */
-            p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-              .app-name
-            get-widget-property:x:/-/*/*?value
-              .app-name
-            set-widget-property:x:/../*/_event?value
-              innerValue:x:/@get-widget-property/*/*?value
+        /*
+         * Getting URL to point correctly.
+         */
+        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+          .app-name
+        get-widget-property:x:/-/*/*?value
+          .app-name
+        set-widget-property:x:/../*/_event?value
+          innerValue:x:/@get-widget-property/*/*?value

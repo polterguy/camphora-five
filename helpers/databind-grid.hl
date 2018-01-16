@@ -35,7 +35,6 @@ for-each:x:/@list-files/*?name
           widgets
             div
               class:strip
-              style:"display:inline-block;"
               widgets
                 button
                   innerValue:@"<span class=""icon-pencil""></span>"
