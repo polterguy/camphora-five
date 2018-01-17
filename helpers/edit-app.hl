@@ -335,6 +335,7 @@ unless you create your own custom view."
                       widgets
                         label
                           for:camphora-select-skin
+                          class:description
                           innerValue:Skin
                         container:camphora-select-skin
                           element:select
@@ -455,7 +456,7 @@ Notice, some field types such as select dropdown and radiobutton fields have add
                   widgets
                     button
                       innerValue:@"<span class=""icon-plus""></span>"
-                      style:"margin-bottom:0;"
+                      class:large
                       title:Adds another field to your CRUD app
                       onclick
 
@@ -492,7 +493,7 @@ requiring you to understand Hyperlambda, which you can learn <a href=""https://g
                   widgets
                     button
                       innerValue:@"<span class=""icon-eye-plus""></span>"
-                      class:larger
+                      class:large
                       title:Adds another view to your CRUD app
                       onclick
 
@@ -586,7 +587,7 @@ p5.mysql.connect:[camphora]
                     button
                       innerValue:@"<span class=""icon-floppy-disk""></span>"
                       title:Save your app declaration, keyboard shortcut S
-                      class:larger
+                      class:large
                       .save-button
                       accesskey:S
                       onclick

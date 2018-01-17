@@ -193,8 +193,7 @@ for-each:x:/@load-file/*/*/field
         src
           label
             innerValue:x:/@_dp/#/*/name?value
-            class:capitalize
-            style:"margin-bottom:.5rem;"
+            class:capitalize above
           literal
             element:textarea
             class:fill
