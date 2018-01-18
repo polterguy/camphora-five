@@ -267,26 +267,25 @@ for-each:x:/@load-file/*/*/field
         /*
          * Value for widget was provided.
          */
-        add:x:/..case/*/add/*/*/*/*/input
+        add:x:/..case/*/add/**/input
           src:checked
 
       /*
        * Adding widget to modal window.
        */
-      eval-x:x:/+/*/*/*/*(/input|/*(/for|/innerValue|/.data-field))
+      eval-x:x:/+/**(/innerValue|/.data-field)
       add:x:/../*/return
         src
           div
             widgets
-              input:{0}-widget
-                :x:/@_dp/#/*/name?value
-                type:checkbox
-                .data-field:x:/@_dp/#/*/name?value
               label
-                for:{0}-widget
-                  :x:/@_dp/#/*/name?value
-                innerValue:x:/@_dp/#/*/name?value
                 class:capitalize
+                widgets
+                  span
+                    innerValue:x:/@_dp/#/*/name?value
+                  input
+                    type:checkbox
+                    .data-field:x:/@_dp/#/*/name?value
 
     /*
      * Radiobutton type of data.
@@ -307,7 +306,7 @@ for-each:x:/@load-file/*/*/field
           and:x:/@_dp/#?name
             =:x:/@.signal/--/{0}?value
               :x:/..for-each/@_dp/#/*/name?value
-          add:x:/..for-each/*/add/*/*/input
+          add:x:/..for-each/*/add/**/input
             src:checked
 
         /*
@@ -326,19 +325,18 @@ for-each:x:/@load-file/*/*/field
         /*
          * Adding radio button to modal widget.
          */
-        eval-x:x:/+/*/*(/input|/*(/for|/name|/.data-value|/innerValue))
+        eval-x:x:/+/**(/innerValue|/name|/.data-value)
         add:x:/..case/*/add/*/*/*/widgets
           src
-            input:{0}-widget
-              :x:/@_dp/#?name
-              type:radio
-              name:x:/@for-each/@_dp/#/*/name?value
-              .data-value:x:/@_dp/#?name
             label
-              for:{0}-widget
-                :x:/@_dp/#?name
-              innerValue:x:/@_dp/#?name
               class:capitalize
+              widgets
+                span
+                  innerValue:x:/@_dp/#?name
+                input
+                  type:radio
+                  name:x:/@for-each/@_dp/#/*/name?value
+                  .data-value:x:/@_dp/#?name
 
       /*
        * Now adding radiobutton group widget to modal widget.
