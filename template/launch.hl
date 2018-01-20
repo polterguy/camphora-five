@@ -95,7 +95,6 @@ p5.web.page.set-title:{0}
  */
 eval-x:x:/+/*
 micro.css.include
-  skin:x:/@load-file/*/*/skin?value
 p5.web.include-css-file:/modules/{0}/media/main.css
   :x:/@camphora._internal.get-app-url-entities/0?name
 
@@ -314,113 +313,72 @@ if:x:/@load-file/*/*/show-headers?value
 
 
 /*
- * Verifying user is allowed to edit data, and if not, removing edit widgets
- * from our form.
+ * Checking if current request is trying to upload a CSV file, and if so,
+ * invoking file responsible for handling our upload, and returning early.
  */
-whoami
-if:x:/@whoami/*/role?value
-  !=:root
-  and:x:/@load-file/*/*/editors?value
-    !=:guest
-  and:x:/@load-file/*/*/editors?value
-    !=:x:/whoami/*/role?value
+if:x:/@camphora._internal.get-app-url-entities/*?count
+  =:int:2
+  and:x:/@camphora._internal.get-app-url-entities/1?name
+    =:upload
 
   /*
-   * Making sure all other parts of our system knows that user is NOT allowed 
-   * to edit data in the system.
+   * Evaluating file responsible for handling our upload, and returning early,
+   * to avoid evaluation of the rest of our file.
+   *
+   * Making sure we wrap our invocation in a try/catch block.
    */
-  p5.web.viewstate.set:camphora.editing-allowed
-    src:bool:false
-
-  /*
-   * Removing the "add new record button".
-   */
-  set:x:/../*/create-widget/**/button/=camphora-add-new-record-button
-
-  /*
-   * Removing the "import CSV file button".
-   */
-  set:x:/../*/create-widget/**/button/=camphora-import-csv-file
-
-  /*
-   * Removing the "delete all button".
-   */
-  set:x:/../*/create-widget/**/button/=camphora-delete-all-button
-
-  /*
-   * Removing obscurer, since it's only used when files are uploaded.
-   */
-  set:x:/../*/create-widget/**/micro.widgets.obscurer/=camphora-upload-obscurer
-
-else
-
-  /*
-   * Checking if current request is trying to upload a CSV file, and if so,
-   * invoking file responsible for handling our upload, and returning early.
-   */
-  if:x:/@camphora._internal.get-app-url-entities/*?count
-    =:int:2
-    and:x:/@camphora._internal.get-app-url-entities/1?name
-      =:upload
+  try
 
     /*
-     * Evaluating file responsible for handling our upload, and returning early,
-     * to avoid evaluation of the rest of our file.
-     *
-     * Making sure we wrap our invocation in a try/catch block.
+     * Evaluating "upload" file.
      */
-    try
+    eval-x:x:/+/*/app-name
+    micro.evaluate.file:/modules/{0}/helpers/upload-file.hl
+      :x:/@camphora._internal.get-app-url-entities/0?name
+      app-name:x:/@camphora._internal.get-app-url-entities/0?name
 
-      /*
-       * Evaluating "upload" file.
-       */
-      eval-x:x:/+/*/app-name
-      micro.evaluate.file:/modules/{0}/helpers/upload-file.hl
-        :x:/@camphora._internal.get-app-url-entities/0?name
-        app-name:x:/@camphora._internal.get-app-url-entities/0?name
-
-    catch
-
-      /*
-       * Making sure we return "error" to client.
-       */
-      p5.web.echo:ERROR
+  catch
 
     /*
-     * Returning early to avoid evaluation of the rest of our file.
+     * Making sure we return "error" to client.
      */
-    return
+    p5.web.echo:ERROR
 
   /*
-   * Creating Edit row header, but only if headers are supposed to be shown.
+   * Returning early to avoid evaluation of the rest of our file.
    */
-  if:x:/@load-file/*/*/show-headers?value
+  return
 
-    /*
-     * Headers are visible for app, adding the "Edit" header.
-     */
-    add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
-      src
-        Edit
-          style:"width:5px;text-align:right;"
+/*
+ * Creating Edit row header, but only if headers are supposed to be shown.
+ */
+if:x:/@load-file/*/*/show-headers?value
 
   /*
-   * Making sure all other parts of our system knows the user is allowed to edit data
-   * in the system.
+   * Headers are visible for app, adding the "Edit" header.
    */
-  p5.web.viewstate.set:camphora.editing-allowed
-    src:bool:true
+  add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
+    src
+      ""
+        style:"width:5px;text-align:right;"
 
-  /*
-   * Making sure we create a CSV file dropzone for our page.
-   */
-  eval-x:x:/+/*/url
-  micro.page.create-dropzone
-    filter:csv
-    url:{0}/upload
-      :x:/../*/camphora._internal.get-app-url-entities/[0,1]/0?name
-    .onfinish:@"function(uid, no_files, no_errors) {if(no_errors > 0){alert('There were errors when trying to import your file');p5.$('camphora-upload-obscurer').el.style.display = 'none';} else {window.location.replace(window.location.href);}}"
-    .onbegin:@"function() {p5.$('camphora-upload-obscurer').el.style.display = 'block';}"
+/*
+ * Making sure all other parts of our system knows the user is allowed to edit data
+ * in the system.
+ */
+p5.web.viewstate.set:camphora.editing-allowed
+  src:bool:true
+
+/*
+ * Making sure we create a CSV file dropzone for our page.
+ */
+eval-x:x:/+/*/url
+micro.page.create-dropzone
+  filter:csv
+  url:{0}/upload
+    :x:/../*/camphora._internal.get-app-url-entities/[0,1]/0?name
+  .onfinish:@"function(uid, no_files, no_errors) {if(no_errors > 0){alert('There were errors when trying to import your file');p5.$('camphora-upload-obscurer').el.style.display = 'none';} else {window.location.replace(window.location.href);}}"
+  .onbegin:@"function() {p5.$('camphora-upload-obscurer').el.style.display = 'block';}"
 
 
 
@@ -581,7 +539,7 @@ window.onscroll = function() {
                   class:col-50
                   widgets
                     div
-                      class:strip fill
+                      class:strip fill right
                       widgets
                         input:camphora-search-query
                           type:text
@@ -697,8 +655,7 @@ window.onscroll = function() {
                   class:col-50
                   widgets
                     div
-                      class:strip toolbar
-                      style:"float:right;"
+                      class:strip toolbar right
                       widgets:toolbar
                         button:camphora-add-new-record-button
                           innerValue:@"<span class=""icon-plus""></span>"
@@ -834,7 +791,7 @@ window.onscroll = function() {
                             p5.web.set-location:x:/-?value
 
     div
-      class:row
+      class:row air-top
       widgets
         div
           class:col-100

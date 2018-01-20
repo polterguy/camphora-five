@@ -115,7 +115,7 @@ for-each:x:/@load-file/*/*/field
                 for:{0}-widget
                   :x:/@_dp/#/*/name?value
                 innerValue:x:/@_dp/#/*/name?value
-                class:capitalize
+                class:capitalize description-7
               input:{0}-widget
                 :x:/@_dp/#/*/name?value
                 placeholder:{0} ...

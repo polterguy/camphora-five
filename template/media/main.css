@@ -9,15 +9,12 @@
     width:100%;
 }
 .camphora-crud-grid-wrapper table tr td {
-    border-top:solid 1px #fafafa;
     vertical-align:top;
     cursor:default;
 }
 .camphora-crud-grid-wrapper table tr:first-child td {
-    border-top:none;
 }
 .camphora-edit-column {
-    min-width:120px;
     text-align:right;
 }
 .camphora-edit-row,
@@ -30,13 +27,13 @@
     border-top:none !important;
 }
 .camphora-date-column {
-    font-style:italic;
-    color:#aaa;
+    font-style: italic;
+    font-size: .8rem;
 }
 .camphora-date-edit-item {
     font-style: italic;
-    color: #aaa;
-    text-align:right;
+    font-size: .8rem;
+    text-align: right;
 }
 .camphora-sort-column:after {
     padding-left:.5rem;
