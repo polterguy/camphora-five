@@ -265,7 +265,7 @@ becomes the name of your app, in addition to the name of its database, and the U
                    * Name of app.
                    */
                   collection
-                    class:col-50
+                    class:col-40
                     widgets
                       text
                         info:Name
@@ -309,136 +309,58 @@ becomes the name of your app, in addition to the name of its database, and the U
                             delete-widget-property:x:/../*/_event?value
                               class
 
-            hr
-            div
-              class:row
-              widgets
-
-                /*
-                 * Skin select drop down list wrapper.
-                 */
-                div
-                  class:col-100
-                  widgets
-                    h3
-                      innerValue:Styling
-                    p
-                      innerValue:@"What skin you want to use for your app, and whether or not you want to display column headers, 
-and/or have a desktop icon created for it or not to launch it. Notice, even without a desktop icon, you can still launch your app
-directly, if you know its URL. Also realise that without column headers, there is no way to sort your items when viewing them,
-unless you create your own custom view."
-                div
-                  class:col-33
-                  widgets
-                    div
-                      class:strip fill
-                      widgets
-                        label
-                          for:camphora-select-skin
-                          class:description
-                          innerValue:Skin
-                        container:camphora-select-skin
-                          element:select
-                          .data-field:skin
-                          oninit
-
-                            /*
-                             * Forward evaluated before creation of widget.
-                             */
-                            .file-values
-                              skin:x:/../*/.file-values/*/skin?value
-
-                            /*
-                             * Checking which Micro skins exists in installation.
-                             */
-                            list-files:@MICRO/media/skins/
-                              filter:.css
-
-                            /*
-                             * Creating one option element for each skin.
-                             */
-                            for-each:x:/@list-files/*?name
+                  /*
+                   * Show headers checkbox.
+                   */
+                  div
+                    class:col
+                    widgets
+                      label
+                        widgets
+                          span
+                            innerValue:Show headers
+                          input:camphora-show-headers
+                            type:checkbox
+                            .data-field:show-headers
+                            oninit
 
                               /*
-                               * Splitting currently iterated file, to figure out
-                               * only its name.
+                               * Forward evaluated before creation of widget.
                                */
-                              split:x:/@_dp?value
-                                =:/
-                                =:.
-
-                              /*
-                               * Checking if this is our currently selected value.
-                               */
-                              if:x:/@.file-values/*/skin?value
-                                =:x:/@split/0/-2?name
+                              .file-values
+                                show-headers:x:/../*/.file-values/*/show-headers?value
+                              if:x:/@.file-values/*/show-headers?value
 
                                 /*
-                                 * Yup, currently iterated value should be our selected guy.
+                                 * Widget should be initially checked.
                                  */
-                                add:x:/..for-each/*/create-literal-widget
-                                  src:selected
+                                set-widget-property:x:/../*/_event?value
+                                  checked
+
+                      /*
+                       * Desktop icon checkbox.
+                       */
+                      label
+                        widgets
+                          span
+                            innerValue:Desktop icon
+                          input:camphora-desktop-icon
+                            type:checkbox
+                            .data-field:desktop-icon
+                            oninit
 
                               /*
-                               * Creating option element.
+                               * Forward evaluated before creation of widget.
                                */
-                              create-literal-widget
-                                parent:x:/../*/_event?value
-                                element:option
-                                innerValue:x:/@split/0/-2?name
+                              .file-values
+                                desktop-icon:x:/../*/.file-values/*/desktop-icon?value
+                              if:x:/@.file-values/*/desktop-icon?value
 
-                /*
-                 * Show headers checkbox.
-                 */
-                div
-                  class:col
-                  widgets
-                    label
-                      widgets
-                        span
-                          innerValue:Show headers
-                        input:camphora-show-headers
-                          type:checkbox
-                          .data-field:show-headers
-                          oninit
-
-                            /*
-                             * Forward evaluated before creation of widget.
-                             */
-                            .file-values
-                              show-headers:x:/../*/.file-values/*/show-headers?value
-                            if:x:/@.file-values/*/show-headers?value
-
-                              /*
-                               * Widget should be initially checked.
-                               */
-                              set-widget-property:x:/../*/_event?value
-                                checked
-
-                    /*
-                     * Desktop icon checkbox.
-                     */
-                    label
-                      widgets
-                        span
-                          innerValue:Desktop icon
-                        input:camphora-desktop-icon
-                          type:checkbox
-                          .data-field:desktop-icon
-                          oninit
-
-                            /*
-                             * Forward evaluated before creation of widget.
-                             */
-                            .file-values
-                              desktop-icon:x:/../*/.file-values/*/desktop-icon?value
-                            if:x:/@.file-values/*/desktop-icon?value
-
-                              /*
-                               * Widget should be initially checked.
-                               */
-                              set-widget-property:x:/../*/_event?value
-                                checked
+                                /*
+                                 * Widget should be initially checked.
+                                 */
+                                set-widget-property:x:/../*/_event?value
+                                  checked
 
             hr
             div
