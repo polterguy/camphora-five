@@ -489,14 +489,14 @@ create-widget
     /*
      * Obscurer show when files are uploaded.
      */
-    micro.widgets.obscurer:camphora-feed-more-obscurer
+    micro.widgets.cover:camphora-feed-more-obscurer
       style:"display:none;"
       message:"Please wait while we fetch more items ..."
 
     /*
      * Obscurer show when files are uploaded.
      */
-    micro.widgets.obscurer:camphora-upload-obscurer
+    micro.widgets.cover:camphora-upload-obscurer
       style:"display:none;"
       message:"Please wait while we upload and import your file(s) ..."
 
