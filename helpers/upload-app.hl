@@ -1,7 +1,7 @@
 
 /*
- * File responsible for handling an upload request, of a Hyperlambda file,
- * containing an app declaration.
+ * File responsible for handling an upload request of one or more Hyperlambda file(s).
+ * These files are expected to contain an "app manifest" file.
  */
 
 
@@ -9,21 +9,20 @@
 
 
 /*
- * Parsing HTTP request, downloading file attachments to user's "temp" folder.
+ * Sanity checking invocation.
  */
-p5.web.request.parse-mime
-  attachment-folder:~/temp/
+micro.lambda.contract.min:x:/..
+  files
 
 
 
 
 
 /*
- * Saving file to user's Camphora app declaration folder.
+ * Iterating through all specified [files] and saving them to user's document folder
+ * for all Camphora app manifest files.
  */
-copy-file:{0}{1}{2}
-  :x:/@p5.web.request.parse-mime/*/multipart/=form-data/**/filename/*/folder?value
-  :x:/@p5.web.request.parse-mime/*/multipart/=form-data/**/filename/*/prefix?value
-  :x:/@p5.web.request.parse-mime/*/multipart/=form-data/**/filename?value
-  dest:~/documents/private/camphora/{0}
-    :x:/@p5.web.request.parse-mime/*/multipart/=form-data/**/filename?value
+for-each:x:/../*/files/*
+  copy-file:x:/@_dp/#?value
+    dest:~/documents/private/camphora/{0}
+      :x:/@_dp/#/*/original-filename?value

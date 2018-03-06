@@ -1,3 +1,4 @@
+
 /*
  * File responsible for starting Camphora.
  */
@@ -7,84 +8,9 @@
 
 
 /*
- * Including Micro, adding Awesome Fonts, and serious skin - In addition to 
- * custom CSS file for app.
+ * Including Micro CSS.
  */
 micro.css.include
-
-
-
-
-/*
- * Checking if user is trying to upload a file.
- */
-p5.web.get-location-url
-split:x:/@p5.web.get-location-url?value
-  =:/
-if:x:/@split/0/-?name
-  =:upload
-
-  /*
-   * Saving file by invoking file responsible for handling uploads to system.
-   */
-  micro.evaluate.file:@CAMPHORA/helpers/upload-app.hl
-
-  /*
-   * Returning early to avoid evaluation of the rest of our lambda.
-   */
-  return
-
-
-
-
-
-/*
- * Making sure we have at least version 1.4 of Hypereval installed, before proceeding,
- * since Camphora is dependent upon Hypereval to function.
- */
-if
-  hypereval.version
-  <:decimal:1.4
-  or
-    hypereval.version
-    not
-
-  /*
-   * Warning user that he has to install Hypereval 1.4 to continue.
-   */
-  create-widgets
-    micro.widgets.modal:camphora-hypereval-warning
-      widgets
-        h3
-          innerValue:Pre-requisites for Camphora not met
-        p
-          innerValue:Camphora Five is dependent upon Hypereval, version 1.4 or more to correctly function. Please install or upgrade Hypereval before continuing.
-        div
-          class:right
-          widgets
-            button
-              innerValue:OK
-              oninit
-
-                /*
-                 * Setting initial focus to "OK" button.
-                 */
-                micro.page.set-focus:x:/../*/_event?value
-
-              onclick
-
-                /*
-                 * Redirecting user to URL for the Bazar.
-                 */
-                p5.web.get-root-location
-                p5.web.set-location:{0}/bazar
-                  :x:/@p5.web.get-root-location?value
-
-  /*
-   * Returning early to abort evaluation of the rest of our file, since required
-   * Hypereval version is not installed.
-   */
-  return
 
 
 
@@ -109,16 +35,6 @@ if
 
 
 /*
- * Creating main content container.
- */
-create-container-widget:camphora-main-container
-  class:container
-
-
-
-
-
-/*
  * Setting page title.
  */
 p5.web.page.set-title:Camphora Five
@@ -128,86 +44,77 @@ p5.web.page.set-title:Camphora Five
 
 
 /*
- * Creating dropzone to allow user to drag and drop upload app declaration files.
- */
-split:x:/@p5.web.get-location-url?value
-  =:/
-eval-x:x:/+/*
-micro.page.create-dropzone
-  filter:hl
-  url:/{0}/upload
-    :x:/@split/2?name
-  .onfinish:@"function(uid, no_files, no_errors) {{window.location.replace('{0}');}}"
-    :x:/@split/2?name
-
-
-
-
-
-/*
  * Creating main wire-frame for Camphora.
  */
-create-widget
-  parent:camphora-main-container
-  class:row
+create-widget:camphora-main-container
+  class:container
   widgets
     div
-      class:col-100
+      class:row
       widgets
         div
-          class:right
+          class:col-100
           widgets
             div
-              class:strip toolbar
+              class:right
               widgets
-                button
-                  innerValue:@"<span class=""icon-plus""></span>"
-                  class:larger
-                  onclick
+                div
+                  class:strip toolbar
+                  widgets
+                    button
+                      innerValue:@"<span class=""icon-plus""></span>"
+                      class:larger
+                      onclick
 
-                    /*
-                     * Creating a new app by invoking file responsible for starting process.
-                     *
-                     * Notice, this is the same Hyperlambda file as we use for editing existing apps.
-                     * Only difference is that it doesn't take an [file] parameter, which sets it
-                     * into "new app mode".
-                     */
-                    micro.evaluate.file:@CAMPHORA/helpers/edit-app.hl
+                        /*
+                         * Creating a new app by invoking file responsible for starting process.
+                         *
+                         * Notice, this is the same Hyperlambda file as we use for editing existing apps.
+                         * Only difference is that it doesn't take an [file] parameter, which sets it
+                         * into "new app mode".
+                         */
+                        micro.evaluate.file:@CAMPHORA/helpers/edit-app.hl
 
-                button
-                  innerValue:@"<span class=""icon-upload2""></span>"
-                  title:Upload app declaration file
-                  onclick:@"p5.dropzone.browse();event.stopPropagation(true);return false;"
+                    micro.widgets.upload-button
+                      title:Upload app manifest file
+                      accept:.hl
+                      multiple
+                      .onupload
 
-                button
-                  innerValue:@"<span class=""icon-home3""></span>"
-                  onclick
+                        /*
+                         * Saving file(s) by invoking file responsible for handling uploads to system.
+                         */
+                        add:x:/+
+                          src:x:/../*/files
+                        micro.evaluate.file:@CAMPHORA/helpers/upload-app.hl
 
-                    /*
-                     * Making sure we get href attribute correctly.
-                     */
-                    p5.web.get-root-location
-                    p5.web.set-location:x:/-?value
+                        /*
+                         * Evaluating file responsible for re-databinding grid.
+                         */
+                        micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
 
-    div
-      class:col-100
-      widgets
+                    a
+                      innerValue:@"<span class=""icon-home3""></span>"
+                      class:button
+                      href:/
+
         div
-          class:shaded rounded air-inner
-          style:"position:relative;"
+          class:col-100
           widgets
-            a
-              href:"https://github.com/polterguy/camphora-five"
-              innerValue:@"<span class=""icon-question""></span>"
-              target:_blank
-              style:"position:absolute;top:.5rem;right:1rem;font-size:1.5rem;"
-            h3
-              innerValue:CRUD apps
-            micro.widgets.grid:camphora-apps
-              class:striped hover
-              oninit
+            div
+              class:shaded rounded air-inner
+              widgets
+                h3
+                  innerValue:CRUD app manifests
 
                 /*
-                 * Databinding grid initially.
+                 * This is the actual grid wrapping all app manifest files.
                  */
-                micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
+                micro.widgets.grid:camphora-apps
+                  class:striped hover
+                  oninit
+
+                    /*
+                     * Databinding grid initially.
+                     */
+                    micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
