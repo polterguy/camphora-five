@@ -1,4 +1,3 @@
-
 /*
  * File responsible for databinding Camphora apps datagrid.
  */
@@ -31,11 +30,14 @@ for-each:x:/@list-files/*?name
       item
         name:x:/@split/0/-2?name
         edit
-          class:right
           widgets
             div
-              class:strip
+              class:strip right
               widgets
+
+                /*
+                 * Edit app manifest button.
+                 */
                 button
                   innerValue:@"<span class=""icon-pencil""></span>"
                   title:Edit your app
@@ -53,6 +55,9 @@ for-each:x:/@list-files/*?name
                     micro.evaluate.file:@CAMPHORA/helpers/edit-app.hl
                       filename:x:/@_filename?value
 
+                /*
+                 * Copy app manifest button.
+                 */
                 button
                   innerValue:@"<span class=""icon-loop2""></span>"
                   title:Create a copy of your app
@@ -73,6 +78,9 @@ for-each:x:/@list-files/*?name
                         :x:/@split/0?name
                     micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
 
+                /*
+                 * Download app manifest to client button.
+                 */
                 button
                   innerValue:@"<span class=""icon-download2""></span>"
                   title:Download app
@@ -94,101 +102,25 @@ for-each:x:/@list-files/*?name
                       Content-Disposition:@"attachment; filename=""{0}"""
                         :x:/@split/0/-?name
 
+                /*
+                 * Delete app manifest button.
+                 */
                 button
                   innerValue:@"<span class=""icon-bin""></span>"
                   title:Delete your app entirely
                   onclick
 
                     /*
-                     * Deleting app, after having asked user to confirm action, for then
-                     * to simply re-databind grid.
+                     * Forward evaluated above.
                      */
-                    create-widgets
-                      micro.widgets.modal:camphora-confirm-deletion
-                        widgets
-                          h3
-                            innerValue:Confirm deletion of app
-                          p
-                            innerValue:Are you sure you want to delete this app? This action is permanent, and your application will also be uninstalled.
-                          label
-                            widgets
-                              input:delete-data
-                                type:checkbox
-                              span
-                                innerValue:Also delete the data for app
-                          div
-                            class:right
-                            widgets
-                              div
-                                class:strip
-                                style:"display:inline-block"
-                                widgets
-                                  button
-                                    innerValue:Yes
-                                    oninit
+                    _filename:x:/@_dp?value
 
-                                      /*
-                                       * Setting initial focus to "Yes" button.
-                                       */
-                                      micro.page.set-focus:x:/../*/_event?value
-
-                                    onclick
-
-                                      /*
-                                       * Forward evaluated above.
-                                       */
-                                      _filename:x:/@_dp?value
-
-                                      /*
-                                       * Making sure we also uninstall app.
-                                       */
-                                      split:x:/@_filename?value
-                                        =:/
-                                        =:.
-                                      desktop.uninstall-app:/modules/{0}/
-                                        :x:/@split/0/-2?name
-
-                                      /*
-                                       * Then checking if we should delete the database table for our app.
-                                       */
-                                      get-widget-property:delete-data
-                                        checked
-                                      if:x:/@get-widget-property/*/*
-
-                                        /*
-                                         * Opening up database connection to camphora, and deleting the table, making
-                                         * sure we wrap it in a try/catch block, in case it doesn't exist, or some other 
-                                         * error occurs.
-                                         */
-                                        p5.mysql.connect:[camphora]
-                                          p5.mysql.execute:@"drop table `{0}`"
-                                            :x:/@split/0/-2?name
-
-                                      /*
-                                       * Deleting app declaration file, for then to simply
-                                       * delete modal widget.
-                                       */
-                                      delete-file:x:/@_filename?value
-                                      delete-widget:camphora-confirm-deletion
-
-                                      /*
-                                       * Re-databinding grid.
-                                       */
-                                      micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
-
-                                      /*
-                                       * Signaling listeners that app's been deleted.
-                                       */
-                                      camphora.delete-app:x:/@_filename?value
-
-                                  button
-                                    innerValue:No
-                                    onclick
-
-                                      /*
-                                       * Simply deleting modal widget.
-                                       */
-                                      delete-widget:camphora-confirm-deletion
+                    /*
+                     * Invoking file responsible for deleting app manifest.
+                     */
+                    eval-x:x:/+/*
+                    micro.evaluate.file:@CAMPHORA/helpers/delete-app.hl
+                      filename:x:/@_filename?value
 
 
 
