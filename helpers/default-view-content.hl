@@ -1,0 +1,44 @@
+
+/*
+ * Although you can do whatever you wish from within your view,
+ * the most common task is probably to view records, or create
+ * some sort of custom editor for your items, not necessarily
+ * resembling the default editor/viewer.
+ *
+ * Below is an example of how to create a widget for each `name`
+ * item in your `my-app` app.
+ *
+ * Notice, this example code highly unlikely evaluates correctly,
+ * unless your app is actually called 'my-app' and has a 'name' field
+ * within it.
+ *
+ * First we include our CSS files.
+ */
+micro.css.include
+
+
+/*
+ * Then we create our main wire frame widget hierarchy.
+ */
+create-widget
+  class:container
+  widgets
+    div
+      class:row
+      widgets
+        div:my-column
+          class:col
+          widgets
+
+
+/*
+ * Then we connect to our database, select all records from `my-table`,
+ * and create one paragraph for each `name`, injecting it into our column
+ * created above.
+ */
+p5.mysql.connect:[camphora]
+  p5.mysql.select:select * from `my-app`
+  for-each:x:/@p5.mysql.select/*
+    create-widget
+      parent:my-column
+      innerValue:x:/@_dp/#/*/name?value

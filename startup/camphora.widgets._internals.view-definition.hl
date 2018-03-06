@@ -1,0 +1,53 @@
+
+/*
+ * Creates our "view definition" widget.
+ */
+create-event:camphora.widgets._internals.view-definition
+
+  /*
+   * Sanity checking arguments.
+   */
+  micro.lambda.contract.min:x:/..
+    name:string
+  micro.lambda.contract.optional:x:/..
+    value:string
+
+  /*
+   * Returns widget to caller.
+   */
+  eval-x:x:/+/**/value
+  return
+    container
+      class:shaded rounded air-inner
+      .view
+      widgets
+        div
+          class:strip fill
+          widgets
+            label
+              innerValue:Name
+            input
+              type:text
+              value:x:/../*/name?value
+              .data-field:view-name
+        micro.widgets.codemirror
+          value:x:/../*/value?value
+          .data-field:view-content
+        div
+          class:right air-top
+          widgets
+            button
+              innerValue:@"<span class=""icon-bin""></span>"
+              title:Delete view
+              class:large
+              onclick
+
+                /*
+                 * Since views are anyways dynamically fetched during save, all
+                 * we need to do, is to delete widget wrapping view.
+                 */
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  .view
+                delete-widget:x:/-/*/*?value
+                micro.windows.info:View was deleted
+                  class:micro-windows-info success
