@@ -1,0 +1,289 @@
+
+/*
+ * Save an app.
+ *
+ * Expected to have [_event] passed in, being the ID of the "save app" button.
+ */
+
+
+
+
+
+/*
+ * Sanity checking arguments.
+ */
+micro.lambda.contract.min:x:/..
+  _event:string
+
+
+
+
+
+/*
+ * Retrieving wizard-form's data.
+ */
+p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+  .data
+micro.form.serialize:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
+/*
+ * Sanity checking name of app.
+ */
+match:x:/@micro.form.serialize/*/name?value
+  src:regex:@"/^[-_a-z0-9]{3,20}$/i"
+if:x:/@match/0?name
+  =:
+  or:x:/@match/*?count
+    =:int:0
+  or
+    fetch:x:/0/0?value
+      file-exists:~/documents/private/camphora/{0}.hl
+        :x:/@micro.form.serialize/*/name?value
+    and
+      fetch:x:/*/.different?value
+        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+          .filename
+        get-widget-property:x:/-/*/*?value
+          .filename
+        .different:bool:false
+        whoami
+        if:x:/@get-widget-property/*/*?value
+          !=:/users/{0}/documents/private/camphora/{1}.hl
+            :x:/@whoami/*/username?value
+            :x:/@micro.form.serialize/*/name?value
+          set:x:/@.different?value
+            src:bool:true
+
+  /*
+   * App's name is not accepted.
+   */
+  micro.windows.info:Your app's name can only have 3-20 characters of a-z, A-Z, 0-9 and hyphens/underscores (-/_) in it, and must be unique.
+    class:micro-windows-info warning
+  p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+    .data-field:name
+  micro.page.set-focus:x:/@p5.web.widgets.find/*/*?value
+  return:bool:false
+
+/*
+ * Making sure app has at least one column.
+ */
+if:x:/@micro.form.serialize/*/.signal?count
+  =:int:0
+
+  /*
+   * Oops, app has no field declarations.
+   */
+  micro.windows.info:Your app must have at least one field
+    class:micro-windows-info warning
+  return:bool:false
+
+/*
+ * Making sure app has at least one visible column.
+ */
+if:x:@"/@micro.form.serialize/*/.signal/@show-in-grid/""=:bool:true""?count"
+  =:int:0
+
+  /*
+   * Oops, app has no field declarations visible in grid.
+   */
+  micro.windows.info:Your app must have at least one field visible in the grid
+    class:micro-windows-info warning
+  return:bool:false
+
+/*
+ * Used to hold actual data for our app.
+ */
+.data
+  views
+
+/*
+ * Iterating through each view, and adding it into above [.data]/[views] lambda.
+ */
+for-each:x:/@micro.form.serialize/*/view-name
+
+  /*
+   * Making sure view name is unique, and that it contains only legal characters.
+   */
+  if:x:/@_dp/#/./*/view-name/={0}?count
+    :x:/@_dp/#?value
+    >:int:1
+
+    /*
+     * View name is not unique.
+     */
+    micro.windows.info:Your view must have unique names
+      class:micro-windows-info warning
+    return:bool:false
+
+  /*
+   * Making sure view's name doesn't contain "illegal characters".
+   */
+  match:x:/@_dp/#?value
+    src:regex:"/^[-_a-z0-9]{3,20}$/"
+  if:x:/@match/*?count
+    =:int:0
+
+    /*
+     * View name was not valid.
+     */
+    micro.windows.info:Your view can only contain a-z. 0-9, - and _ in its name, and must be between 3 and 20 characters long.
+      class:micro-windows-info warning
+    return:bool:false
+
+  /*
+   * Making sure view is not named "upload", "download" ot "tag".
+   */
+  if:x:/@_dp/#?value
+    =:upload
+    or:x:/@_dp/#?value
+      =:download
+    or:x:/@_dp/#?value
+      =:tag
+
+    /*
+     * View name was not valid.
+     */
+    micro.windows.info:Your view cannot be named 'upload', 'download' or 'tag'.
+      class:micro-windows-info warning
+    return:bool:false
+
+  /*
+   * Adding view to above [.data]/[views].
+   */
+  add:x:/@.data/*/views
+    src:x:/@_dp/#?value
+  set:x:/@.data/*/views/0/-?value
+    src:x:/@_dp/#/+2?value
+
+/*
+ * Iterating through each field, and adding it into our above [.data] lambda.
+ */
+for-each:x:/@micro.form.serialize/*/.signal
+
+  /*
+   * Verifying all [field-name]'s are unique.
+   */
+  if:x:/@micro.form.serialize/*/field-name/={0}?count
+    :x:/@_dp/#/@field-name?value
+    >:int:1
+
+    /*
+     * Two fields have the same name.
+     */
+    micro.windows.info:Your fields' names must be unique.
+      class:micro-windows-info warning
+    return:bool:false
+
+  /*
+   * Sanity checking field's name.
+   */
+  match:x:/@_dp/#/@field-name?value
+    src:regex:"/^[-_a-z0-9_]{2,20}$/"
+  if:x:/@match/*?count
+    =:int:0
+
+    /*
+     * Oops, not an accepted name!
+     */
+    micro.windows.info:The name of your fields must contain only a-z, 0-9, _ and - characters, and be between 2 and 20 characters long
+      class:micro-windows-info warning
+    return:bool:false
+
+  eval-x:x:/+/*/*/*
+  add:x:/@.data
+    src
+      field
+        name:x:/@_dp/#/@field-name?value
+        type:x:/@_dp/#/@field-type?value
+        show:x:/@_dp/#/@show-in-grid?value
+  if:x:/@_dp/#/@field-type?value
+    =:radio
+    or:x:/@_dp/#/@field-type?value
+      =:select
+
+    /*
+     * Splitting up options semantically for each "," found
+     * in its value.
+     */
+    split:x:/@_dp/#/@options?value
+      =:,
+      trim:true
+
+    /*
+     * Sanity checking option value(s), and that there are
+     * at least two different options.
+     */
+    if:x:/@split/*?count
+      <:int:2
+
+      /*
+       * Not a valid option element.
+       */
+      micro.windows.info:You must have at least two different options for radio and select items, and your options must be separated by ','
+        class:micro-windows-info warning
+      return:bool:false
+
+    /*
+     * Looping through each option value, and adding it to [.data] lambda.
+     */
+    for-each:x:/@split/*?name
+      add:x:/@.data/0/-/*/type
+        src:x:/@_dp?value
+
+/*
+ * Adding other types of settings for app.
+ */
+add:x:/../*/.data
+  src:x:/@micro.form.serialize/*(/viewers|/editors|/skin|/show-headers|/desktop-icon)
+
+/*
+ * Retrieving app's filename, and if it is not null, we delete
+ * the file.
+ */
+p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+  .filename
+get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+  .filename
+if:x:/@get-widget-property/*/*?value
+  !=
+
+  /*
+   * Editing mode, making sure we delete existing file,
+   * if it exists.
+   */
+  if
+    fetch:x:/0/0?value
+      file-exists:x:/@get-widget-property/*/*?value
+
+    /*
+     * File exists, deleting it.
+     */
+    delete-file:x:/@get-widget-property/*/*?value
+
+/*
+ * Saving file.
+ */
+lambda2hyper:x:/@.data/*
+save-file:~/documents/private/camphora/{0}.hl
+  :x:/@micro.form.serialize/*/name?value
+  src:x:/@lambda2hyper?value
+
+/*
+ * Updating [.filename] to signal we're now in "edit mode".
+ */
+whoami
+set-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+  .filename:/users/{0}/documents/private/camphora/{1}.hl
+    :x:/@whoami/*/username?value
+    :x:/@micro.form.serialize/*/name?value
+
+/*
+ * Re-databinding grid.
+ */
+micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
+
+/*
+ * Notifying user.
+ */
+micro.windows.info:App was successfully saved
+  class:micro-windows-info success

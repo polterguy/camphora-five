@@ -158,7 +158,7 @@ else
 eval-x:x:/+/*/.filename|/+/**/micro.widgets.wizard-form/*/*/value|/+/**(/.file-values/*)
 create-widget
   parent:camphora-main-container
-  class:row
+  class:row air-top
   .filename:x:/@.defaults/*/filename?value
   events
 
@@ -192,184 +192,11 @@ create-widget
   widgets
     div
       class:col
+      .data
       widgets
         div
           class:shaded rounded air-inner
-          .data
           widgets
-            h3
-              innerValue:General information
-            micro.widgets.wizard-form
-              collection
-                class:row
-                widgets
-
-                  /*
-                   * Name of app.
-                   */
-                  collection
-                    class:col-40
-                    widgets
-                      text
-                        info:Name
-                        .data-field:name
-                        value:x:/@.defaults/*/name?value
-                        title:Name of your app. Notice, this also declares the name of your database table.
-                        oninit
-
-                          /*
-                           * Setting initial focus to name textbox.
-                           */
-                          micro.page.set-focus:x:/../*/_event?value
-
-                        onchange
-
-                          /*
-                           * Sanity checking new name of app.
-                           */
-                          get-widget-property:x:/../*/_event?value
-                            value
-                          match:x:/@get-widget-property/*/*?value
-                            src:regex:"/^[-_a-z0-9]{3,20}$/i"
-                          if:x:/@match/*?count
-                            =:int:0
-                            or:x:/@match/0?name
-                              =:
-
-                            /*
-                             * Not an acceptable name of app.
-                             */
-                            micro.windows.info:Not an acceptable name. Use only a-z, A-Z, 0-1, '_' and/or '-' in your app's name
-                              class:micro-windows-info warning
-                            micro.page.set-focus:x:/../*/_event?value
-
-                  /*
-                   * Show headers checkbox.
-                   */
-                  div
-                    class:col
-                    widgets
-                      label
-                        widgets
-                          span
-                            innerValue:Show headers
-                          input:camphora-show-headers
-                            type:checkbox
-                            .data-field:show-headers
-                            oninit
-
-                              /*
-                               * Forward evaluated before creation of widget.
-                               */
-                              .file-values
-                                show-headers:x:/../*/.file-values/*/show-headers?value
-                              if:x:/@.file-values/*/show-headers?value
-
-                                /*
-                                 * Widget should be initially checked.
-                                 */
-                                set-widget-property:x:/../*/_event?value
-                                  checked
-
-                      /*
-                       * Desktop icon checkbox.
-                       */
-                      label
-                        widgets
-                          span
-                            innerValue:Desktop icon
-                          input:camphora-desktop-icon
-                            type:checkbox
-                            .data-field:desktop-icon
-                            oninit
-
-                              /*
-                               * Forward evaluated before creation of widget.
-                               */
-                              .file-values
-                                desktop-icon:x:/../*/.file-values/*/desktop-icon?value
-                              if:x:/@.file-values/*/desktop-icon?value
-
-                                /*
-                                 * Widget should be initially checked.
-                                 */
-                                set-widget-property:x:/../*/_event?value
-                                  checked
-
-            hr
-            div
-              .fields
-              widgets
-                h3
-                  innerValue:Fields
-                p
-                  innerValue:@"What fields or columns you want your app to contain. These are basically columns in your database. You can have as
-many fields as you wish in your app, and you can choose if you want to display each field in the datagrid or not. Each field is also
-expected to be of a specific type, such as single line textbox, checkbox type, etc. Your app must at the very least have one field to be valid.
-Notice, some field types such as select dropdown and radiobutton fields have additional properties for which values are possible to select."
-                div
-                  class:right
-                  widgets
-                    button
-                      innerValue:@"<span class=""icon-plus""></span>"
-                      class:large
-                      title:Adds another field to your CRUD app
-                      onclick
-
-                        /*
-                         * Adding a new field into form.
-                         */
-                        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                          .filename
-                        p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                          .fields
-
-                        /*
-                         * Creating widget wrapping field definition.
-                         */
-                        p5.web.widgets.get-parent:x:/../*/_event?value
-                        eval-x:x:/+/*/*
-                        create-widgets
-                          camphora.widgets._internals.field-definition
-                            before:x:/@p5.web.widgets.get-parent/*/*?value
-
-            hr
-            div
-              .views
-              widgets
-                h3
-                  innerValue:Views
-                p
-                  innerValue:@"Additional views for your app. A view is basically an additional page, where you have full control over every aspect of 
-what happens as it is requested. Each view gets its own unique URL, accessible through <em>'/my-app/my-view'</em>, which you can fill with whatever 
-Hyperlambda you wish, to create any custom type of logic, associated with your app. To create a view, is considered an <em>'advanced topic'</em>,
-requiring you to understand Hyperlambda."
-                div
-                  class:right
-                  widgets
-                    button
-                      innerValue:@"<span class=""icon-eye-plus""></span>"
-                      class:large
-                      title:Adds another view to your CRUD app
-                      onclick
-
-                        /*
-                         * Finds our "view wrapper", and adds another CodeMirror wrapper, and a wrapper
-                         * for the view's name.
-                         *
-                         * Notice, we use the contents of 'default-view-content.hl' as the default content
-                         * of our newly created view.
-                         */
-                        p5.web.widgets.find
-                          .views
-                        load-file:@CAMPHORA/helpers/default-view-content.hl
-                          convert:false
-                        create-widgets
-                          camphora.widgets._internals.view-definition
-                            parent:x:/@p5.web.widgets.find/*/*?value
-                            name:view-name
-                            value:x:/@load-file/*?value
-
             div
               class:strip right
               widgets
@@ -394,273 +221,12 @@ requiring you to understand Hyperlambda."
                     camphora.save-app
 
                       /*
-                       * Retrieving wizard-form's data.
+                       * Evaluating main file responsible for actually saving our app,
+                       * and doing the heavy lifting.
                        */
-                      p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                        .data
-                      micro.form.serialize:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-
-                      /*
-                       * Sanity checking name of app.
-                       */
-                      match:x:/@micro.form.serialize/*/name?value
-                        src:regex:@"/^[-_a-z0-9]{3,20}$/i"
-                      if:x:/@match/0?name
-                        =:
-                        or:x:/@match/*?count
-                          =:int:0
-                        or
-                          fetch:x:/0/0?value
-                            file-exists:~/documents/private/camphora/{0}.hl
-                              :x:/@micro.form.serialize/*/name?value
-                          and
-                            fetch:x:/*/.different?value
-                              p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                                .filename
-                              get-widget-property:x:/-/*/*?value
-                                .filename
-                              .different:bool:false
-                              whoami
-                              if:x:/@get-widget-property/*/*?value
-                                !=:/users/{0}/documents/private/camphora/{1}.hl
-                                  :x:/@whoami/*/username?value
-                                  :x:/@micro.form.serialize/*/name?value
-                                set:x:/@.different?value
-                                  src:bool:true
-
-                        /*
-                         * App's name is not accepted.
-                         */
-                        micro.windows.info:Your app's name can only have 3-20 characters of a-z, A-Z, 0-9 and hyphens/underscores (-/_) in it, and must be unique.
-                          class:micro-windows-info warning
-                        p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                          .data-field:name
-                        micro.page.set-focus:x:/@p5.web.widgets.find/*/*?value
-                        return:bool:false
-
-                      /*
-                       * Making sure app has at least one column.
-                       */
-                      if:x:/@micro.form.serialize/*/.signal?count
-                        =:int:0
-
-                        /*
-                         * Oops, app has no field declarations.
-                         */
-                        micro.windows.info:Your app must have at least one field
-                          class:micro-windows-info warning
-                        return:bool:false
-
-                      /*
-                       * Making sure app has at least one visible column.
-                       */
-                      if:x:@"/@micro.form.serialize/*/.signal/@show-in-grid/""=:bool:true""?count"
-                        =:int:0
-
-                        /*
-                         * Oops, app has no field declarations visible in grid.
-                         */
-                        micro.windows.info:Your app must have at least one field visible in the grid
-                          class:micro-windows-info warning
-                        return:bool:false
-
-                      /*
-                       * Used to hold actual data for our app.
-                       */
-                      .data
-                        views
-
-                      /*
-                       * Iterating through each view, and adding it into above [.data]/[views] lambda.
-                       */
-                      for-each:x:/@micro.form.serialize/*/view-name
-
-                        /*
-                         * Making sure view name is unique, and that it contains only legal characters.
-                         */
-                        if:x:/@_dp/#/./*/view-name/={0}?count
-                          :x:/@_dp/#?value
-                          >:int:1
-
-                          /*
-                           * View name is not unique.
-                           */
-                          micro.windows.info:Your view must have unique names
-                            class:micro-windows-info warning
-                          return:bool:false
-
-                        /*
-                         * Making sure view's name doesn't contain "illegal characters".
-                         */
-                        match:x:/@_dp/#?value
-                          src:regex:"/^[-_a-z0-9]{3,20}$/"
-                        if:x:/@match/*?count
-                          =:int:0
-
-                          /*
-                           * View name was not valid.
-                           */
-                          micro.windows.info:Your view can only contain a-z. 0-9, - and _ in its name, and must be between 3 and 20 characters long.
-                            class:micro-windows-info warning
-                          return:bool:false
-
-                        /*
-                         * Making sure view is not named "upload", "download" ot "tag".
-                         */
-                        if:x:/@_dp/#?value
-                          =:upload
-                          or:x:/@_dp/#?value
-                            =:download
-                          or:x:/@_dp/#?value
-                            =:tag
-
-                          /*
-                           * View name was not valid.
-                           */
-                          micro.windows.info:Your view cannot be named 'upload', 'download' or 'tag'.
-                            class:micro-windows-info warning
-                          return:bool:false
-
-                        /*
-                         * Adding view to above [.data]/[views].
-                         */
-                        add:x:/@.data/*/views
-                          src:x:/@_dp/#?value
-                        set:x:/@.data/*/views/0/-?value
-                          src:x:/@_dp/#/+2?value
-
-                      /*
-                       * Iterating through each field, and adding it into our above [.data] lambda.
-                       */
-                      for-each:x:/@micro.form.serialize/*/.signal
-
-                        /*
-                         * Verifying all [field-name]'s are unique.
-                         */
-                        if:x:/@micro.form.serialize/*/field-name/={0}?count
-                          :x:/@_dp/#/@field-name?value
-                          >:int:1
-
-                          /*
-                           * Two fields have the same name.
-                           */
-                          micro.windows.info:Your fields' names must be unique.
-                            class:micro-windows-info warning
-                          return:bool:false
-
-                        /*
-                         * Sanity checking field's name.
-                         */
-                        match:x:/@_dp/#/@field-name?value
-                          src:regex:"/^[-_a-z0-9_]{2,20}$/"
-                        if:x:/@match/*?count
-                          =:int:0
-
-                          /*
-                           * Oops, not an accepted name!
-                           */
-                          micro.windows.info:The name of your fields must contain only a-z, 0-9, _ and - characters, and be between 2 and 20 characters long
-                            class:micro-windows-info warning
-                          return:bool:false
-
-                        eval-x:x:/+/*/*/*
-                        add:x:/@.data
-                          src
-                            field
-                              name:x:/@_dp/#/@field-name?value
-                              type:x:/@_dp/#/@field-type?value
-                              show:x:/@_dp/#/@show-in-grid?value
-                        if:x:/@_dp/#/@field-type?value
-                          =:radio
-                          or:x:/@_dp/#/@field-type?value
-                            =:select
-
-                          /*
-                           * Splitting up options semantically for each "," found
-                           * in its value.
-                           */
-                          split:x:/@_dp/#/@options?value
-                            =:,
-                            trim:true
-
-                          /*
-                           * Sanity checking option value(s), and that there are
-                           * at least two different options.
-                           */
-                          if:x:/@split/*?count
-                            <:int:2
-
-                            /*
-                             * Not a valid option element.
-                             */
-                            micro.windows.info:You must have at least two different options for radio and select items, and your options must be separated by ','
-                              class:micro-windows-info warning
-                            return:bool:false
-
-                          /*
-                           * Looping through each option value, and adding it to [.data] lambda.
-                           */
-                          for-each:x:/@split/*?name
-                            add:x:/@.data/0/-/*/type
-                              src:x:/@_dp?value
-
-                      /*
-                       * Adding other types of settings for app.
-                       */
-                      add:x:/../*/.data
-                        src:x:/@micro.form.serialize/*(/viewers|/editors|/skin|/show-headers|/desktop-icon)
-
-                      /*
-                       * Retrieving app's filename, and if it is not null, we delete
-                       * the file.
-                       */
-                      p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                        .filename
-                      get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                        .filename
-                      if:x:/@get-widget-property/*/*?value
-                        !=
-
-                        /*
-                         * Editing mode, making sure we delete existing file,
-                         * if it exists.
-                         */
-                        if
-                          fetch:x:/0/0?value
-                            file-exists:x:/@get-widget-property/*/*?value
-
-                          /*
-                           * File exists, deleting it.
-                           */
-                          delete-file:x:/@get-widget-property/*/*?value
-
-                      /*
-                       * Saving file.
-                       */
-                      lambda2hyper:x:/@.data/*
-                      save-file:~/documents/private/camphora/{0}.hl
-                        :x:/@micro.form.serialize/*/name?value
-                        src:x:/@lambda2hyper?value
-
-                      /*
-                       * Updating [.filename] to signal we're now in "edit mode".
-                       */
-                      whoami
-                      set-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                        .filename:/users/{0}/documents/private/camphora/{1}.hl
-                          :x:/@whoami/*/username?value
-                          :x:/@micro.form.serialize/*/name?value
-
-                      /*
-                       * Re-databinding grid.
-                       */
-                      micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
-
-                      /*
-                       * Notifying user.
-                       */
-                      micro.windows.info:App was successfully saved
-                        class:micro-windows-info success
+                      add:x:/+
+                        src:x:/../*/_event
+                      micro.evaluate.file:@CAMPHORA/helpers/save-app.hl
 
                 button
                   innerValue:@"<span class=""icon-magic-wand""></span>"
@@ -804,3 +370,170 @@ requiring you to understand Hyperlambda."
                     p5.web.widgets.find-first-ancestor:x:/../*/_event?value
                       .filename
                     delete-widget:x:/-/*/*?value
+
+            h3
+              innerValue:General information
+            micro.widgets.wizard-form
+              collection
+                class:row
+                widgets
+
+                  /*
+                   * Name of app.
+                   */
+                  collection
+                    class:col-40
+                    widgets
+                      text
+                        info:Name
+                        .data-field:name
+                        value:x:/@.defaults/*/name?value
+                        title:Name of your app. Notice, this also declares the name of your database table.
+                        oninit
+
+                          /*
+                           * Setting initial focus to name textbox.
+                           */
+                          micro.page.set-focus:x:/../*/_event?value
+
+                        onchange
+
+                          /*
+                           * Sanity checking new name of app.
+                           */
+                          get-widget-property:x:/../*/_event?value
+                            value
+                          match:x:/@get-widget-property/*/*?value
+                            src:regex:"/^[-_a-z0-9]{3,20}$/i"
+                          if:x:/@match/*?count
+                            =:int:0
+                            or:x:/@match/0?name
+                              =:
+
+                            /*
+                             * Not an acceptable name of app.
+                             */
+                            micro.windows.info:Not an acceptable name. Use only a-z, A-Z, 0-1, '_' and/or '-' in your app's name
+                              class:micro-windows-info warning
+                            micro.page.set-focus:x:/../*/_event?value
+
+                  /*
+                   * Show headers checkbox.
+                   */
+                  div
+                    class:col
+                    widgets
+                      label
+                        widgets
+                          span
+                            innerValue:Show headers
+                          input:camphora-show-headers
+                            type:checkbox
+                            .data-field:show-headers
+                            oninit
+
+                              /*
+                               * Forward evaluated before creation of widget.
+                               */
+                              .file-values
+                                show-headers:x:/../*/.file-values/*/show-headers?value
+                              if:x:/@.file-values/*/show-headers?value
+
+                                /*
+                                 * Widget should be initially checked.
+                                 */
+                                set-widget-property:x:/../*/_event?value
+                                  checked
+
+                      /*
+                       * Desktop icon checkbox.
+                       */
+                      label
+                        widgets
+                          span
+                            innerValue:Desktop icon
+                          input:camphora-desktop-icon
+                            type:checkbox
+                            .data-field:desktop-icon
+                            oninit
+
+                              /*
+                               * Forward evaluated before creation of widget.
+                               */
+                              .file-values
+                                desktop-icon:x:/../*/.file-values/*/desktop-icon?value
+                              if:x:/@.file-values/*/desktop-icon?value
+
+                                /*
+                                 * Widget should be initially checked.
+                                 */
+                                set-widget-property:x:/../*/_event?value
+                                  checked
+
+        div
+          class:shaded rounded air-inner
+          widgets
+            h3
+              innerValue:Fields
+            div
+              .fields
+              widgets
+                div
+                  class:right
+                  widgets
+                    button
+                      innerValue:@"<span class=""icon-plus""></span>"
+                      class:large
+                      title:Adds another field to your CRUD app
+                      onclick
+
+                        /*
+                         * Adding a new field into form.
+                         */
+                        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                          .filename
+                        p5.web.widgets.find:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                          .fields
+
+                        /*
+                         * Creating widget wrapping field definition.
+                         */
+                        p5.web.widgets.get-parent:x:/../*/_event?value
+                        eval-x:x:/+/*/*
+                        create-widgets
+                          camphora.widgets._internals.field-definition
+                            before:x:/@p5.web.widgets.get-parent/*/*?value
+
+        div
+          class:shaded rounded air-inner
+          widgets
+            h3
+              innerValue:Views
+            div
+              .views
+              widgets
+                div
+                  class:right
+                  widgets
+                    button
+                      innerValue:@"<span class=""icon-eye-plus""></span>"
+                      class:large
+                      title:Adds another view to your CRUD app
+                      onclick
+
+                        /*
+                         * Finds our "view wrapper", and adds another CodeMirror wrapper, and a wrapper
+                         * for the view's name.
+                         *
+                         * Notice, we use the contents of 'default-view-content.hl' as the default content
+                         * of our newly created view.
+                         */
+                        p5.web.widgets.find
+                          .views
+                        load-file:@CAMPHORA/helpers/default-view-content.hl
+                          convert:false
+                        create-widgets
+                          camphora.widgets._internals.view-definition
+                            parent:x:/@p5.web.widgets.find/*/*?value
+                            name:view-name
+                            value:x:/@load-file/*?value
