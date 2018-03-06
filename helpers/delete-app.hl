@@ -18,8 +18,8 @@ micro.lambda.contract.min:x:/..
 
 
 /*
- * Deleting app, after having asked user to confirm action, for then
- * to simply re-databind grid.
+ * Deleting app, after having asked user to confirm action in a modal widget,
+ * for then to simply re-databind grid.
  */
 eval-x:x:/+/**/_filename
 create-widgets
@@ -76,7 +76,7 @@ create-widgets
 
                     /*
                      * Opening up database connection to camphora, and deleting the table, making
-                     * sure we wrap it in a try/catch block, in case it doesn't exist, or some other 
+                     * sure we wrap it in a try/catch block, in case it doesn't exist, or some other
                      * error occurs.
                      */
                     p5.mysql.connect:[camphora]
