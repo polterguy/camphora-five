@@ -1,4 +1,3 @@
-
 /*
  * Save an app.
  *
@@ -25,6 +24,10 @@ micro.lambda.contract.min:x:/..
 p5.web.widgets.find-first-ancestor:x:/../*/_event?value
   .data
 micro.form.serialize:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
+
+
+
 
 /*
  * Sanity checking name of app.
@@ -64,6 +67,10 @@ if:x:/@match/0?name
   micro.page.set-focus:x:/@p5.web.widgets.find/*/*?value
   return:bool:false
 
+
+
+
+
 /*
  * Making sure app has at least one column.
  */
@@ -76,6 +83,10 @@ if:x:/@micro.form.serialize/*/.signal?count
   micro.windows.info:Your app must have at least one field
     class:micro-windows-info warning
   return:bool:false
+
+
+
+
 
 /*
  * Making sure app has at least one visible column.
@@ -90,11 +101,19 @@ if:x:@"/@micro.form.serialize/*/.signal/@show-in-grid/""=:bool:true""?count"
     class:micro-windows-info warning
   return:bool:false
 
+
+
+
+
 /*
  * Used to hold actual data for our app.
  */
 .data
   views
+
+
+
+
 
 /*
  * Iterating through each view, and adding it into above [.data]/[views] lambda.
@@ -154,6 +173,10 @@ for-each:x:/@micro.form.serialize/*/view-name
     src:x:/@_dp/#?value
   set:x:/@.data/*/views/0/-?value
     src:x:/@_dp/#/+2?value
+
+
+
+
 
 /*
  * Iterating through each field, and adding it into our above [.data] lambda.
@@ -230,11 +253,19 @@ for-each:x:/@micro.form.serialize/*/.signal
       add:x:/@.data/0/-/*/type
         src:x:/@_dp?value
 
+
+
+
+
 /*
  * Adding other types of settings for app.
  */
 add:x:/../*/.data
   src:x:/@micro.form.serialize/*(/viewers|/editors|/skin|/show-headers|/desktop-icon)
+
+
+
+
 
 /*
  * Retrieving app's filename, and if it is not null, we delete
@@ -260,6 +291,10 @@ if:x:/@get-widget-property/*/*?value
      */
     delete-file:x:/@get-widget-property/*/*?value
 
+
+
+
+
 /*
  * Saving file.
  */
@@ -267,6 +302,10 @@ lambda2hyper:x:/@.data/*
 save-file:~/documents/private/camphora/{0}.hl
   :x:/@micro.form.serialize/*/name?value
   src:x:/@lambda2hyper?value
+
+
+
+
 
 /*
  * Updating [.filename] to signal we're now in "edit mode".
@@ -277,10 +316,18 @@ set-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
     :x:/@whoami/*/username?value
     :x:/@micro.form.serialize/*/name?value
 
+
+
+
+
 /*
  * Re-databinding grid.
  */
 micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
+
+
+
+
 
 /*
  * Notifying user.

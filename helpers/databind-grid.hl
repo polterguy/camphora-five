@@ -96,11 +96,7 @@ for-each:x:/@list-files/*?name
                      */
                     split:x:/@_filename?value
                       =:/
-                    eval-x:x:/+/*
                     micro.download.file:x:/@_filename?value
-                      Content-Type:application/x-hyperlambda
-                      Content-Disposition:@"attachment; filename=""{0}"""
-                        :x:/@split/0/-?name
 
                 /*
                  * Delete app manifest button.
