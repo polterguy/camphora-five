@@ -1,0 +1,144 @@
+
+/*
+ * Asks user to confirm generating edited app.
+ * Expects [_event] being the ID of the "generate button" that triggered request.
+ */
+
+
+
+
+
+/*
+ * Sanity checking arguments.
+ */
+micro.lambda.contract.min:x:/..
+  _event:string
+
+
+
+
+
+/*
+ * Asking user to confirm action.
+ */
+eval-x:x:/+/**/_widget
+create-widgets
+  micro.widgets.modal:camphora-confirm-app-creation
+    widgets
+      h3
+        innerValue:Please confirm action
+      p
+        innerValue:@"<strong>Warning</strong> - This will delete any existing apps with the same name, and also delete any existing data for these apps, if you choose to check off the <em>'delete data'</em> checkbox. Are you sure you wish to proceed?"
+      p
+        innerValue:@"<strong>Notice</strong>, - If you have changed any of your fields to become different types, you might have to delete your existing data in order to have your app correctly working. If you get weird errors as you run your app, try to re-generate your app, and delete your data as you do."
+      label
+        widgets
+          span
+            innerValue:Delete existing data
+          input:camphora-delete-data
+            type:checkbox
+      div
+        class:right
+        widgets
+          div
+            class:strip
+            widgets
+              button
+                innerValue:Yes
+                oninit
+
+                  /*
+                   * Setting focus initially to "Yes" button.
+                   */
+                  micro.page.set-focus:x:/../*/_event?value
+
+                onclick
+
+                  /*
+                   * Forward evaluated above.
+                   */
+                  _widget:x:/../*/_event?value
+
+                  /*
+                   * Finding parent widget, such that we can find
+                   * save button.
+                   */
+                  p5.web.widgets.get-parent:x:/../*/_widget?value
+                  p5.web.widgets.find:x:/-/*/*?value
+                    .save-button
+
+                  /*
+                   * Invoking event responsible for saving app, and
+                   * verifying that saving operation was successful
+                   * before we proceed to generating our app.
+                   */
+                  camphora.save-app:x:/@p5.web.widgets.find/*/*?value
+                  if:x:/@camphora.save-app?value
+                    =:bool:false
+
+                    /*
+                     * Saving of form was not successful.
+                     * Returning early, to abort generating of app.
+                     */
+                    return
+
+                  /*
+                   * Checking if user wants to delete any existing data for app.
+                   */
+                  get-widget-property:camphora-delete-data
+                    checked
+                  if:x:/-/*/*
+                    add:x:/../**/micro.evaluate.file
+                      src
+                        delete-data:bool:true
+
+                  /*
+                   * Retrieving filename widget, and invoking 
+                   * file responsible for generating our app.
+                   */
+                  p5.web.widgets.find-first-ancestor:x:/../*/_widget?value
+                    .filename
+                  get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                    .filename
+
+                  /*
+                   * Invoking file responsible for generating our app, making
+                   * sure we wrap the invocation in a try/catch block, in case
+                   * exceptions occurs.
+                   */
+                  try
+
+                    /*
+                     * Evaluating file responsible for creating our app.
+                     */
+                    eval-x:x:/+/*
+                    micro.evaluate.file:@CAMPHORA/helpers/generate-app.hl
+                      filename:x:/@get-widget-property/*/*?value
+
+                    /*
+                     * Notifying user.
+                     */
+                    micro.windows.info:App was successfully generated
+                      class:micro-windows-info success
+
+                    /*
+                     * Deleting modal widget.
+                     */
+                    delete-widget:camphora-confirm-app-creation
+
+                  catch
+
+                    /*
+                     * Oops ...!!
+                     */
+                    micro.windows.info:x:/@message?value
+                      class:micro-windows-info warning
+
+              button
+                innerValue:No
+                onclick
+
+                  /*
+                   * Deleting modal widget.
+                   */
+                  delete-widget:camphora-confirm-app-creation
