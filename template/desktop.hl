@@ -12,14 +12,3 @@ container
     literal
       element:span
       class:desktop-app-text capitalize
-      oninit
-
-        /*
-         * Getting URL to point correctly.
-         */
-        p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-          .app-name
-        get-widget-property:x:/-/*/*?value
-          .app-name
-        set-widget-property:x:/../*/_event?value
-          innerValue:x:/@get-widget-property/*/*?value

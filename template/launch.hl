@@ -9,7 +9,7 @@
 /*
  * Retrieves our app's name, and other URL entities.
  */
-camphora._internal.get-app-url-entities:x:/..
+micro.url.get-entities
 
 
 
@@ -19,7 +19,7 @@ camphora._internal.get-app-url-entities:x:/..
  * Loading file containing app declaration.
  */
 load-file:/modules/{0}/helpers/app-manifest.hl
-  :x:/@camphora._internal.get-app-url-entities/0?name
+  :x:/@micro.url.get-entities/0?name
 
 
 
@@ -28,13 +28,13 @@ load-file:/modules/{0}/helpers/app-manifest.hl
 /*
  * Checking if this is a request for a "custom view".
  */
-if:x:/@camphora._internal.get-app-url-entities/*?count
+if:x:/@micro.url.get-entities/*?count
   >:int:1
-  and:x:/@camphora._internal.get-app-url-entities/1?name
+  and:x:/@micro.url.get-entities/1?name
     !=:download
-  and:x:/@camphora._internal.get-app-url-entities/1?name
+  and:x:/@micro.url.get-entities/1?name
     !=:upload
-  and:x:/@camphora._internal.get-app-url-entities/1?name
+  and:x:/@micro.url.get-entities/1?name
     !=:tag
 
   /*
@@ -44,16 +44,16 @@ if:x:/@camphora._internal.get-app-url-entities/*?count
   if
     fetch:x:/0/0?value
       file-exists:/modules/{0}/{1}.hl
-        :x:/@camphora._internal.get-app-url-entities/0?name
-        :x:/@camphora._internal.get-app-url-entities/1?name
+        :x:/@micro.url.get-entities/0?name
+        :x:/@micro.url.get-entities/1?name
 
     /*
      * View exists, evaluating its associated file, and returning early, 
      * to avoid evaluation of the rest of our lambda.
      */
     micro.evaluate.file:/modules/{0}/{1}.hl
-      :x:/@camphora._internal.get-app-url-entities/0?name
-      :x:/@camphora._internal.get-app-url-entities/1?name
+      :x:/@micro.url.get-entities/0?name
+      :x:/@micro.url.get-entities/1?name
     return
 
   else
@@ -83,7 +83,7 @@ create-container-widget:camphora-main-container
  * Changing the title of page.
  */
 p5.web.page.set-title:{0}
-  :x:/@camphora._internal.get-app-url-entities/0?name
+  :x:/@micro.url.get-entities/0?name
 
 
 
@@ -96,7 +96,7 @@ p5.web.page.set-title:{0}
 eval-x:x:/+/*
 micro.css.include
 p5.web.include-css-file:/modules/{0}/media/main.css
-  :x:/@camphora._internal.get-app-url-entities/0?name
+  :x:/@micro.url.get-entities/0?name
 
 
 
@@ -128,9 +128,9 @@ if:x:/@whoami/*/role?value
  * Checking if current request is trying to download our temp CSV file, and if so,
  * returning it to the client as is.
  */
-if:x:/@camphora._internal.get-app-url-entities/*?count
+if:x:/@micro.url.get-entities/*?count
   =:int:2
-  and:x:/@camphora._internal.get-app-url-entities/1?name
+  and:x:/@micro.url.get-entities/1?name
     =:download
 
   /*
@@ -142,9 +142,9 @@ if:x:/@camphora._internal.get-app-url-entities/*?count
     src:text/csv
   p5.web.header.set:Content-Disposition
     src:@"attachment; filename=""{0}.csv"""
-      :x:/@camphora._internal.get-app-url-entities/0?name
+      :x:/@micro.url.get-entities/0?name
   p5.web.echo-file:~/temp/{0}.csv
-    :x:/@camphora._internal.get-app-url-entities/0?name
+    :x:/@micro.url.get-entities/0?name
 
   /*
    * Returning early to abort evaluation of the rest of our file.
@@ -238,7 +238,7 @@ if:x:/@load-file/*/*/show-headers?value
                 /*
                  * Forward evaluated above.
                  */
-                _app-name:x:/@camphora._internal.get-app-url-entities/0?name
+                _app-name:x:/@micro.url.get-entities/0?name
 
                 /*
                  * Storing sort column in ViewState and re-databinding datagrid.
@@ -316,9 +316,9 @@ if:x:/@load-file/*/*/show-headers?value
  * Checking if current request is trying to upload a CSV file, and if so,
  * invoking file responsible for handling our upload, and returning early.
  */
-if:x:/@camphora._internal.get-app-url-entities/*?count
+if:x:/@micro.url.get-entities/*?count
   =:int:2
-  and:x:/@camphora._internal.get-app-url-entities/1?name
+  and:x:/@micro.url.get-entities/1?name
     =:upload
 
   /*
@@ -334,8 +334,8 @@ if:x:/@camphora._internal.get-app-url-entities/*?count
      */
     eval-x:x:/+/*/app-name
     micro.evaluate.file:/modules/{0}/helpers/upload-file.hl
-      :x:/@camphora._internal.get-app-url-entities/0?name
-      app-name:x:/@camphora._internal.get-app-url-entities/0?name
+      :x:/@micro.url.get-entities/0?name
+      app-name:x:/@micro.url.get-entities/0?name
 
   catch
 
@@ -376,7 +376,7 @@ eval-x:x:/+/*/url
 micro.page.create-dropzone
   filter:csv
   url:{0}/upload
-    :x:/../*/camphora._internal.get-app-url-entities/[0,1]/0?name
+    :x:/../*/micro.url.get-entities/[0,1]/0?name
   .onfinish:@"function(uid, no_files, no_errors) {if(no_errors > 0){alert('There were errors when trying to import your file');p5.$('camphora-upload-obscurer').el.style.display = 'none';} else {window.location.replace(window.location.href);}}"
   .onbegin:@"function() {p5.$('camphora-upload-obscurer').el.style.display = 'block';}"
 
@@ -428,7 +428,7 @@ if:x:/@load-file/*/*/views/*?count
                 innerValue:x:/@_dp?value
                 style:"display:block;"
                 href:/{0}/{1}
-                  :x:/@camphora._internal.get-app-url-entities/0?name
+                  :x:/@micro.url.get-entities/0?name
                   :x:/@_dp?value
 
   /*
@@ -550,7 +550,7 @@ window.onscroll = function() {
                             /*
                              * Forward evaluated above.
                              */
-                            _app-name:x:/@camphora._internal.get-app-url-entities/0?name
+                            _app-name:x:/@micro.url.get-entities/0?name
 
                             /*
                              * Modifying placeholder to contain record count.
@@ -575,7 +575,7 @@ window.onscroll = function() {
                             /*
                              * Forward evaluated above.
                              */
-                            _app-name:x:/@camphora._internal.get-app-url-entities/0?name
+                            _app-name:x:/@micro.url.get-entities/0?name
 
                             /*
                              * Figuring out filter, setting it to viewstate,
@@ -626,8 +626,8 @@ window.onscroll = function() {
                              * Checking if current URL is a request for items with
                              * a specific "hash tag", at which point we enable the clear button.
                              */
-                            camphora._internal.get-app-url-entities
-                            if:x:/@camphora._internal.get-app-url-entities/1?name
+                            micro.url.get-entities
+                            if:x:/@micro.url.get-entities/1?name
                               =:tag
 
                               /*
@@ -643,7 +643,7 @@ window.onscroll = function() {
                             /*
                              * Forward evaluated above.
                              */
-                            _app-name:x:/@camphora._internal.get-app-url-entities/0?name
+                            _app-name:x:/@micro.url.get-entities/0?name
 
                             /*
                              * To clear out any viewstate and tags, we simply re-direct
@@ -666,7 +666,7 @@ window.onscroll = function() {
                             /*
                              * Forward evaluated above.
                              */
-                            _app-name:x:/@camphora._internal.get-app-url-entities/0?name
+                            _app-name:x:/@micro.url.get-entities/0?name
 
                             /*
                              * Making sure user is not editing another item, since this will
@@ -698,7 +698,7 @@ window.onscroll = function() {
                             /*
                              * Forward evaluated above.
                              */
-                            _app-name:x:/@camphora._internal.get-app-url-entities/0?name
+                            _app-name:x:/@micro.url.get-entities/0?name
 
                             /*
                              * Evaluating file responsible for exporting items to client.
@@ -721,7 +721,7 @@ window.onscroll = function() {
                             /*
                              * Forward evaluated above.
                              */
-                            _app-name:x:/@camphora._internal.get-app-url-entities/0?name
+                            _app-name:x:/@micro.url.get-entities/0?name
 
                             /*
                              * Asking user to confirm action.
@@ -755,7 +755,7 @@ window.onscroll = function() {
                                               /*
                                                * Forward evaluated above.
                                                */
-                                              _app-name:x:/@camphora._internal.get-app-url-entities/0?name
+                                              _app-name:x:/@micro.url.get-entities/0?name
 
                                               /*
                                                * Deleting all records from database.
@@ -806,7 +806,7 @@ window.onscroll = function() {
                     /*
                      * Feeding grid with more items.
                      */
-                    _app-name:x:/@camphora._internal.get-app-url-entities/0?name
+                    _app-name:x:/@micro.url.get-entities/0?name
                     micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
                       :x:/@_app-name?value
                       feed-more:bool:true
@@ -817,7 +817,7 @@ window.onscroll = function() {
                     /*
                      * Forward evaluated above.
                      */
-                    _app-name:x:/@camphora._internal.get-app-url-entities/0?name
+                    _app-name:x:/@micro.url.get-entities/0?name
 
                     /*
                      * Evaluating file responsible for databinding grid.
