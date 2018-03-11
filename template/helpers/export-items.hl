@@ -87,7 +87,5 @@ p5.mysql.connect:[camphora]
 /*
  * Re-directing client to download link.
  */
-p5.web.get-root-location
-p5.web.set-location:{0}{1}/download
-  :x:/@p5.web.get-root-location?value
+micro.download.file:~/temp/{0}.csv
   :x:/../*/app-name?value

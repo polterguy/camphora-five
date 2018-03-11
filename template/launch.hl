@@ -31,8 +31,6 @@ load-file:/modules/{0}/helpers/app-manifest.hl
 if:x:/@micro.url.get-entities/*?count
   >:int:1
   and:x:/@micro.url.get-entities/1?name
-    !=:download
-  and:x:/@micro.url.get-entities/1?name
     !=:upload
   and:x:/@micro.url.get-entities/1?name
     !=:tag
@@ -118,37 +116,6 @@ if:x:/@whoami/*/role?value
    * Forcing user to log in, and returning early.
    */
   p5.core.login
-  return
-
-
-
-
-
-/*
- * Checking if current request is trying to download our temp CSV file, and if so,
- * returning it to the client as is.
- */
-if:x:/@micro.url.get-entities/*?count
-  =:int:2
-  and:x:/@micro.url.get-entities/1?name
-    =:download
-
-  /*
-   * Current request is trying to download the temporary created CSV file.
-   *
-   * Making sure we get our HTTP headers set correctly, and echoing file as is.
-   */
-  p5.web.header.set:Content-Type
-    src:text/csv
-  p5.web.header.set:Content-Disposition
-    src:@"attachment; filename=""{0}.csv"""
-      :x:/@micro.url.get-entities/0?name
-  p5.web.echo-file:~/temp/{0}.csv
-    :x:/@micro.url.get-entities/0?name
-
-  /*
-   * Returning early to abort evaluation of the rest of our file.
-   */
   return
 
 
@@ -349,6 +316,10 @@ if:x:/@micro.url.get-entities/*?count
    */
   return
 
+
+
+
+
 /*
  * Creating Edit row header, but only if headers are supposed to be shown.
  */
@@ -362,23 +333,16 @@ if:x:/@load-file/*/*/show-headers?value
       ""
         style:"width:5px;text-align:right;"
 
+
+
+
+
 /*
  * Making sure all other parts of our system knows the user is allowed to edit data
  * in the system.
  */
 p5.web.viewstate.set:camphora.editing-allowed
   src:bool:true
-
-/*
- * Making sure we create a CSV file dropzone for our page.
- */
-eval-x:x:/+/*/url
-micro.page.create-dropzone
-  filter:csv
-  url:{0}/upload
-    :x:/../*/micro.url.get-entities/[0,1]/0?name
-  .onfinish:@"function(uid, no_files, no_errors) {if(no_errors > 0){alert('There were errors when trying to import your file');p5.$('camphora-upload-obscurer').el.style.display = 'none';} else {window.location.replace(window.location.href);}}"
-  .onbegin:@"function() {p5.$('camphora-upload-obscurer').el.style.display = 'block';}"
 
 
 
@@ -492,13 +456,6 @@ create-widget
     micro.widgets.cover:camphora-feed-more-obscurer
       style:"display:none;"
       message:"Please wait while we fetch more items ..."
-
-    /*
-     * Obscurer show when files are uploaded.
-     */
-    micro.widgets.cover:camphora-upload-obscurer
-      style:"display:none;"
-      message:"Please wait while we upload and import your file(s) ..."
 
     div
       class:row
