@@ -1,3 +1,4 @@
+
 /*
  * Launcher file for Camphora Five generated app.
  */
@@ -16,7 +17,7 @@ micro.url.get-entities
 
 
 /*
- * Loading file containing app declaration.
+ * Loading file containing app manifest.
  */
 load-file:/modules/{0}/helpers/app-manifest.hl
   :x:/@micro.url.get-entities/0?name
@@ -27,11 +28,12 @@ load-file:/modules/{0}/helpers/app-manifest.hl
 
 /*
  * Checking if this is a request for a "custom view".
+ *
+ * Notice, a view cannot be named "tag", since that would interfer with the
+ * hashtag URL resolver.
  */
 if:x:/@micro.url.get-entities/*?count
   >:int:1
-  and:x:/@micro.url.get-entities/1?name
-    !=:upload
   and:x:/@micro.url.get-entities/1?name
     !=:tag
 
@@ -80,7 +82,7 @@ create-container-widget:camphora-main-container
 /*
  * Changing the title of page.
  */
-p5.web.page.set-title:{0}
+p5.web.page.set-title:Camphora - {0}
   :x:/@micro.url.get-entities/0?name
 
 
@@ -91,32 +93,9 @@ p5.web.page.set-title:{0}
  * Including Micro, adding Awesome Fonts, adding app's chosen skin, in addition
  * to adding our main CSS file for currently evaluated Camphora app.
  */
-eval-x:x:/+/*
 micro.css.include
 p5.web.include-css-file:/modules/{0}/media/main.css
   :x:/@micro.url.get-entities/0?name
-
-
-
-
-
-/*
- * Verifying user is allowed to view data, and if not, forcing him to login,
- * and returning early, to avoid evaluating the rest of our file.
- */
-whoami
-if:x:/@whoami/*/role?value
-  !=:root
-  and:x:/@load-file/*/*/viewers?value
-    !=:guest
-  and:x:/@load-file/*/*/viewers?value
-    !=:x:/@whoami/*/role?value
-
-  /*
-   * Forcing user to log in, and returning early.
-   */
-  p5.core.login
-  return
 
 
 
@@ -270,51 +249,10 @@ if:x:/@load-file/*/*/show-headers?value
 
                 /*
                  * Re-databinding grid, now with an explicit sort order column
-                 * in ViewState.
+                 * stored in our ViewState.
                  */
                 micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
                   :x:/@_app-name?value
-
-
-
-
-
-/*
- * Checking if current request is trying to upload a CSV file, and if so,
- * invoking file responsible for handling our upload, and returning early.
- */
-if:x:/@micro.url.get-entities/*?count
-  =:int:2
-  and:x:/@micro.url.get-entities/1?name
-    =:upload
-
-  /*
-   * Evaluating file responsible for handling our upload, and returning early,
-   * to avoid evaluation of the rest of our file.
-   *
-   * Making sure we wrap our invocation in a try/catch block.
-   */
-  try
-
-    /*
-     * Evaluating "upload" file.
-     */
-    eval-x:x:/+/*/app-name
-    micro.evaluate.file:/modules/{0}/helpers/upload-file.hl
-      :x:/@micro.url.get-entities/0?name
-      app-name:x:/@micro.url.get-entities/0?name
-
-  catch
-
-    /*
-     * Making sure we return "error" to client.
-     */
-    p5.web.echo:ERROR
-
-  /*
-   * Returning early to avoid evaluation of the rest of our file.
-   */
-  return
 
 
 
@@ -451,7 +389,7 @@ create-widget
   widgets
 
     /*
-     * Obscurer show when files are uploaded.
+     * Obscurer show when more items are requested.
      */
     micro.widgets.cover:camphora-feed-more-obscurer
       style:"display:none;"
@@ -665,10 +603,26 @@ window.onscroll = function() {
                               :x:/@_app-name?value
                               app-name:x:/@_app-name?value
 
-                        button:camphora-import-csv-file
-                          innerValue:@"<span class=""icon-upload2""></span>"
+                        micro.widgets.upload-button:camphora-import-csv-file
                           title:Import a CSV file from your local disc
-                          onclick:@"p5.dropzone.browse();event.stopPropagation(true);return false;"
+                          accept:.csv
+                          .onupload
+
+                            /*
+                             * Evaluating "upload" Hyperlambda file.
+                             */
+                            micro.url.get-entities
+                            add:x:/+2
+                              src:x:/../*/files
+                            eval-x:x:/+/*/app-name
+                            micro.evaluate.file:/modules/{0}/helpers/upload-file.hl
+                              :x:/@micro.url.get-entities/0?name
+                              app-name:x:/@micro.url.get-entities/0?name
+
+                            /*
+                             * For simplicity reasons, we simply reload current URL.
+                             */
+                            p5.web.reload-location
 
                         button:camphora-delete-all-button
                           innerValue:@"<span class=""icon-bin""></span>"
@@ -736,16 +690,12 @@ window.onscroll = function() {
                                                */
                                               delete-widget:camphora-delete-all-records
 
-                        button
+                        a
+                          role:button
+                          class:button
                           innerValue:@"<span class=""icon-home3""></span>"
                           title:Return to home
-                          onclick
-
-                            /*
-                             * Redirecting user to server's root URL.
-                             */
-                            p5.web.get-root-location
-                            p5.web.set-location:x:/-?value
+                          href:/
 
     div
       class:row air-top

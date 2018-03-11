@@ -2,7 +2,7 @@
 /*
  * File responsible for uploading a CSV file.
  *
- * Expects [app-name] being the name of our app.
+ * Expects [app-name] being the name of our app, and [files] being files.
  */
 
 
@@ -10,26 +10,24 @@
 
 
 /*
- * Parsing request content as MIME.
+ * Sanity checking invocation.
  */
-p5.web.request.parse-mime
-  attachment-folder:~/temp/
+micro.lambda.contract.min:x:/..
+  app-name:string
+  files
 
 
 
 
 
 /*
- * Loading file, and creating lambda object from it.
+ * Loading our CSV file.
  *
  * Notice, since file's extension is expected to be ".csv", the default CSV parsing
  * will kick in, and automatically convert file to a lambda object, since we don't
  * explicitly informs our [load-file] invocation to not do this.
  */
-load-file:{0}{1}{2}
-  :x:/@p5.web.request.parse-mime/*/multipart/=form-data/*/text/=csv/*/filename/*/folder?value
-  :x:/@p5.web.request.parse-mime/*/multipart/=form-data/*/text/=csv/*/filename/*/prefix?value
-  :x:/@p5.web.request.parse-mime/*/multipart/=form-data/*/text/=csv/*/filename?value
+load-file:x:/../*/files/0?value
 
 
 
