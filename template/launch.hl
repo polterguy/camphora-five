@@ -90,7 +90,7 @@ p5.web.page.set-title:Camphora - {0}
 
 
 /*
- * Including Micro, adding Awesome Fonts, adding app's chosen skin, in addition
+ * Including Micro, adding Awesome Fonts, adding skin, in addition
  * to adding our main CSS file for currently evaluated Camphora app.
  */
 micro.css.include
@@ -182,7 +182,7 @@ if:x:/@load-file/*/*/show-headers?value
               onclick
 
                 /*
-                 * Forward evaluated above.
+                 * Forward evaluated below before widget is created.
                  */
                 _app-name:x:/@micro.url.get-entities/0?name
 
@@ -270,17 +270,6 @@ if:x:/@load-file/*/*/show-headers?value
     src
       ""
         style:"width:5px;text-align:right;"
-
-
-
-
-
-/*
- * Making sure all other parts of our system knows the user is allowed to edit data
- * in the system.
- */
-p5.web.viewstate.set:camphora.editing-allowed
-  src:bool:true
 
 
 

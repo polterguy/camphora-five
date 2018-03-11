@@ -350,15 +350,6 @@ if:x:/@.signal/--/id?value
 
 
 /*
- * Checking if user is allowed to edit data in the system, for later references.
- */
-p5.web.viewstate.get:camphora.editing-allowed
-
-
-
-
-
-/*
  * Checking if this is a [feed-more] invocation, at which point we add an argument
  * to our SQL, which only selects items with a lower ID than what was previously selected.
  */
@@ -583,17 +574,11 @@ p5.mysql.connect:[camphora]
                     :x:/@p5.html.url-encode?value
 
     /*
-     * Checking if user is allowed to edit items in system, and if he is, 
-     * we add our "Edit row" cell.
+     * User is allowed to edit rows, loading our file that contains our "Edit row"
+     * template, and adding it into invocation that adds row to grid.
      */
-    if:x:/@p5.web.viewstate.get/*?value
-
-      /*
-       * User is allowed to edit rows, loading our file that contains our "Edit row"
-       * template, and adding it into invocation that adds row to grid.
-       */
-      add:x:/..for-each/*/add/[1,2]/*/src
-        src:x:/@load-file/*/*
+    add:x:/..for-each/*/add/[2,3]/*/src
+      src:x:/@load-file/*/*
 
     /*
      * Adding row to grid.
