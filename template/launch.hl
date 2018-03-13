@@ -70,16 +70,6 @@ if:x:/@micro.url.get-entities/*?count
 
 
 /*
- * Creating main content container.
- */
-create-container-widget:camphora-main-container
-  class:container
-
-
-
-
-
-/*
  * Changing the title of page.
  */
 p5.web.page.set-title:Camphora - {0}
@@ -187,71 +177,11 @@ if:x:/@load-file/*/*/show-headers?value
                 _app-name:x:/@micro.url.get-entities/0?name
 
                 /*
-                 * Storing sort column in ViewState and re-databinding datagrid.
+                 * Evaluating file responsible for sorting datagrid by clicked column.
                  */
-                get-widget-property:x:/../*/_event?value
-                  innerValue
-                p5.web.viewstate.set:camphora.sort-column
-                  src:x:/@get-widget-property/*/*?value
-
-                /*
-                 * Making sure we update CSS class of bugger.
-                 */
-                p5.web.widgets.find-like
-                  class:camphora-sort-column
-                if:x:/-/*/*?value
-                  !=:x:/../*/_event?value
-
-                  /*
-                   * User selected a different sorting column.
-                   */
-                  micro.css.delete:x:/@p5.web.widgets.find-like/*/*?value
-                    class:camphora-sort-column camphora-sort-column-asc camphora-sort-column-desc
-                  micro.css.add:x:/../*/_event?value
-                    class:camphora-sort-column
-
-                /*
-                 * Checking if we should sort ascending or descending.
-                 */
-                get-widget-property:x:/../*/_event?value
-                  class
-                if:x:/@get-widget-property/*/*?value
-                  ~:camphora-sort-column-asc
-
-                  /*
-                   * Grid was sorted ascendingly, toggling it to become descendingly sorted.
-                   */
-                  micro.css.toggle:x:/../*/_event?value
-                    class:camphora-sort-column-asc camphora-sort-column-desc
-                  p5.web.viewstate.set:camphora.sort-column-direction
-                    src:desc
-
-                else-if:x:/@get-widget-property/*/*?value
-                  ~:camphora-sort-column-desc
-
-                  /*
-                   * Grid was sorted descendingly, toggling it to become ascendingly sorted.
-                   */
-                  micro.css.toggle:x:/../*/_event?value
-                    class:camphora-sort-column-asc camphora-sort-column-desc
-                  p5.web.viewstate.set:camphora.sort-column-direction
-                    src:asc
-
-                else
-
-                  /*
-                   * Grid was not sorted by this column at all, defaulting to ascendingly.
-                   */
-                  p5.web.viewstate.set:camphora.sort-column-direction
-                    src:asc
-                  micro.css.add:x:/../*/_event?value
-                    class:camphora-sort-column-asc
-
-                /*
-                 * Re-databinding grid, now with an explicit sort order column
-                 * stored in our ViewState.
-                 */
-                micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
+                add:x:/+
+                  src:x:/../*(/_app-name|/_event)
+                micro.evaluate.file:/modules/{0}/helpers/sort-by-column.hl
                   :x:/@_app-name?value
 
 
@@ -288,9 +218,6 @@ if:x:/@p5.web.query.get/*?value
   add:x:/../*/create-widget/**/input/=camphora-search-query
     src
       value:x:/@p5.web.query.get/*?value
-  add:x:/../*/create-widget/**/input/=camphora-search-query/*/oninit
-    src
-      micro.page.set-focus:x:/../*/_event?value
 
 
 
@@ -318,6 +245,7 @@ if:x:/@load-file/*/*/views/*?count
               a
                 innerValue:x:/@_dp?value
                 style:"display:block;"
+                target:_blank
                 href:/{0}/{1}
                   :x:/@micro.url.get-entities/0?name
                   :x:/@_dp?value
@@ -373,8 +301,8 @@ if:x:/@load-file/*/*/views/*?count
  * Creating main wire-frame grid.
  */
 eval-x:x:/+/**(/_app-name)
-create-widget
-  parent:camphora-main-container
+create-widget:camphora-main-container
+  class:container
   widgets
 
     /*
@@ -420,16 +348,16 @@ window.onscroll = function() {
               class:row
               widgets
                 div
-                  class:col-50
+                  class:col
                   widgets
                     div
-                      class:strip fill right
-                      widgets
-                        input:camphora-search-query
-                          type:text
-                          placeholder:Search ...
-                          onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-search-button').raise('onclick');return false;}"
-                          oninit
+                      class:strip toolbar right
+                      widgets:toolbar
+                        button:camphora-add-new-record-button
+                          innerValue:@"<span class=""icon-plus""></span>"
+                          class:large
+                          title:Create new record
+                          onclick
 
                             /*
                              * Forward evaluated above.
@@ -437,18 +365,125 @@ window.onscroll = function() {
                             _app-name:x:/@micro.url.get-entities/0?name
 
                             /*
-                             * Modifying placeholder to contain record count.
+                             * Making sure user is not editing another item, since this will
+                             * raise an exception, due to static IDs in widgets.
                              */
-                            p5.mysql.connect:[camphora]
-                              p5.mysql.scalar:@"select count(*) from `{0}`"
-                                :x:/@_app-name?value
-                              set-widget-property:x:/../*/_event?value
-                                placeholder:Search amongst {0} records ...
-                                  :x:/@p5.mysql.scalar?value
+                            p5.web.widgets.find
+                              .edit
+                            if:x:/@p5.web.widgets.find/*/*?value
+
+                              /*
+                               * Warning use that he needs to finish up editing existing item,
+                               * before he can create new items.
+                               */
+                              micro.windows.info:You have to finish editing your item, before you can create a new item
+                                class:micro-windows-info warning
+                              return
 
                             /*
-                             * Setting focus initially to search textbox.
+                             * Evaluating file responsible for creating a new record.
                              */
+                            micro.evaluate.file:/modules/{0}/helpers/create-item.hl
+                              :x:/@_app-name?value
+
+                        button
+                          innerValue:@"<span class=""icon-download2""></span>"
+                          title:Download items as CSV file
+                          onclick
+
+                            /*
+                             * Forward evaluated above.
+                             */
+                            _app-name:x:/@micro.url.get-entities/0?name
+
+                            /*
+                             * Evaluating file responsible for exporting items to client.
+                             */
+                            eval-x:x:/+/*/app-name
+                            micro.evaluate.file:/modules/{0}/helpers/export-items.hl
+                              :x:/@_app-name?value
+                              app-name:x:/@_app-name?value
+
+                        micro.widgets.upload-button:camphora-import-csv-file
+                          title:Import a CSV file from your local disc
+                          accept:.csv
+                          .onupload
+
+                            /*
+                             * Evaluating "upload" Hyperlambda file.
+                             */
+                            micro.url.get-entities
+                            add:x:/+2
+                              src:x:/../*/files
+                            eval-x:x:/+/*/app-name
+                            micro.evaluate.file:/modules/{0}/helpers/upload-file.hl
+                              :x:/@micro.url.get-entities/0?name
+                              app-name:x:/@micro.url.get-entities/0?name
+
+                            /*
+                             * For simplicity reasons, we simply reload current URL.
+                             */
+                            p5.web.reload-location
+
+                        button:camphora-delete-all-button
+                          innerValue:@"<span class=""icon-bin""></span>"
+                          title:Deletes all items in your database
+                          onclick
+
+                            /*
+                             * Forward evaluated above.
+                             */
+                            _app-name:x:/@micro.url.get-entities/0?name
+
+                            /*
+                             * Evaluates file responsible for actually deleting all items.
+                             */
+                            micro.evaluate.file:/modules/{0}/helpers/delete-all.hl
+                              :x:/@_app-name?value
+
+                        a
+                          role:button
+                          class:button
+                          innerValue:@"<span class=""icon-home3""></span>"
+                          title:Return to home
+                          href:/
+
+                    div
+                      class:strip right
+                      widgets
+                        input:camphora-search-query
+                          type:text
+                          placeholder:Search ...
+                          onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-search-button').raise('onclick');return false;}"
+                          events
+
+                            /*
+                             * Updates count.
+                             */
+                            camphora.update-count
+
+                              /*
+                               * Forward evaluated above.
+                               */
+                              _app-name:x:/@micro.url.get-entities/0?name
+
+                              /*
+                               * Modifying placeholder to contain record count.
+                               */
+                              p5.mysql.connect:[camphora]
+                                p5.mysql.scalar:@"select count(*) from `{0}`"
+                                  :x:/@_app-name?value
+                                set-widget-property:x:/../*/_event?value
+                                  placeholder:Search amongst {0} records ...
+                                    :x:/@p5.mysql.scalar?value
+
+                          oninit
+
+                            /*
+                             * Setting focus initially to search textbox, and
+                             * making sure we set initial count of records.
+                             */
+                            camphora.update-count
                             micro.page.set-focus:x:/../*/_event?value
 
                         button:camphora-search-button
@@ -534,157 +569,6 @@ window.onscroll = function() {
                              * the client to base URL of app.
                              */
                             p5.web.set-location:x:/@_app-name?value
-
-                div
-                  class:col-50
-                  widgets
-                    div
-                      class:strip toolbar right
-                      widgets:toolbar
-                        button:camphora-add-new-record-button
-                          innerValue:@"<span class=""icon-plus""></span>"
-                          class:larger
-                          title:Create new record
-                          onclick
-
-                            /*
-                             * Forward evaluated above.
-                             */
-                            _app-name:x:/@micro.url.get-entities/0?name
-
-                            /*
-                             * Making sure user is not editing another item, since this will
-                             * raise an exception, due to static IDs in widgets.
-                             */
-                            p5.web.widgets.find
-                              .edit
-                            if:x:/@p5.web.widgets.find/*/*?value
-
-                              /*
-                               * Warning use that he needs to finish up editing existing item,
-                               * before he can create new items.
-                               */
-                              micro.windows.info:You have to finish editing your item, before you can create a new item
-                                class:micro-windows-info warning
-                              return
-
-                            /*
-                             * Evaluating file responsible for creating a new record.
-                             */
-                            micro.evaluate.file:/modules/{0}/helpers/create-item.hl
-                              :x:/@_app-name?value
-
-                        button
-                          innerValue:@"<span class=""icon-download2""></span>"
-                          title:Download items as CSV file
-                          onclick
-
-                            /*
-                             * Forward evaluated above.
-                             */
-                            _app-name:x:/@micro.url.get-entities/0?name
-
-                            /*
-                             * Evaluating file responsible for exporting items to client.
-                             */
-                            eval-x:x:/+/*/app-name
-                            micro.evaluate.file:/modules/{0}/helpers/export-items.hl
-                              :x:/@_app-name?value
-                              app-name:x:/@_app-name?value
-
-                        micro.widgets.upload-button:camphora-import-csv-file
-                          title:Import a CSV file from your local disc
-                          accept:.csv
-                          .onupload
-
-                            /*
-                             * Evaluating "upload" Hyperlambda file.
-                             */
-                            micro.url.get-entities
-                            add:x:/+2
-                              src:x:/../*/files
-                            eval-x:x:/+/*/app-name
-                            micro.evaluate.file:/modules/{0}/helpers/upload-file.hl
-                              :x:/@micro.url.get-entities/0?name
-                              app-name:x:/@micro.url.get-entities/0?name
-
-                            /*
-                             * For simplicity reasons, we simply reload current URL.
-                             */
-                            p5.web.reload-location
-
-                        button:camphora-delete-all-button
-                          innerValue:@"<span class=""icon-bin""></span>"
-                          title:Deletes all items in your database
-                          onclick
-
-                            /*
-                             * Forward evaluated above.
-                             */
-                            _app-name:x:/@micro.url.get-entities/0?name
-
-                            /*
-                             * Asking user to confirm action.
-                             */
-                            eval-x:x:/+/*/*/*/p/*/innerValue
-                            create-widgets
-                              micro.widgets.modal:camphora-delete-all-records
-                                widgets
-                                  h3
-                                    innerValue:Please confirm action
-                                  p
-                                    innerValue:These will delete all records in your database of type '{0}', are you sure you wish to continue?
-                                      :x:/@_app-name?value
-                                  div
-                                    class:right
-                                    widgets
-                                      div
-                                        class:strip
-                                        widgets
-                                          button
-                                            innerValue:Yes
-                                            oninit
-
-                                              /*
-                                               * Setting initial focus to "Yes" button.
-                                               */
-                                              micro.page.set-focus:x:/../*/_event?value
-
-                                            onclick
-
-                                              /*
-                                               * Forward evaluated above.
-                                               */
-                                              _app-name:x:/@micro.url.get-entities/0?name
-
-                                              /*
-                                               * Deleting all records from database.
-                                               */
-                                              p5.mysql.connect:[camphora]
-                                                p5.mysql.delete:@"delete from `{0}`"
-                                                  :x:/@_app-name?value
-
-                                              /*
-                                               * Reloading root location for simplicity.
-                                               */
-                                              p5.web.set-location:/{0}
-                                                :x:/@_app-name?value
-
-                                          button
-                                            innerValue:No
-                                            onclick
-
-                                              /*
-                                               * Deleting modal widget.
-                                               */
-                                              delete-widget:camphora-delete-all-records
-
-                        a
-                          role:button
-                          class:button
-                          innerValue:@"<span class=""icon-home3""></span>"
-                          title:Return to home
-                          href:/
 
     div
       class:row air-top

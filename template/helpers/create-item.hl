@@ -21,20 +21,11 @@ join:x:/@split/*?name
 
 
 /*
- * Evaluating file responsible for creating widgets for us.
- */
-micro.evaluate.file:/{0}/create-item-widgets.hl
-  :x:/@join?value
-
-
-
-
-
-/*
  * Adding widgets returned from above file invocation to [widgets:data] segment below.
  */
 add:x:/../*/create-widgets/**/widgets/=data
-  src:x:/@micro.evaluate.file/*
+  micro.evaluate.file:/{0}/create-item-widgets.hl
+    :x:/@join?value
 
 
 
@@ -137,6 +128,11 @@ create-widgets
                   delete-widget:camphora-new-item-modal
                   micro.evaluate.file:/{0}/databind-grid.hl
                     :x:/@_helper-folder?value
+
+                  /*
+                   * Updates count.
+                   */
+                  camphora.update-count
 
               button
                 innerValue:Cancel

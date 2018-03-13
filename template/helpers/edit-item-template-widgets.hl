@@ -167,6 +167,11 @@ Edit
                                */
                               delete-widget:camphora-confirm-deletion
 
+                              /*
+                               * Updating count.
+                               */
+                              camphora.update-count
+
                           button
                             innerValue:No
                             onclick

@@ -1,0 +1,78 @@
+
+/*
+ * Sorts datagrid by a column.
+ */
+
+
+
+
+
+/*
+ * Retrieving URL entities, such that we'll know the app's name.
+ */
+micro.url.get-entities
+
+
+
+
+
+/*
+ * Asking user to confirm action.
+ */
+eval-x:x:/+/*/*/*/p/*/innerValue|/+/**/_app-name
+create-widgets
+  micro.widgets.modal:camphora-delete-all-records
+    widgets
+      h3
+        innerValue:Please confirm action
+      p
+        innerValue:These will delete all records in your database of type '{0}', are you sure you wish to continue?
+          :x:/@_app-name?value
+      div
+        class:right
+        widgets
+          div
+            class:strip
+            widgets
+              button
+                innerValue:Yes
+                oninit
+
+                  /*
+                   * Setting initial focus to "Yes" button.
+                   */
+                  micro.page.set-focus:x:/../*/_event?value
+
+                onclick
+
+                  /*
+                   * Forward evaluated above.
+                   */
+                  _app-name:x:/@micro.url.get-entities/0?name
+
+                  /*
+                   * Deleting all records from database.
+                   */
+                  p5.mysql.connect:[camphora]
+                    p5.mysql.delete:@"delete from `{0}`"
+                      :x:/@_app-name?value
+
+                  /*
+                   * Reloading root location for simplicity.
+                   */
+                  p5.web.set-location:/{0}
+                    :x:/@_app-name?value
+
+                  /*
+                   * Updates count.
+                   */
+                  camphora.update-count
+
+              button
+                innerValue:No
+                onclick
+
+                  /*
+                   * Deleting modal widget.
+                   */
+                  delete-widget:camphora-delete-all-records

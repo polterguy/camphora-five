@@ -1,0 +1,97 @@
+
+/*
+ * Sorts datagrid by a column.
+ *
+ * Expects [_app-name] and [_event].
+ */
+
+
+
+
+
+/*
+ * Sanity checking invocation
+ */
+micro.lambda.contract.min:x:/..
+  _app-name:string
+  _event:string
+
+
+
+
+
+/*
+ * Storing sort column in ViewState and re-databinding datagrid.
+ */
+get-widget-property:x:/../*/_event?value
+  innerValue
+p5.web.viewstate.set:camphora.sort-column
+  src:x:/@get-widget-property/*/*?value
+
+
+
+
+
+/*
+ * Making sure we update CSS class of bugger.
+ */
+p5.web.widgets.find-like
+  class:camphora-sort-column
+if:x:/-/*/*?value
+  !=:x:/../*/_event?value
+
+  /*
+   * User selected a different sorting column.
+   */
+  micro.css.delete:x:/@p5.web.widgets.find-like/*/*?value
+    class:camphora-sort-column camphora-sort-column-asc camphora-sort-column-desc
+  micro.css.add:x:/../*/_event?value
+    class:camphora-sort-column
+
+
+
+
+
+/*
+ * Checking if we should sort ascending or descending.
+ */
+get-widget-property:x:/../*/_event?value
+  class
+if:x:/@get-widget-property/*/*?value
+  ~:camphora-sort-column-asc
+
+  /*
+   * Grid was sorted ascendingly, toggling it to become descendingly sorted.
+   */
+  micro.css.toggle:x:/../*/_event?value
+    class:camphora-sort-column-asc camphora-sort-column-desc
+  p5.web.viewstate.set:camphora.sort-column-direction
+    src:desc
+
+else-if:x:/@get-widget-property/*/*?value
+  ~:camphora-sort-column-desc
+
+  /*
+   * Grid was sorted descendingly, toggling it to become ascendingly sorted.
+   */
+  micro.css.toggle:x:/../*/_event?value
+    class:camphora-sort-column-asc camphora-sort-column-desc
+  p5.web.viewstate.set:camphora.sort-column-direction
+    src:asc
+
+else
+
+  /*
+   * Grid was not sorted by this column at all, defaulting to ascendingly.
+   */
+  p5.web.viewstate.set:camphora.sort-column-direction
+    src:asc
+  micro.css.add:x:/../*/_event?value
+    class:camphora-sort-column-asc
+
+/*
+ * Re-databinding grid, now with an explicit sort order column
+ * stored in our ViewState.
+ */
+micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
+  :x:/@_app-name?value
