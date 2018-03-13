@@ -7,7 +7,6 @@
 split:x:/..?name
   =:/
   =:.
-micro.evaluate.folder:/{0}/{1}/startup/
-  :x:/@split/0?name
+micro.evaluate.folder:/modules/{0}/startup/
   :x:/@split/1?name
 
