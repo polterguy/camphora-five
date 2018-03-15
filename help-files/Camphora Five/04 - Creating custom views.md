@@ -47,7 +47,7 @@ you can evaluate the Hyperlambda below.
  * this Hyperlambda, and open up the Hyperlambda help files.
  */
 desktop.help.display
-  folder:@DESKTOP/help-files/Hyperlambda/
+  file:@DESKTOP/help-files/Hyperlambda/index.hl
 ```
 
 Below is an example of such a custom view.
