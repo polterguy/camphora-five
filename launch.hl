@@ -47,6 +47,16 @@ p5.web.page.set-title:Camphora Five
  */
 create-widget:camphora-main-container
   class:container
+  events
+
+
+    /*
+     * Help context Active Event.
+     */
+    desktop.help.get-context
+      return:@CAMPHORA/help-files/Camphora Five/index.hl
+
+
   widgets
     div
       class:row
