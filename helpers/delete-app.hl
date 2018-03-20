@@ -64,7 +64,7 @@ create-widgets
                   split:x:/@_filename?value
                     =:/
                     =:.
-                  desktop.uninstall-app:/modules/{0}/
+                  desktop.modules.uninstall:/modules/{0}/
                     :x:/@split/0/-2?name
 
                   /*
