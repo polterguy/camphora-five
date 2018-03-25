@@ -1,5 +1,9 @@
 ## Creating your first app
 
+**Notice**, the following app, or one similar to it, should already exist as a _"template example app"_.
+If you still want to follow this tutorial, and create this app exactly as illustrated here - Then simply
+delete the example app called _"address-book"_ from your list of apps.
+
 [Open up Camphora Five](/camphora-five) and click the _"+"_ button, at the top right corner of your page.
 Then name your app `address-book`. Notice, you cannot use spaces in your app's name.
 Then add some fields to your app, by clicking the _"+"_ in the area of your screen where it says _"fields"_.
@@ -20,7 +24,7 @@ and generate it, at which point you can immediately start using your app. If you
 by clicking the home button, you'll see your an icon for you app, resembling the following. If you want to,
 you can change your app's desktop icon - However, we'll have a look at this later.
 
-https://phosphorusfive.files.wordpress.com/2018/03/address-book-desktop-icon-screenshot.png
+https://phosphorusfive.files.wordpress.com/2018/03/camphora-five-screenshot-address-book.png
 
 If you open your app, and add some records to it, it'll end up resembling the following.
 

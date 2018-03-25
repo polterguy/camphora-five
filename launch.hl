@@ -19,6 +19,7 @@ micro.css.include
  * Making sure user has a folder where we can store his apps, if it doesn't
  * exist from before.
  */
+.first:bool:false
 if
   fetch:x:/0/0?value
     folder-exists:~/documents/private/camphora/
@@ -28,6 +29,20 @@ if
    * Camphora's app declaration folder doesn't exist, making sure we create it.
    */
   create-folder:~/documents/private/camphora/
+
+  /*
+   * Also adding all "template apps" from Camphora's app-template folder.
+   */
+  list-files:@CAMPHORA/app-templates/
+    filter:.hl
+  copy-file:x:/@list-files/*?name
+    dest:~/documents/private/camphora/
+
+  /*
+   * Automatically launching help system, since this is user's first visit.
+   */
+  set:x:/@.first?value
+    src:bool:true
 
 
 
@@ -141,3 +156,14 @@ create-widget:camphora-main-container
                      * Databinding grid initially.
                      */
                     micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
+
+
+
+
+
+/*
+ * Checking if this is user's first visit, and if so, launching help system
+ * automatically.
+ */
+if:x:/@.first?value
+  desktop.help.display

@@ -1,0 +1,17 @@
+views
+field
+  name:name
+  type:text
+  show:bool:true
+field
+  name:address
+  type:textarea
+  show:bool:true
+field
+  name:sex
+  type:radio
+    male
+    female
+  show:bool:true
+show-headers:bool:true
+desktop-icon:bool:true
