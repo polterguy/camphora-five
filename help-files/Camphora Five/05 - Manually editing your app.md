@@ -56,13 +56,6 @@ create-widgets
             innerValue:Icons
           ol
             widgets
-      div
-        class:right
-        widgets
-          button
-            innerValue:Close
-            onclick
-              delete-widget:dox-icons-modal
 ```
 
 Below is an example of a _"desktop.hl"_ file from a Camphora Five generated app. If you change the `icon-paragraph-justify`

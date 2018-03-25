@@ -1,7 +1,7 @@
 ## Creating your first app
 
 [Open up Camphora Five](/camphora-five) and click the _"+"_ button, at the top right corner of your page.
-Then name your app `address-book`. PS - You cannot use spaces in your app's name.
+Then name your app `address-book`. Notice, you cannot use spaces in your app's name.
 Then add some fields to your app, by clicking the _"+"_ in the area of your screen where it says _"fields"_.
 You can create any fields you want to create, such as for instance.
 
