@@ -16,8 +16,4 @@ https://phosphorusfive.files.wordpress.com/2018/03/camphora-five-address-book-sc
 When you have _"generated"_ your app, you can Create, Read, Update and Delete records from your database, hence
 the acronym _"CRUD"_. In addition, Camphora Five apps allows you to export and import items from Excel, or other
 systems, that somehow supports CSV files. This makes Camphora Five a perfect fit for creating your own web apps,
-from which you want to collect and edit your data, from where ever you are in the world. Below is an introductory
-video to Camphora Five, and although the video is relatively dated, and illustrates Camphora from a very old version
-of Phosphorus Five, it still illustrates the process of creating your own _"Address Book"_ type of app.
-
-https://www.youtube.com/watch?v=Nxalk0Us6Q8
+from which you want to collect and edit your data, from where ever you are in the world.

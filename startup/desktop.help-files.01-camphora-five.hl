@@ -1,7 +1,6 @@
-
 /*
  * Help file Active Event sink.
  */
-create-event:desktop.help-files.camphora-five
+create-event:desktop.help-files.01-camphora-five
 
   return:@CAMPHORA/help-files/Camphora Five/
