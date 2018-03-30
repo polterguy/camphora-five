@@ -70,9 +70,17 @@ unchanged of your class name declaration.
  */
 container
   element:a
-  role:button
-  class:desktop-app button shaded
+  class:jumbo-button
   widgets
+    literal
+      element:span
+
+      /*
+       * Change the "address-book" parts below, if you want to
+       * give a different name to your app.
+       */
+      innerValue:address-book
+
     literal
       element:span
 
@@ -80,17 +88,7 @@ container
        * Change the "icon-paragraph-justify" parts below to any
        * of the values found by evaluating the above Hyperlambda.
        */
-      class:icon-paragraph-justify desktop-app-icon
-
-    literal
-      element:span
-      class:desktop-app-text capitalize
-
-      /*
-       * Change the "address-book" parts below, if you want to
-       * give a different name to your app.
-       */
-      innerValue:address-book
+      class:icon-paragraph-justify
 ```
 
 ### Camphora Five's internals

@@ -3,12 +3,11 @@
  */
 container
   element:a
-  class:desktop-app button shaded
+  class:jumbo-button
   title:Camphora Five, a CRUD app generator
   widgets
+    span
+      innerValue:Camphora
     literal
       element:span
-      class:icon-table2 desktop-app-icon
-    span
-      class:desktop-app-text
-      innerValue:Camphora
+      class:icon-table2
