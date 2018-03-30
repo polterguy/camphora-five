@@ -5,6 +5,8 @@ easily create CRUD apps, without ever having done any coding at all. You simply 
 and the type of columns, for then to generate your app. The results becomes a nice CRUD app, with lots of
 features, allowing you to Create, Read, Update and Delete data items from your MySQL database.
 
+![screenshot](https://phosphorusfive.files.wordpress.com/2018/03/camphora-screenshot.png)
+
 ## Installation
 
 Camphora Five is automatically installed when you install Phosphorus Five.
