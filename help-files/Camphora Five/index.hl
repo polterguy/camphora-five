@@ -6,7 +6,7 @@ h2
 
 img
   class:desktop-help-icon-image
-  src:"https://phosphorusfive.files.wordpress.com/2018/03/2000px-applications-database-svg.png"
+  src:"https://phosphorusfive.files.wordpress.com/2018/03/camphora-db.png"
 
 p
   innerValue:@"Camphora Five is a CRUD app generator, that allows you to create some fairly rich web apps, without requiring you to
