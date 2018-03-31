@@ -98,7 +98,7 @@ else
   load-file:/modules/{0}/desktop.hl
     :x:/@split/0/-2?name
   eval-x:x:/+/*/*
-  add:x:/@load-file/*/*/*/widgets/*/literal/[1,2]
+  add:x:/@load-file/*/*/*/widgets/*/literal/[0,1]
     src
       innerValue:x:/@split/0/-2?name
   save-file:/modules/{0}/desktop.hl
