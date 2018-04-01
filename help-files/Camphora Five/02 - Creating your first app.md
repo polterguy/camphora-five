@@ -19,7 +19,7 @@ screen should resemble the following.
 
 https://phosphorusfive.files.wordpress.com/2018/03/camphora-five-screenshot.png
 
-Then simply click the _"Magic wand"_ button, next to the _"Floppy disc save"_ button. This will both save your app,
+Then simply click the _"power cord"_ button, next to the _"Floppy disc save"_ button. This will both save your app,
 and generate it, at which point you can immediately start using your app. If you now go back to your desktop,
 by clicking the home button, you'll see your an icon for you app, resembling the following. If you want to,
 you can change your app's desktop icon - However, we'll have a look at this later.

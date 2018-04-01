@@ -229,7 +229,7 @@ create-widget
                       micro.evaluate.file:@CAMPHORA/helpers/save-app.hl
 
                 button
-                  innerValue:@"<span class=""icon-magic-wand""></span>"
+                  innerValue:@"<span class=""icon-power-cord""></span>"
                   title:Generates your app, keyboard shortcut G
                   accesskey:G
                   onclick
