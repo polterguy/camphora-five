@@ -1,4 +1,3 @@
-
 /*
  * Asks user to confirm generating edited app.
  * Expects [_event] being the ID of the "generate button" that triggered request.
@@ -27,10 +26,13 @@ create-widgets
     widgets
       h3
         innerValue:Please confirm action
+      div
+        class:warning shaded rounded air-inner
+        widgets
+          p
+            innerValue:@"<strong>Warning</strong> - This will delete any existing apps with the same name, and also delete any existing data for these apps, if you choose to check off the <em>'delete data'</em> checkbox. Are you sure you wish to proceed?"
       p
-        innerValue:@"<strong>Warning</strong> - This will delete any existing apps with the same name, and also delete any existing data for these apps, if you choose to check off the <em>'delete data'</em> checkbox. Are you sure you wish to proceed?"
-      p
-        innerValue:@"<strong>Notice</strong>, - If you have changed any of your fields to become different types, you might have to delete your existing data in order to have your app correctly working. If you get weird errors as you run your app, try to re-generate your app, and delete your data as you do."
+        innerValue:@"<strong>Notice</strong> - If you have changed any of your fields to become different types, you might have to delete your existing data in order to have your app correctly working. If you get weird errors as you run your app, try to re-generate your app, and delete your data as you do."
       label
         widgets
           span
@@ -45,13 +47,6 @@ create-widgets
             widgets
               button
                 innerValue:Yes
-                oninit
-
-                  /*
-                   * Setting focus initially to "Yes" button.
-                   */
-                  micro.page.set-focus:x:/../*/_event?value
-
                 onclick
 
                   /*
@@ -136,6 +131,13 @@ create-widgets
 
               button
                 innerValue:No
+                oninit
+
+                  /*
+                   * Setting focus initially to "No" button.
+                   */
+                  micro.page.set-focus:x:/../*/_event?value
+
                 onclick
 
                   /*
