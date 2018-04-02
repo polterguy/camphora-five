@@ -6,9 +6,9 @@ list, and their most important traits explained.
 * __Singleline text__ - A single line text type of field
 * __Multiline text__ - Multiple lines of text field
 * __Checkbox__ - A yes/no type of field
-* __Number__ - A way for you to provide a number type of input
+* __Number__ - A number type of input
 * __Select dropdown__ - Allows the user to select from a pre-defined set of different options
-* __Radiobuttons__ - Similar to select dropdown, but will display the different options as radiobuttons, where the user must select only one value, from a pre-defined set of values
+* __Radiobuttons__ - Similar to select dropdown, but will display the different options as radiobuttons
 * __Date/time created__ - Not per se an input field, but an automatically created field, that allows you to track when the item was actually created
 
 Some of the above field types have unique traits, such as for instance the _"Multiline text"_ type of field, which
@@ -36,14 +36,13 @@ These items allows the user to select a value from a pre-defined list of options
 the field type definition will split in two, and expect you to supply a comma separated list of pre-defined
 values, from which the end user can select from, as he is creating new items, or editing existing items.
 An example of such a field could for instance be _"sex"_, containing a comma separated list of the following
-values; `male,female`. When the user is creating or editing an item, he will have to choose from only _"female"_
-or _"male"_ as his value for that specific column. The screenshot above illustrates this fairly well, since
+values; _"male,female"_. When the user is creating or editing an item, he will have to choose from only _"female"_
+or _"male"_ as his value for that specific field. The screenshot above illustrates this fairly well, since
 it contains a _"Radiobutton"_ type of field, which asks the user to supply the value for the _"sex"_ column.
 
 These types of columns also allows the user to filter items during _"gridview"_, by only items matching
 the specified value. This can be done by simply clicking for instance a _"female"_ value in your datagrid.
-This will automatically populate your filter textbox, with the value necessary to filter your items, by only
-items matching the specified value, for only the specified column.
+This will automatically populate your filter textbox, with the value necessary to filter your items accordingly.
 
 ### Checkbox fields
 

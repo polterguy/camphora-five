@@ -15,8 +15,7 @@ database data, then Camphora Five should probably be your starting point."
 
 p
   innerValue:@"Apps created with Camphora Five also provide an excellent start for your own apps, and Camphora
-also allows you to create your own <em>'views'</em>, completely overriding the default GUI or logic. Camphora
-also contains a fairly rich API, if you want to extend it, or build upon apps created with it."
+also allows you to create your own <em>'views'</em>, completely overriding the default GUI or logic."
 
 
 /*

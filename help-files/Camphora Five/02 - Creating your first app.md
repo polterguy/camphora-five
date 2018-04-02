@@ -17,7 +17,7 @@ If you choose _"Radiobuttons"_ or _"Select dropdown"_ as your field type however
 you supply the legal options for these fields, as a comma separated list of values. After you are done, your
 screen should resemble the following.
 
-https://phosphorusfive.files.wordpress.com/2018/03/camphora-five-screenshot.png
+https://phosphorusfive.files.wordpress.com/2018/04/camphora-new-screenshot.png
 
 Then simply click the _"power cord"_ button, next to the _"Floppy disc save"_ button. This will both save your app,
 and generate it, at which point you can immediately start using your app. If you now go back to your desktop,
@@ -30,7 +30,7 @@ If you open your app, and add some records to it, it'll end up resembling the fo
 
 https://phosphorusfive.files.wordpress.com/2018/03/camphora-five-address-book-screenshot.png
 
-When you have added som records to your database, you can export your items, and for instance import them
+When you have added some records to your database, you can export your items, and for instance import them
 as a CSV file into Excel or Numbers if you're on a Mac OS X based system.
 
 ### Settings for your app
@@ -46,7 +46,7 @@ also allows you to sort your data, both incrementally and decrementally - So if 
 app's columns, you can no longer sort your records.
 
 You can also choose to explicitly hide a specific column from the datagrid view of your app, by checking
-off the _"Show"_ checkbox, on each column. The data and column will still exist in your database, and you
+off the _"Show"_ checkbox on your columns. The data and column will still exist in your database, and you
 can change and read its value when you edit a specific item - However, the data will not be visible in your
 main _"datagrid"_ view. If we for instance choose to hide the _"address"_ field, then your app will end
 up looking like the following.
@@ -65,7 +65,7 @@ your app's _"declaration"_, without generating it. You can also clone an existin
 you'll need to copy your app for some reasons.
 
 Your app declarations are actually simply Hyperlambda files, which you can find in your user's home folder. However,
-be careful if you edit these files, since if the the file's content becomes invalid, you can no longer generate
+be careful if you edit these files manually, since if the the file's content becomes invalid, you can no longer generate
 your app.
 
 ### Responsive CRUD apps

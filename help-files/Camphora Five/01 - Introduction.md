@@ -5,13 +5,13 @@ of information. Although it is very powerful, and allows you to create your own 
 require you to know any programming to create basic CRUD apps. In such a way, it arguably resembles Microsoft Excel
 or Access. Below is a screenshot of Camphora Five.
 
-https://phosphorusfive.files.wordpress.com/2018/03/camphora-five-screenshot.png
+https://phosphorusfive.files.wordpress.com/2018/04/camphora-new-screenshot.png
 
-In the above screenshot, you can see an app which is called _"address-book"_, and that allows you to collect
-and edit a person's name, address, and sex. The app itself would resemble the following once you've _"generated"_
+In the above screenshot, you can see an app which is called _"address-book"_, that allows you to collect
+and edit a person's name, address, and sex. The app would resemble the following once you've _"generated"_
 it.
 
-https://phosphorusfive.files.wordpress.com/2018/03/camphora-five-address-book-screenshot.png
+https://phosphorusfive.files.wordpress.com/2018/04/camphora-address-book-new-screenshot.png
 
 When you have _"generated"_ your app, you can Create, Read, Update and Delete records from your database, hence
 the acronym _"CRUD"_. In addition, Camphora Five apps allows you to export and import items from Excel, or other

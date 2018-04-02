@@ -13,7 +13,7 @@ allows you to see all the possible icons you can use for your app. If you want t
 you can evaluate the snippet below, for then to edit your app's _"desktop.hl"_ file, and change the parts
 of your `class` property that declares which icon to use.
 
-T.H. Rose Home Cloud, Inc. can also help you edit your app, or create custom apps entirely from scratch for you,
+We can also help you edit your app, or create custom apps entirely from scratch for you,
 if you require additional features, or custom apps. This is a service we charge for. Feel free to
 send us an email at thomas@gaiasoul.com if you want to hear more about these types of services.
 
@@ -60,8 +60,7 @@ create-widgets
 
 Below is an example of a _"desktop.hl"_ file from a Camphora Five generated app. If you change the `icon-paragraph-justify`
 parts of your **[class]** declaration to any of the values that you found by evaluating the above Hyperlambda snippet,
-your app's desktop icon will change. **Notice**, it's important that you keep the _"desktop-app-icon"_ parts
-unchanged of your class name declaration.
+your app's desktop icon will change accordingly.
 
 ```hyperlambda
 /*
