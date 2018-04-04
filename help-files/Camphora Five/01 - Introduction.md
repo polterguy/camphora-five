@@ -1,4 +1,4 @@
-## Camphora Five introduction
+## Introduction to Camphora Five
 
 Camphora Five is a CRUD app generator that allows you to create apps declaratively, to collect and edit lists
 of information. Although it is very powerful, and allows you to create your own views in Hyperlambda - It doesn't
