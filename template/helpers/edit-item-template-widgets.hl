@@ -82,101 +82,68 @@ Edit
              * Deleting row, asking user to confirm action first.
              */
             eval-x:x:/+/**/_widget
-            create-widgets
-              micro.widgets.modal:camphora-confirm-deletion
-                widgets
-                  h3
-                    innerValue:Please confirm deletion
-                  p
-                    innerValue:Do you really wish to delete this item? This action is permanent.
-                  div
-                    class:right
-                    widgets
-                      div
-                        class:strip
-                        widgets
-                          button
-                            innerValue:Yes
-                            oninit
+            micro.windows.confirm
+              body:Please confirm deletion
+              header:Do you really wish to delete this item? This action is permanent.
+              onok
 
-                              /*
-                               * Setting initial focus to "Yes" button.
-                               */
-                              micro.page.set-focus:x:/../*/_event?value
+                /*
+                 * Forward evaluated above.
+                 */
+                _widget:x:/../*/_event?value
 
-                            onclick
+                /*
+                 * Retrieving location of client, to determine app's name
+                 */
+                p5.web.get-location
+                p5.web.get-root-location
+                replace:x:/@p5.web.get-location?value
+                  src:x:/@p5.web.get-root-location?value
+                split:x:/@replace?value
+                  =:/
+                  =:?
 
-                              /*
-                               * Forward evaluated above.
-                               */
-                              _widget:x:/../*/_event?value
+                /*
+                 * Figuring out database ID of record to delete.
+                 */
+                p5.web.widgets.find-first-ancestor:x:/../*/_widget?value
+                  .id
+                get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  .id
 
-                              /*
-                               * Retrieving location of client, to determine app's name
-                               */
-                              p5.web.get-location
-                              p5.web.get-root-location
-                              replace:x:/@p5.web.get-location?value
-                                src:x:/@p5.web.get-root-location?value
-                              split:x:/@replace?value
-                                =:/
-                                =:?
+                /*
+                 * Deleting record from database.
+                 */
+                p5.mysql.connect:[camphora]
+                  p5.mysql.delete:@"delete from `{0}` where id = @id"
+                    :x:/@split/0?name
+                    @id:x:/@get-widget-property/*/*?value
 
-                              /*
-                               * Figuring out database ID of record to delete.
-                               */
-                              p5.web.widgets.find-first-ancestor:x:/../*/_widget?value
-                                .id
-                              get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                                .id
+                /*
+                 * Deleting row wrapping record in datagrid.
+                 */
+                delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 
-                              /*
-                               * Deleting record from database.
-                               */
-                              p5.mysql.connect:[camphora]
-                                p5.mysql.delete:@"delete from `{0}` where id = @id"
-                                  :x:/@split/0?name
-                                  @id:x:/@get-widget-property/*/*?value
+                /*
+                 * Checking if item is currently being edited, and if so, making sure
+                 * we delete its "edit widget".
+                 */
+                p5.web.widgets.find
+                  .edit:x:/@get-widget-property/*/*?value
+                if:x:/@p5.web.widgets.find/*/*?value
 
-                              /*
-                               * Deleting row wrapping record in datagrid.
-                               */
-                              delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  /*
+                   * Item is being edited, making sure we delete its edit widget.
+                   */
+                  delete-widget:x:/@p5.web.widgets.find/*/*?value
 
-                              /*
-                               * Checking if item is currently being edited, and if so, making sure
-                               * we delete its "edit widget".
-                               */
-                              p5.web.widgets.find
-                                .edit:x:/@get-widget-property/*/*?value
-                              if:x:/@p5.web.widgets.find/*/*?value
+                /*
+                 * Giving user some visual feedback.
+                 */
+                micro.windows.info:Record was deleted
+                  class:micro-windows-info success
 
-                                /*
-                                 * Item is being edited, making sure we delete its edit widget.
-                                 */
-                                delete-widget:x:/@p5.web.widgets.find/*/*?value
-
-                              /*
-                               * Giving user some visual feedback.
-                               */
-                              micro.windows.info:Record was deleted
-                                class:micro-windows-info success
-
-                              /*
-                               * Making sure we delete modal confirmation widget.
-                               */
-                              delete-widget:camphora-confirm-deletion
-
-                              /*
-                               * Updating count.
-                               */
-                              camphora.update-count
-
-                          button
-                            innerValue:No
-                            onclick
-
-                              /*
-                               * Deleting modal confirmation widget.
-                               */
-                              delete-widget:camphora-confirm-deletion
+                /*
+                 * Updating count.
+                 */
+                camphora.update-count
