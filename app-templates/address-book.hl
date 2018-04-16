@@ -1,3 +1,7 @@
+/*
+ * Example Camphora Five CRUD app, which is a simple _"address book"_
+ * type of application.
+ */
 views
 field
   name:name
