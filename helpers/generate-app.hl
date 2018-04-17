@@ -1,8 +1,8 @@
 /*
- * File responsible for generating app.
+ * File responsible for generating Camphora Five module.
  *
- * Requires a [filename] argument, declaring which app to generate.
- * Optionally pass in a [delete-data] argument, and set its value to boolean "true"
+ * Requires a __[filename]__ argument, declaring which app to generate.
+ * Optionally pass in a __[delete-data]__ argument, and set its value to boolean _"true"_
  * if you wish to delete existing data/database/table for app.
  */
 

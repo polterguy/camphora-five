@@ -1,7 +1,8 @@
-
 /*
  * File responsible for handling an upload request of one or more Hyperlambda file(s).
- * These files are expected to contain an "app manifest" file.
+ * These files are expected to contain an _"app manifest"_ file.
+ *
+ * The file will simply copy all files into your user's Camphora Five manifest folder.
  */
 
 

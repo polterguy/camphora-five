@@ -1,5 +1,6 @@
-
 /*
+ * The default view content when the user creates a Camphora Five _"view"_.
+ *
  * Although you can do whatever you wish from within your view,
  * the most common task is probably to view records, or create
  * some sort of custom editor for your items, not necessarily
@@ -9,10 +10,8 @@
  * item in your `my-app` app.
  *
  * Notice, this example code highly unlikely evaluates correctly,
- * unless your app is actually called 'my-app' and has a 'name' field
+ * unless your app is actually called _'my-app'_ and has a _'name'_ field
  * within it.
- *
- * First we include our CSS files.
  */
 micro.css.include
 

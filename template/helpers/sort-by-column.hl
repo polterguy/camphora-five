@@ -1,8 +1,8 @@
-
 /*
- * Sorts datagrid by a column.
+ * Sorts datagrid of a Camphora Five module by a column.
  *
- * Expects [_app-name] and [_event].
+ * Expects __[\_app-name]__ and __[\_event]__. The field to sort on is determined by the innerValue of the specified
+ * _event argument.
  */
 
 

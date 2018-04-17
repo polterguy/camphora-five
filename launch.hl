@@ -1,5 +1,6 @@
 /*
- * File responsible for starting Camphora.
+ * Launches Camphora Five, by creating a wireframe, and a datagrid containing
+ * all your CRUD manifests.
  */
 
 

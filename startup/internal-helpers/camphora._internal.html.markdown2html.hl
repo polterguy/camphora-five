@@ -1,9 +1,8 @@
-
 /*
- * Creates the Active Event that transforms Markdown to HTML, 
+ * Creates the Active Event that transforms Markdown to HTML,
  * adding #hash-tag links in the process, and adding up rel="noreferrer", etc.
  *
- * Requires [app-name] as argument.
+ * Requires __[app-name]__ as argument, being the name/URL of your Camphora Five module.
  */
 create-event:camphora._internal.html.markdown2html
 

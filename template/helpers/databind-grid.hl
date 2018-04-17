@@ -1,11 +1,11 @@
 /*
  * File responsible for databinding the grid for a Camphora Five generated app.
  *
- * Optionally pass in [id], at which case, only the specified database [id] item 
+ * Optionally pass in __[id]__, at which case, only the specified database id item
  * will be re-databound, and no other items will be touched.
  *
- * You can also pass in [feed-more] and set its value to boolean "true", 
- * at which point the existing items will not be cleared, but rather the grid 
+ * You can also optionally pass in __[feed-more]__ and set its value to boolean _"true"_,
+ * at which point the existing items will not be cleared, but rather the grid
  * will have 20 more items appended to itself.
  */
 

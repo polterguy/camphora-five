@@ -1,8 +1,7 @@
-
 /*
  * Startup file for Camphora Five generated app.
  *
- * Evaluates all startup files inside of our "/startup/" folder for our generated app.
+ * Evaluates all startup files inside of our _"/startup/"_ folder for our generated app.
  */
 split:x:/..?name
   =:/

@@ -1,6 +1,6 @@
-
 /*
- * Creates our "view definition" widget.
+ * Creates our __[camphora.widgets.\_internals.view-definition]__ extension widget,
+ * that allows the user to create/edit a Camphora Five view.
  */
 create-event:camphora.widgets._internals.view-definition
 

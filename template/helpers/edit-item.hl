@@ -1,8 +1,8 @@
 /*
- * File responsible for editing existing CRUD item.
+ * File responsible for editing existing Camphora Five CRUD records.
  *
- * Expects a [parent], being the ID of the widget where the editing widget should
- * be injected - In addition to [id] being record's database ID.
+ * Expects a __[parent]__, being the ID of the widget where the editing widget should
+ * be injected - In addition to __[id]__ being the record's database ID.
  */
 
 

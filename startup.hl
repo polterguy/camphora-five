@@ -1,7 +1,8 @@
 /*
- * Startup file.
+ * Startup file for Camphora Five.
  *
- * Creates "path" event and evaluates all files in "/startup/" folder for module.
+ * Creates the Camphora Five _"path"_ Active Event and evaluates all files in the _"/startup/"_
+ * for Camphora Five.
  */
 
 

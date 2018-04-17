@@ -1,5 +1,5 @@
 /*
- * Desktop widget.
+ * Creates the desktop widget for Camphora Five.
  */
 container
   element:a

@@ -1,6 +1,7 @@
 /*
- * Asks user to confirm generating edited app.
- * Expects [_event] being the ID of the "generate button" that triggered request.
+ * Asks the user to confirm generating edited app, and if he confirms that
+ * he wants to create his app, will generate the app.
+ * Expects __[\_event]__ being the ID of the _"generate button"_ that triggered the request.
  */
 
 

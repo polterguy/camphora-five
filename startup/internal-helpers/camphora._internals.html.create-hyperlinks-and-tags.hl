@@ -1,11 +1,10 @@
-
 /*
- * Converts the given [_arg] HTML snippet's URLs and tags into hyperlinks, 
+ * Converts the given __[\_arg]__ HTML snippet's URLs and tags into hyperlinks,
  * and returns the result to the caller.
  *
  * Notice, the path used to generate #hash-tags here is dynamically created.
  *
- * Requires [app-name] as argument.
+ * Requires __[app-name]__ as argument, being the name/URL of your Camphora Five module.
  */
 create-event:camphora._internals.html.create-hyperlinks-and-tags
 
@@ -34,7 +33,7 @@ create-event:camphora._internals.html.create-hyperlinks-and-tags
    * websites, to know the origin of the request.
    */
   replace:x:/@replace?value
-    src:regex:@"/(\(|<|\[|\s|>)+(http|https|ftp)(\://)([a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3})((:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\(\)\-\._\?\,\'/\\\+&amp;%\$#\=~])*)/"
+    src:regex:@"/(\(|<|\[|\s|>)+(http|https|ftp)(\://)([a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3})((:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\(\)\-\._\?\,\'/\\\+&%\$#\=~])*)/"
     dest:@"$1<a rel=""noreferrer"" target=""_blank"" href=""$2$3$4$5""><strong>$4</strong>$5</a>"
 
   /*

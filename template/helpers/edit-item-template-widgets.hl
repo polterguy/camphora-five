@@ -1,7 +1,7 @@
 /*
- * Template "cell" for grids that are allowed to be edited.
+ * Template datagrid _"cell"_ for a Camphora Five module's rows.
  *
- * Loaded by datagrid's databind operation, and appended as "edit cell" into grid
+ * Loaded by datagrid's databind operation, and appended as an _"edit record"_ cell into grid
  * during creation.
  */
 Edit

@@ -1,7 +1,9 @@
 /*
- * Creates our "field definition widget".
+ * Creates the __[camphora.widgets.\_internals.field-definition]__ widget, that will
+ * create a widget allowing the user to edit the attributes of his field(s).
  *
- * Optionally pass in [name], [type], [options] and [show]
+ * Optionally pass in __[name]__, __[type]__, __[options]__ and __[show]__ to
+ * edit an existing field, instead of creating a new one.
  */
 create-event:camphora.widgets._internals.field-definition
 

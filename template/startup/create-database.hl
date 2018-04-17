@@ -1,6 +1,5 @@
-
 /*
- * This file creates the app's database, unless it already exists.
+ * This file creates your Camphora Five module's database, unless it already exists from before.
  */
 
 
@@ -30,7 +29,7 @@ load-file:/{0}/{1}/helpers/app-manifest.hl
 for-each:x:/@load-file/*/*/field
 
   /*
-   * Appending currently iterated column to [_cols] above, according to 
+   * Appending currently iterated column to [_cols] above, according to
    * what [type] of [field] it is.
    */
   switch:x:/@_dp/#/*/type?value

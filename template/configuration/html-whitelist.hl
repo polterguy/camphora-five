@@ -1,8 +1,9 @@
-
 /*
- * Contains the list of legal HTML elements and attributes an HTML Markdown cell can contain.
+ * Contains the list of legal HTML elements and attributes an HTML Markdown cell can contain
+ * in your Camphora Five module.
  *
- * Notice, all elements and tags not listed in this file, will be removed.
+ * Notice, all elements and tags not listed in this file, will be removed when for some reasons
+ * a piece of text is transformed into HTML from its Markdown representation.
  */
 
 // Elements.

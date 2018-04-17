@@ -1,8 +1,7 @@
-
 /*
- * File responsible for exporting items to client.
+ * File responsible for exporting items to the client as a CSV file.
  *
- * Expects [app-name] being the name of our app.
+ * Expects __[app-name]__ being the name of our Camphora Five module.
  */
 
 

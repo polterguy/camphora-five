@@ -1,5 +1,6 @@
 /*
- * File responsible for creating and returning widgets necessary to edit/create a new item.
+ * File responsible for creating and returning widgets necessary to edit/create
+ * a new Camphora Five module item.
  *
  * Optionally pass in data matching type declaration of widgets.
  */

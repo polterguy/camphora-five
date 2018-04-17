@@ -1,8 +1,8 @@
-﻿
 /*
- * Creates the Active Event that will generate an app.
+ * Creates the Active Event that will generate a Camphora Five module.
  *
- * Expects [manifest] being the manifest declaration for app and [_arg] being name of app.
+ * Expects __[manifest]__ being the manifest declaration for module and __[\_arg]__
+ * being the name for your Camphora Five module.
  */
 create-event:camphora.generate-app
 

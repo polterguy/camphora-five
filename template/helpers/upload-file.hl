@@ -1,8 +1,11 @@
-
 /*
- * File responsible for uploading a CSV file.
+ * File responsible for uploading a CSV file, and importing its content
+ * into your Camphora Five database.
  *
- * Expects [app-name] being the name of our app, and [files] being files.
+ * Expects __[app-name]__ being the name of our app, and __[files]__ being a
+ * collection of CSV files to import.
+ *
+ * __Notice__ - The CSV file must conform to your database schema for your module.
  */
 
 

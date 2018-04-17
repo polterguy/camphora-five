@@ -1,6 +1,6 @@
-
 /*
- * File responsible for deleting app.
+ * Deletes the specified __[filename]__ Camphora Five module, by asking the user
+ * to first confirm that he really wants to delete the manifest, before proceeding.
  */
 
 

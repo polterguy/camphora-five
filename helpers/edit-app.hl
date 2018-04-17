@@ -1,7 +1,7 @@
 /*
- * File responsible for editing and creating new apps.
+ * File responsible for editing and creating new Camphora Five apps.
  *
- * Optionally takes a [filename] argument, for editing existing app, instead of
+ * Optionally takes a __[filename]__ argument, for editing existing app, instead of
  * creating a new app.
  */
 

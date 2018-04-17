@@ -1,7 +1,7 @@
 /*
- * Save an app.
+ * Saves a Camphora Five manifest.
  *
- * Expected to have [_event] passed in, being the ID of the "save app" button.
+ * Expects __[\_event]__ passed in, being the ID of the _"save app"_ button.
  */
 
 
