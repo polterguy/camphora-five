@@ -4,9 +4,11 @@
 h2
   innerValue:Camphora Five
 
-img
-  class:desktop-help-icon-image
-  src:"https://phosphorusfive.files.wordpress.com/2018/03/camphora-db.png"
+micro.widgets.file
+  style:"float:right; margin-left: 1rem; margin-bottom: 1rem;"
+  files
+    /modules/camphora-five/desktop.hl
+      href:/camphora-five/
 
 p
   innerValue:@"Camphora Five is a CRUD app generator, that allows you to create some fairly rich web apps, without requiring you to
