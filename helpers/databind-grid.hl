@@ -1,5 +1,7 @@
 /*
- * File responsible for databinding Camphora apps datagrid.
+ * This file will databind the Camphora CRUD app manifest datagrid. Basically
+ * listing all Hyperlambda files in user's CRUD app manifest folder, and allowing
+ * the user to edit, create, and delete these, using a graphical UI.
  */
 
 
@@ -24,7 +26,7 @@ for-each:x:/@list-files/*?name
   /*
    * Adding grid [item] to databind operation below.
    */
-  eval-x:x:/+/*/*/*|/+/**/_filename
+  eval-x:x:/+/*/*/*|/+/**/.filename
   add:x:/../*/micro.widgets.grid.databind
     src
       item
@@ -46,14 +48,14 @@ for-each:x:/@list-files/*?name
                     /*
                      * Forward evaluated above.
                      */
-                    _filename:x:/@_dp?value
+                    .filename:x:/@_dp?value
 
                     /*
                      * Evaluating file responsible for editing app.
                      */
                     eval-x:x:/+/*
                     micro.evaluate.file:@CAMPHORA/helpers/edit-app.hl
-                      filename:x:/@_filename?value
+                      filename:x:/@.filename?value
 
                 /*
                  * Copy app manifest button.
@@ -66,14 +68,14 @@ for-each:x:/@list-files/*?name
                     /*
                      * Forward evaluated above.
                      */
-                    _filename:x:/@_dp?value
+                    .filename:x:/@_dp?value
 
                     /*
                      * Copying file, and re-databinding grid.
                      */
-                    split:x:/@_filename?value
+                    split:x:/@.filename?value
                       =:.
-                    copy-file:x:/@_filename?value
+                    copy-file:x:/@.filename?value
                       dest:{0}-copy.hl
                         :x:/@split/0?name
                     micro.evaluate.file:@CAMPHORA/helpers/databind-grid.hl
@@ -89,14 +91,14 @@ for-each:x:/@list-files/*?name
                     /*
                      * Forward evaluated above.
                      */
-                    _filename:x:/@_dp?value
+                    .filename:x:/@_dp?value
 
                     /*
                      * Downloading Hyperlambda file wrapping app.
                      */
-                    split:x:/@_filename?value
+                    split:x:/@.filename?value
                       =:/
-                    micro.download.file:x:/@_filename?value
+                    micro.download.file:x:/@.filename?value
 
                 /*
                  * Delete app manifest button.
@@ -109,14 +111,14 @@ for-each:x:/@list-files/*?name
                     /*
                      * Forward evaluated above.
                      */
-                    _filename:x:/@_dp?value
+                    .filename:x:/@_dp?value
 
                     /*
                      * Invoking file responsible for deleting app manifest.
                      */
                     eval-x:x:/+/*
                     micro.evaluate.file:@CAMPHORA/helpers/delete-app.hl
-                      filename:x:/@_filename?value
+                      filename:x:/@.filename?value
 
 
 

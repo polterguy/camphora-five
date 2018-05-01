@@ -1,5 +1,5 @@
 /*
- * Saves a Camphora Five manifest.
+ * Saves a Camphora Five CRUD app manifest file.
  *
  * Expects __[\_event]__ passed in, being the ID of the _"save app"_ button.
  */

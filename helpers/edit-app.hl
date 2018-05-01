@@ -52,9 +52,6 @@ if:x:/-/*/*?value
  * Used to hold attributes of app retrieved from app-declaration file, if any.
  */
 .file-values
-  viewers
-  editors
-  skin
   show-headers
   desktop-icon
 
@@ -88,12 +85,6 @@ if:x:/../*/filename?value
   /*
    * Applying settings for later references.
    */
-  set:x:/@.file-values/*/viewers?value
-    src:x:/@load-file/*/*/viewers?value
-  set:x:/@.file-values/*/editors?value
-    src:x:/@load-file/*/*/editors?value
-  set:x:/@.file-values/*/skin?value
-    src:x:/@load-file/*/*/skin?value
   set:x:/@.file-values/*/show-headers?value
     src:x:/@load-file/*/*/show-headers?value
   set:x:/@.file-values/*/desktop-icon?value

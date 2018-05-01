@@ -1,0 +1,564 @@
+/*
+ * This file is responsible for actually showing the main datagrid
+ * for a Camphora Five app.
+ */
+
+
+
+
+
+/*
+ * Retrieves our app's name, and other URL entities.
+ */
+micro.url.get-entities
+
+
+
+
+
+/*
+ * Changing the title of page.
+ */
+p5.web.page.set-title:Camphora - {0}
+  :x:/@micro.url.get-entities/0?name
+
+
+
+
+
+/*
+ * Including Micro's CSS files, in addition to our main CSS
+ * file for currently evaluated Camphora app.
+ */
+micro.css.include
+p5.web.include-css-file:/modules/{0}/media/main.css
+  :x:/@micro.url.get-entities/0?name
+
+
+
+
+
+/*
+ * Loading file containing app manifest.
+ */
+load-file:/modules/{0}/helpers/app-manifest.hl
+  :x:/@micro.url.get-entities/0?name
+
+
+
+
+
+/*
+ * Iterating through each field in app, adding one column for each field that is
+ * supposed to be visible in the grid - But only if settings for app has told us to
+ * actually show any headers at all.
+ *
+ * Notice, we're tracking the first textarea type of column, and making it "100%" wide,
+ * which will prioritize the first column in regards to spacing, and make all other columns
+ * reduce accordingly in size, to have no more width than what's absolutely necessary
+ * in order to show their values, without breaking text into multiple lines.
+ */
+if:x:/@load-file/*/*/show-headers?value
+
+  /*
+   * Tracking first header of type [textarea], since we want to make sure it have
+   * priority in spacing, by making it 100% width, which will force it to become the
+   * largest column in our datagrid.
+   */
+  _first:bool:true
+
+  /*
+   * Looping through each [field] declaration in "app-manifest.hl" file for app.
+   */
+  for-each:x:/@load-file/*/*/field
+
+    /*
+     * Checking if field is supposed to be visible in grid.
+     */
+    if:x:/@_dp/#/*/show?value
+      =:bool:false
+
+      /*
+       * Current field is not supposed to be visible in the datagrid.
+       */
+      continue
+
+    /*
+     * Checking if this is a "checked" type of field.
+     */
+    if:x:/@_dp/#/*/type?value
+      =:checkbox
+
+      /*
+       * Yup, checkbox column type - Reducing width of column.
+       *
+       * This little CSS trick will make the column no wider than what it absolutely
+       * needs to be, to show its header (th) cell.
+       */
+      add:x:/..for-each/*/add/*/*
+        src
+          style:"width:5px;"
+
+    else-if:x:/@_first?value
+      and:x:/@_dp/#/*/type?value
+        =:textarea
+
+      /*
+       * This is our first text or textarea column, making it 100% wide, to throw
+       * our CSS trick from above (read comments above).
+       */
+      add:x:/..for-each/*/add/*/*
+        src
+          style:"width:100%;"
+
+    /*
+     * Adding a column to our datagrid below.
+     */
+    set:x:/+2/*/*?name
+      src:x:/@_dp/#/*/name?value
+    eval-x:x:/+/*/*/*/*/*/innerValue
+    add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
+      src
+        foo
+          class:capitalize
+          widgets
+            a
+              href:#
+              role:button
+              innerValue:x:/@_dp/#/*/name?value
+              onclick
+
+                /*
+                 * Forward evaluated below before widget is created.
+                 */
+                _app-name:x:/@micro.url.get-entities/0?name
+
+                /*
+                 * Evaluating file responsible for sorting datagrid by clicked column.
+                 */
+                add:x:/+
+                  src:x:/../*(/_app-name|/_event)
+                micro.evaluate.file:/modules/{0}/helpers/sort-by-column.hl
+                  :x:/@_app-name?value
+
+
+
+
+
+/*
+ * Creating Edit row header, but only if headers are supposed to be shown.
+ */
+if:x:/@load-file/*/*/show-headers?value
+
+  /*
+   * Headers are visible for app, adding the "Edit" header.
+   */
+  add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
+    src
+      ""
+        style:"width:5px;text-align:right;"
+
+
+
+
+
+/*
+ * Figuring out if a query search parameter was supplied.
+ */
+p5.web.query.get:q
+if:x:/@p5.web.query.get/*?value
+
+  /*
+   * Query parameter was given.
+   */
+  eval-x:x:/+/*/*/value
+  add:x:/../*/create-widget/**/input/=camphora-search-query
+    src
+      value:x:/@p5.web.query.get/*?value
+
+
+
+
+
+/*
+ * Checking if we have alternative views, and if so, making sure we display our
+ * "view views" button.
+ */
+if:x:/@load-file/*/*/views/*?count
+  >:int:0
+
+  /*
+   * There are alternative views, making sure we inject our "view views" button.
+   *
+   * First injecting a datagrid item for each view in app.
+   */
+  for-each:x:/@load-file/*/*/views/*?name
+    eval-x:x:/+/*/*/*/*/*/*
+    add:x:/..if/*/insert-after/**/micro.widgets.grid/*/rows
+      src
+        item
+          View
+            widgets
+              a
+                innerValue:x:/@_dp?value
+                style:"display:block;"
+                target:_blank
+                href:/{0}/{1}
+                  :x:/@micro.url.get-entities/0?name
+                  :x:/@_dp?value
+
+  /*
+   * Then inserting our open modal window button, that allows the user to select
+   * a specific view.
+   */
+  insert-after:x:/../*/create-widget/**/widgets/=toolbar/0
+    src
+      button
+        innerValue:@"<span class=""icon-eye""></span>"
+        title:View alternative views
+        onclick
+
+          /*
+           * Showing a modal window, allowing user to open up alternative views for app.
+           */
+          create-widgets
+            micro.widgets.modal:camphora-view-views
+              widgets
+                h3
+                  innerValue:Alternative views
+                micro.widgets.grid
+                  class:hover striped
+                  rows
+                div
+                  class:right
+                  widgets
+                    button
+                      innerValue:Close
+                      title:Close window
+                      oninit
+
+                        /*
+                         * Setting initial focus to "close" button.
+                         */
+                        micro.page.set-focus:x:/../*/_event?value
+
+                      onclick
+
+                        /*
+                         * Closing "view views" modal window.
+                         */
+                        delete-widget:camphora-view-views
+
+
+
+
+
+/*
+ * Creating main wire-frame grid.
+ */
+eval-x:x:/+/**(/_app-name)
+create-widget:camphora-main-container
+  class:container
+  widgets
+
+    /*
+     * Obscurer show when more items are requested.
+     */
+    micro.widgets.cover:camphora-feed-more-obscurer
+      style:"display:none;"
+      message:"Please wait while we fetch more items ..."
+
+    div
+      class:row
+      widgets
+        div
+          class:col-100
+          oninit
+
+            /*
+             * Including JavaScript to determine is user is at the bottom of page,
+             * at which point we "auto-feed" grid with more items.
+             */
+            p5.web.include-javascript:@"
+window.onscroll = function() {
+  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+    if (!p5.camphora_end_of_dataset) {
+      if(p5.camphora_ongoing_scroll) {
+        return;
+      }
+      p5.camphora_ongoing_scroll = true;
+      var obsc = p5.$('camphora-feed-more-obscurer').el;
+      obsc.style.display = 'block';
+      var el = p5.$('camphora-crud-grid');
+      el.raise('.onfeed',{
+        onsuccess:function() {
+          p5.camphora_ongoing_scroll = false;
+          obsc.style.display = 'none';
+        }
+      });
+    }
+  }
+};"
+          widgets
+            div
+              class:row
+              widgets
+                div
+                  class:col
+                  widgets
+                    div
+                      class:strip toolbar right
+                      widgets:toolbar
+                        button:camphora-add-new-record-button
+                          innerValue:@"<span class=""icon-plus""></span>"
+                          class:large
+                          title:Create new record
+                          onclick
+
+                            /*
+                             * Forward evaluated above.
+                             */
+                            _app-name:x:/@micro.url.get-entities/0?name
+
+                            /*
+                             * Making sure user is not editing another item, since this will
+                             * raise an exception, due to static IDs in widgets.
+                             */
+                            p5.web.widgets.find
+                              .edit
+                            if:x:/@p5.web.widgets.find/*/*?value
+
+                              /*
+                               * Warning use that he needs to finish up editing existing item,
+                               * before he can create new items.
+                               */
+                              micro.windows.info:You have to finish editing your item, before you can create a new item
+                                class:micro-windows-info warning
+                              return
+
+                            /*
+                             * Evaluating file responsible for creating a new record.
+                             */
+                            micro.evaluate.file:/modules/{0}/helpers/create-item.hl
+                              :x:/@_app-name?value
+
+                        button
+                          innerValue:@"<span class=""icon-download2""></span>"
+                          title:Download items as CSV file
+                          onclick
+
+                            /*
+                             * Forward evaluated above.
+                             */
+                            _app-name:x:/@micro.url.get-entities/0?name
+
+                            /*
+                             * Evaluating file responsible for exporting items to client.
+                             */
+                            eval-x:x:/+/*/app-name
+                            micro.evaluate.file:/modules/{0}/helpers/export-items.hl
+                              :x:/@_app-name?value
+                              app-name:x:/@_app-name?value
+
+                        micro.widgets.upload-button:camphora-import-csv-file
+                          title:Import a CSV file from your local disc
+                          accept:.csv
+                          .onupload
+
+                            /*
+                             * Evaluating "upload" Hyperlambda file.
+                             */
+                            micro.url.get-entities
+                            add:x:/+2
+                              src:x:/../*/files
+                            eval-x:x:/+/*/app-name
+                            micro.evaluate.file:/modules/{0}/helpers/upload-file.hl
+                              :x:/@micro.url.get-entities/0?name
+                              app-name:x:/@micro.url.get-entities/0?name
+
+                            /*
+                             * For simplicity reasons, we simply reload current URL.
+                             */
+                            p5.web.reload-location
+
+                        button:camphora-delete-all-button
+                          innerValue:@"<span class=""icon-bin""></span>"
+                          title:Deletes all items in your database
+                          onclick
+
+                            /*
+                             * Forward evaluated above.
+                             */
+                            _app-name:x:/@micro.url.get-entities/0?name
+
+                            /*
+                             * Evaluates file responsible for actually deleting all items.
+                             */
+                            micro.evaluate.file:/modules/{0}/helpers/delete-all.hl
+                              :x:/@_app-name?value
+
+                        a
+                          role:button
+                          class:button
+                          innerValue:@"<span class=""icon-home3""></span>"
+                          title:Return to home
+                          href:/
+
+                    div
+                      class:strip right
+                      widgets
+                        input:camphora-search-query
+                          type:text
+                          placeholder:Search ...
+                          onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-search-button').raise('onclick');return false;}"
+                          events
+
+                            /*
+                             * Updates count.
+                             */
+                            camphora.update-count
+
+                              /*
+                               * Forward evaluated above.
+                               */
+                              _app-name:x:/@micro.url.get-entities/0?name
+
+                              /*
+                               * Modifying placeholder to contain record count.
+                               */
+                              p5.mysql.connect:[camphora]
+                                p5.mysql.scalar:@"select count(*) from `{0}`"
+                                  :x:/@_app-name?value
+                                set-widget-property:x:/../*/_event?value
+                                  placeholder:Search amongst {0} records ...
+                                    :x:/@p5.mysql.scalar?value
+
+                          oninit
+
+                            /*
+                             * Setting focus initially to search textbox, and
+                             * making sure we set initial count of records.
+                             */
+                            camphora.update-count
+                            micro.page.set-focus:x:/../*/_event?value
+
+                        button:camphora-search-button
+                          innerValue:@"<span class=""icon-search""></span>"
+                          title:Search for items
+                          onclick
+
+                            /*
+                             * Forward evaluated above.
+                             */
+                            _app-name:x:/@micro.url.get-entities/0?name
+
+                            /*
+                             * Figuring out filter, setting it to viewstate,
+                             * and re-databinding grid.
+                             */
+                            get-widget-property:camphora-search-query
+                              value
+                            if:x:/@get-widget-property/*/*?value
+                              !=:
+
+                              /*
+                               * Filter was given, storing it in ViewState before re-databinding grid,
+                               * and making sure we enable our "clear filter button".
+                               */
+                              p5.web.viewstate.set:camphora.filter
+                                src:x:/@get-widget-property/*/*?value
+                              delete-widget-property:camphora-remove-all-filters
+                                disabled
+
+                            else
+
+                              /*
+                               * Filter was NOT given, removing it from ViewState before re-databinding grid,
+                               * and making sure we disable our "clear filter button".
+                               */
+                              p5.web.viewstate.set:camphora.filter
+                              set-widget-property:camphora-remove-all-filters
+                                disabled
+
+                            /*
+                             * Re-databinding grid.
+                             */
+                            micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
+                              :x:/@_app-name?value
+
+                            /*
+                             * Selecting textbox content, and setting focus to it.
+                             */
+                            micro.page.set-focus:camphora-search-query
+
+                        button:camphora-remove-all-filters
+                          innerValue:@"<span class=""icon-cross""></span>"
+                          title:Remove all search and tag filters
+                          disabled
+                          oninit
+
+                            /*
+                             * Checking if current URL is a request for items with
+                             * a specific "hash tag", at which point we enable the clear button.
+                             */
+                            micro.url.get-entities
+                            if:x:/@micro.url.get-entities/1?name
+                              =:tag
+
+                              /*
+                               * Current request is a request for a specific tag, hence
+                               * we enable the "clear filter" button, to allow user to
+                               * clear the tag, and go to "root" URL of app.
+                               */
+                              delete-widget-property:x:/../*/_event?value
+                                disabled
+
+                          onclick
+
+                            /*
+                             * Forward evaluated above.
+                             */
+                            _app-name:x:/@micro.url.get-entities/0?name
+
+                            /*
+                             * To clear out any viewstate and tags, we simply re-direct
+                             * the client to base URL of app.
+                             */
+                            p5.web.set-location:x:/@_app-name?value
+
+    div
+      class:row air-top
+      widgets
+        div
+          class:col-100
+          widgets
+            div
+              class:camphora-crud-grid-wrapper
+              widgets
+                micro.widgets.grid:camphora-crud-grid
+                  class:striped hover
+                  .onfeed
+
+                    /*
+                     * Feeding grid with more items.
+                     */
+                    _app-name:x:/@micro.url.get-entities/0?name
+                    micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
+                      :x:/@_app-name?value
+                      feed-more:bool:true
+
+                  columns
+                  oninit
+
+                    /*
+                     * Forward evaluated above.
+                     */
+                    _app-name:x:/@micro.url.get-entities/0?name
+
+                    /*
+                     * Evaluating file responsible for databinding grid.
+                     */
+                    eval-x:x:/+/*/url
+                    micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
+                      :x:/@_app-name?value
+                      url:x:/@_app-name?value

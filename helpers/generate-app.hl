@@ -1,7 +1,7 @@
 /*
- * File responsible for generating Camphora Five module.
+ * File responsible for generating a Camphora Five CRUD app from a manifest file.
  *
- * Requires a __[filename]__ argument, declaring which app to generate.
+ * Expects a __[filename]__ argument, declaring which app to generate.
  * Optionally pass in a __[delete-data]__ argument, and set its value to boolean _"true"_
  * if you wish to delete existing data/database/table for app.
  */
@@ -76,7 +76,7 @@ for-each:x:/-/*?name
 
 
 /*
- * Checking if manifest for application specified that we should create a 
+ * Checking if manifest for application specified that we should create a
  * desktop icon, or not
  */
 load-file:x:/../*/filename?value
@@ -92,18 +92,25 @@ if:x:/@load-file/*/*/desktop-icon?value
 else
 
   /*
-   * Loading and modifying app's "desktop.hl" file, to make sure it's got knowledge
-   * about which app this actually is.
+   * Loading and modifying app's "desktop.hl" file, to make sure it displays
+   * what app this actually is.
+   *
+   * Making sure we keep comments in file.
    */
   load-file:/modules/{0}/desktop.hl
     :x:/@split/0/-2?name
+    convert:false
+  hyper2lambda:x:/@load-file/*?value
+    keep-comments:true
   eval-x:x:/+/*/*
-  add:x:/@load-file/*/*/*/widgets/*/literal/[0,1]
+  add:x:/@hyper2lambda/*/*/widgets/*/literal/[0,1]
     src
       innerValue:x:/@split/0/-2?name
+  lambda2hyper:x:/@hyper2lambda/*
+    comments:unroll
   save-file:/modules/{0}/desktop.hl
     :x:/@split/0/-2?name
-    src:x:/@load-file/*/*
+    src:x:/@lambda2hyper?value
 
 
 
@@ -120,7 +127,7 @@ copy-file:x:/../*/filename?value
 load-file:/modules/{0}/helpers/app-manifest.hl
   :x:/@split/0/-2?name
 for-each:x:/@load-file/*/*/views/*
-  save-file:/modules/{0}/{1}.hl
+  save-file:/modules/{0}/views/{1}.hl
     :x:/@split/0/-2?name
     :x:/@_dp/#?name
     src:{0}{1}

@@ -8,15 +8,6 @@
 
 
 /*
- * Including Micro CSS.
- */
-micro.css.include
-
-
-
-
-
-/*
  * Making sure user has a folder where we can store his apps, if it doesn't
  * exist from before.
  */
@@ -59,6 +50,15 @@ p5.web.page.set-title:Camphora Five
 
 
 /*
+ * Including Micro CSS.
+ */
+micro.css.include
+
+
+
+
+
+/*
  * Creating main wire-frame for Camphora.
  */
 create-widget:camphora-main-container
@@ -77,6 +77,10 @@ create-widget:camphora-main-container
     div
       class:row
       widgets
+
+        /*
+         * Wrapper for toolbar at the top.
+         */
         div
           class:col-100
           widgets

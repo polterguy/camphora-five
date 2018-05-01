@@ -21,7 +21,7 @@ micro.lambda.contract.min:x:/..
  * Deleting app, after having asked user to confirm action in a modal widget,
  * for then to simply re-databind grid.
  */
-eval-x:x:/+/**/_filename
+eval-x:x:/+/**/.filename
 create-widgets
   micro.widgets.modal:camphora-confirm-deletion
     widgets
@@ -56,12 +56,12 @@ create-widgets
                   /*
                    * Forward evaluated above.
                    */
-                  _filename:x:/../*/filename?value
+                  .filename:x:/../*/filename?value
 
                   /*
                    * Making sure we also uninstall app.
                    */
-                  split:x:/@_filename?value
+                  split:x:/@.filename?value
                     =:/
                     =:.
                   desktop.modules.uninstall:/modules/{0}/
@@ -87,7 +87,7 @@ create-widgets
                    * Deleting app declaration file, for then to simply
                    * delete modal widget.
                    */
-                  delete-file:x:/@_filename?value
+                  delete-file:x:/@.filename?value
                   delete-widget:camphora-confirm-deletion
 
                   /*
@@ -98,7 +98,7 @@ create-widgets
                   /*
                    * Signaling listeners that app's been deleted.
                    */
-                  camphora.delete-app:x:/@_filename?value
+                  camphora.delete-app:x:/@.filename?value
 
               button
                 innerValue:No
