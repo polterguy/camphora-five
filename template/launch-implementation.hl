@@ -71,8 +71,15 @@ create-widget:camphora-main-container
              * Notice, the name of this node is dynamically replaced
              * as your app is generated, to the correct name for the
              * extension widget.
+             *
+             * We instantiate our toolbar widget by default such that
+             * it also displays the home button, delete all button, import
+             * CSV file button, etc. If you don't want these buttons, or
+             * this strip to be more accurate, you can set the [main-toolbar]
+             * value to "false".
              */
             camphora.widgets.toolbar
+              main-toolbar:bool:true
 
 
     /*
@@ -91,5 +98,10 @@ create-widget:camphora-main-container
              * Notice, the name of this node is dynamically replaced
              * as your app is generated, to the correct name for the
              * extension widget.
+             *
+             * We instantiate the widget such that it allows for editing
+             * and deletion of items. If you don't want this feature, you
+             * can change the [edit-items] value to "false".
              */
             camphora.widgets.datagrid:camphora-datagrid
+              edit-items:bool:true

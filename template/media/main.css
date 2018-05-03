@@ -2,8 +2,10 @@
  * Main CSS file for Camphora Five CRUD app.
  */
 .camphora-datagrid tr td {
-    cursor: pointer;
     vertical-align: text-top;
+}
+.camphora-datagrid tr.camphora-grid-editable td {
+    cursor: pointer;
 }
 .camphora-sort-column-asc>span:after {
     padding-left:.5rem;

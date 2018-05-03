@@ -1,4 +1,3 @@
-
 /*
  * This file creates the __[camphora.widgets.toolbar.xxx]__ extension widget.
  */
@@ -6,10 +5,30 @@
 /*
  * This extension widget allows you to display your Camphora Five
  * CRUD app as a widget, injecting the entire app, anywhere on your
- * page.
+ * page. The extension widget takes the following arguments.
+ *
+ * - __[main-toolbar]__ - Whether or not the main toolbar should be created or not. The default value of this argument is _"false"_.
  */
 create-event:camphora.widgets.toolbar.{0}
   :{app-name}
+
+  /*
+   * Defaults.
+   */
+  .defaults
+    main-toolbar:bool:false
+
+  /*
+   * Checking if caller does not want a main toolbar, at which
+   * point we delete it from the return value.
+   */
+  if:x:(/../*/main-toolbar|/@.defaults/*/main-toolbar)/$?value.bool
+    =:bool:false
+
+    /*
+     * Removing main toolbar.
+     */
+    set:x:/../*/return/*/div/*/widgets/0
 
   /*
    * Returning our toolbar widget to caller.
@@ -20,21 +39,6 @@ create-event:camphora.widgets.toolbar.{0}
         div
           class:strip right toolbar
           widgets
-
-            /*
-             * Add new record button.
-             */
-            button
-              innerValue:@"<span class=""icon-plus""></span>"
-              class:large
-              title:Create new record
-              onclick
-
-                /*
-                 * Invoking widget lambda event that is responsible for
-                 * creating a new item.
-                 */
-                camphora.create-new-item
 
 
             /*
@@ -259,3 +263,19 @@ create-event:camphora.widgets.toolbar.{0}
                  * Paging to next page.
                  */
                 camphora.datagrid.databind.next
+
+
+            /*
+             * Add new record button.
+             */
+            button
+              innerValue:@"<span class=""icon-plus""></span>"
+              class:large
+              title:Create new record
+              onclick
+
+                /*
+                 * Invoking widget lambda event that is responsible for
+                 * creating a new item.
+                 */
+                camphora.create-new-item
