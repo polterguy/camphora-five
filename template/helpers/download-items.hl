@@ -1,7 +1,5 @@
 /*
  * File responsible for exporting items to the client as a CSV file.
- *
- * Expects __[app-name]__ being the name of our Camphora Five module.
  */
 
 
@@ -9,35 +7,41 @@
 
 
 /*
- * Checking if there exists an existing temp CSV file in user's temp folder,
+ * Checking if there already exists an existing temp CSV file in user's temp folder,
  * and deleting it if it exists.
  */
 if
   fetch:x:/0/0?value
     file-exists:~/temp/{0}.csv
-      :x:/../*/app-name?value
+      :{app-name}
   delete-file:~/temp/{0}.csv
-    :x:/../*/app-name?value
+    :{app-name}
 
 
 
 
 
 /*
- * Loading app-manifest file, to figure out which columns we should export from
- * our database.
+ * Contains all [field] arguments from app manifest file.
  */
-load-file:/modules/{0}/helpers/app-manifest.hl
-  :x:/../*/app-name?value
-_cols
-for-each:x:/@load-file/*/*/field
+.fields
+
+
+
+
+
+/*
+ * Iterating through each [field] declaration from above [.fields] node.
+ */
+.cols
+for-each:x:/@.fields/*/field
 
   /*
    * Adding column to SQL.
    */
-  set:x:/@_cols?value
+  set:x:/@.cols?value
     src:{0},`{1}`
-      :x:/@_cols?value
+      :x:/@.cols?value
       :x:/@_dp/#/*/name?value
 
 
@@ -47,8 +51,8 @@ for-each:x:/@load-file/*/*/field
 /*
  * Trimming away redundant "," on columns declaration.
  */
-set:x:/@_cols?value
-  trim:x:/@_cols?value
+set:x:/@.cols?value
+  trim:x:/@.cols?value
     chars:,
 
 
@@ -64,8 +68,8 @@ p5.mysql.connect:[camphora]
    * Runninq query.
    */
   p5.mysql.select:@"select {0} from `{1}`"
-    :x:/@_cols?value
-    :x:/../*/app-name?value
+    :x:/@.cols?value
+    :{app-name}
 
   /*
    * Creating CSV content out of query's result.
@@ -76,7 +80,7 @@ p5.mysql.connect:[camphora]
    * Saving CSV content to file in user's "/temp/" folder.
    */
   save-file:~/temp/{0}.csv
-    :x:/../*/app-name?value
+    :{app-name}
     src:x:/@lambda2csv?value
 
 
@@ -87,4 +91,4 @@ p5.mysql.connect:[camphora]
  * Re-directing client to download link.
  */
 micro.download.file:~/temp/{0}.csv
-  :x:/../*/app-name?value
+  :{app-name}

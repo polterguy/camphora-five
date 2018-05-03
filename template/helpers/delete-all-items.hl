@@ -1,0 +1,38 @@
+/*
+ * Asks the user to confirm deletion of all records in our Camphora Five app.
+ */
+
+
+
+
+
+/*
+ * Contains app name.
+ */
+.app-name:{app-name}
+
+
+
+
+
+/*
+ * Asking user to confirm action.
+ */
+eval-x:x:/+/*/body
+micro.windows.confirm
+  header:Please confirm action
+  body:This will delete all records in your database of type '{0}', are you sure you wish to continue?
+    :x:/../*/.app-name?value
+  onok
+
+    /*
+     * Deleting all records from database.
+     */
+    p5.mysql.connect:[camphora]
+      p5.mysql.delete:@"delete from `{0}`"
+        :{app-name}
+
+    /*
+     * Reloading root location for simplicity.
+     */
+    p5.web.reload-location

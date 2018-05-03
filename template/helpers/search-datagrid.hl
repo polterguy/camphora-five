@@ -1,0 +1,171 @@
+
+/*
+ * This file will filter your Camphora app's datagrid according
+ * to the specified __[query]__ argument.
+ */
+
+
+
+
+
+/*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.min:x:/..
+  query:string
+
+
+
+
+
+/*
+ * Setting focus to search button.
+ */
+micro.page.set-focus:camphora-search-query
+
+
+
+
+
+/*
+ * Contains all of our field definitions, which we can
+ * apply to our [filter] condition to.
+ */
+.fields
+
+
+
+
+
+/*
+ * Resets the CSS classes of all "sort header linkbuttons".
+ */
+p5.web.widgets.find-like:camphora-datagrid
+  class:camphora-sort-column
+delete-widget-property:x:/@p5.web.widgets.find-like/*/*?value
+  class
+
+
+
+
+
+/*
+ * Checking if there actually is a [filter] condition.
+ */
+if:x:/../*/query?value
+  !=:
+
+  /*
+   * A filter condition should be applied.
+   *
+   * Used as buffer to hold our [filter] argument.
+   */
+  .filter
+
+  /*
+   * Adding 'like' fields, if there are any such fields.
+   */
+  if:x:/@.fields/*/field/*/type(/=text|/=textarea)/./*/name
+
+    /*
+     * There exists "like" type of fields in app.
+     * Iterating through them all and adding them to our [.filter].
+     */
+    for-each:x:/@.fields/*/field/*/type(/=text|/=textarea)/./*/name?value
+
+      /*
+       * Checking if this is the first filter condition, and if not,
+       * making sure we add an 'or' clause before we add our currently
+       * iterated filter.
+       */
+      if:x:/@.filter?value
+        set:x:/@.filter?value
+          src:"{0} or "
+            :x:/@.filter?value
+
+      /*
+       * Concatenating currently iterated filter into [.filter].
+       */
+      set:x:/@.filter?value
+        src:{0}`{1}` like @like
+          :x:/@.filter?value
+          :x:/@_dp?value
+
+    /*
+     * Adding [@filter] argument to databind invocation.
+     */
+    eval-x:x:/+/*/*
+    add:x:/@.filter
+      src
+        @like:%{0}%
+          :x:/../*/query?value
+
+  /*
+   * Adding 'equal' fields, if there are any such fields.
+   */
+  if:x:/@.fields/*/field/*/type(/=number|/=select|/=radio)/./*/name
+
+    /*
+     * There exists "equal" type of fields in app.
+     * Iterating through them all and adding them to our [.filter].
+     */
+    for-each:x:/@.fields/*/field/*/type(/=number|/=select|/=radio)/./*/name?value
+
+      /*
+       * Checking if this is the first filter condition, and if not,
+       * making sure we add an 'or' clause before we add our currently
+       * iterated filter.
+       */
+      if:x:/@.filter?value
+        set:x:/@.filter?value
+          src:"{0} or "
+            :x:/@.filter?value
+
+      /*
+       * Concatenating currently iterated filter into [.filter].
+       */
+      set:x:/@.filter?value
+        src:{0}`{1}` = @equals
+          :x:/@.filter?value
+          :x:/@_dp?value
+
+    /*
+     * Adding [@value] argument to databind invocation.
+     */
+    eval-x:x:/+/*/*
+    add:x:/@.filter
+      src
+        @equals:x:/../*/query?value
+
+  /*
+   * Adding entire [.filter] argument to databind invocation,
+   * including its children nodes, which might include [@value]
+   * and [@filter].
+   */
+  eval-x:x:/+2/*/*
+  add:x:/+/*/*
+    src:x:/@.filter/*
+  add:x:/../*/camphora.datagrid.databind
+    src
+      filter:x:/@.filter?value
+
+else
+
+  /*
+   * No filter condition, making sure we reset it in databind invocation.
+   */
+  add:x:/../*/camphora.datagrid.databind
+    src:filter
+
+
+
+
+
+/*
+ * Re-databinding datagrid, and making sure we reset all arguments,
+ * except possibly the [filter] argument.
+ */
+camphora.datagrid.databind
+  page
+  order-by
+  order-dir

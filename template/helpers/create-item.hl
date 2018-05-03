@@ -2,7 +2,7 @@
  * File responsible for creating a new item.
  *
  * Displays a modal widget with an input field for all fields in app
- * that user can supply himself.
+ * that user can supply.
  */
 
 

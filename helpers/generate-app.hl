@@ -80,7 +80,7 @@ if:x:/@load-file/*/*/desktop-icon?value
   =:bool:false
 
   /*
-   * Deleting desktop icon for app, since it obviously should not have one.
+   * Deleting desktop icon for app, since app should not have one.
    */
   delete-file:/modules/{0}/desktop.hl
     :x:/@split/0/-2?name
@@ -90,11 +90,8 @@ if:x:/@load-file/*/*/desktop-icon?value
 
 
 /*
- * Loading app manifest file, and creating one 'view' file
- * from each [view] in our manifest file.
+ * Creating one 'view' file from each [view] in our manifest file.
  */
-load-file:/modules/{0}/helpers/app-manifest.hl
-  :x:/@split/0/-2?name
 for-each:x:/@load-file/*/*/views/*
   save-file:/modules/{0}/views/{1}.hl
     :x:/@split/0/-2?name
@@ -109,11 +106,6 @@ for-each:x:/@load-file/*/*/views/*
 
 "
       :x:/@_dp/#?value
-set:x:/@load-file/*/*/views
-lambda2hyper:x:/@load-file/*/*
-save-file:/modules/{0}/helpers/app-manifest.hl
-  :x:/@split/0/-2?name
-  src:x:/@lambda2hyper?value
 
 
 
@@ -181,9 +173,17 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
             onclick
 
               /*
-               * Forward evaluated above.
+               * Getting [column] value that we should sort by.
                */
-              camphora.datagrid._header-clicked:x:/../*/_event?value
+              get-widget-property:x:/../*/_event?value
+                .column
+
+              /*
+               * Doing the actual sorting.
+               */
+              eval-x:x:/+/*
+              camphora.datagrid.sort
+                column:x:/@get-widget-property/*/*?value
 
   /*
    * Setting the column's name, forward declaring its [innerValue],
@@ -335,6 +335,81 @@ add:x:/@hyper2lambda/*/create-widget/**/widgets/=data
 lambda2hyper:x:/@hyper2lambda/*
   comments:unroll
 save-file:/modules/{0}/helpers/edit-item.hl
+  :x:/@split/0/-2?name
+  src:x:/@lambda2hyper?value
+
+
+
+
+
+/*
+ * Making sure that our "download-items.hl" file knows which columns to export.
+ */
+load-file:/modules/{0}/helpers/download-items.hl
+  :x:/@split/0/-2?name
+  convert:false
+hyper2lambda:x:/@load-file/*?value
+  keep-comments:true
+
+
+
+
+
+/*
+ * Applying all [field] declarations from app manifest file into
+ * [.fields] inside of file.
+ */
+add:x:/@hyper2lambda/**/.fields
+  src:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
+
+
+
+
+
+/*
+ * Saving file again, now with column declarations.
+ */
+lambda2hyper:x:/@hyper2lambda/*
+  comments:unroll
+save-file:/modules/{0}/helpers/download-items.hl
+  :x:/@split/0/-2?name
+  src:x:/@lambda2hyper?value
+
+
+
+
+
+/*
+ * Making sure our "search-datagrid.hl" file knows which columns we can apply filtering
+ * to, and how
+ */
+load-file:/modules/{0}/helpers/search-datagrid.hl
+  :x:/@split/0/-2?name
+  convert:false
+hyper2lambda:x:/@load-file/*?value
+  keep-comments:true
+
+
+
+
+
+/*
+ * Applying all [field] declarations from app manifest file into
+ * [.fields] inside of file.
+ */
+add:x:/@hyper2lambda/*/.fields
+  src:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
+
+
+
+
+
+/*
+ * Saving file again, now with [columns] declarations.
+ */
+lambda2hyper:x:/@hyper2lambda/*
+  comments:unroll
+save-file:/modules/{0}/helpers/search-datagrid.hl
   :x:/@split/0/-2?name
   src:x:/@lambda2hyper?value
 

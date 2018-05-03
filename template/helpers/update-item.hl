@@ -1,0 +1,93 @@
+
+/*
+ * This file will update the specified __[id]__ database item,
+ * with all given arguments, which should be database columns.
+ */
+
+
+
+
+
+/*
+ * Separating arguments from the rest of our lambda.
+ */
+.signal
+
+
+
+
+
+/*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.min:x:/..
+  id:long
+if:x:/@.signal/--?count
+  =:int:1
+  throw:No arguments given to update besides the 'id'
+
+
+
+
+
+/*
+ * Parametrizing update SQL with column names and SQL parameters.
+ */
+.pars
+.no:int:0
+for-each:x:/@.signal/--/<-(!/_event!/id!/=)
+
+  /*
+   * Concatenating currently iterated SQL parameter, into [.pars],
+   * which is our parameter names to our insert SQL.
+   */
+  set:x:/@.pars?value
+    src:{0},`{1}`=@no{2}
+      :x:/@.pars?value
+      :x:/@_dp/#?name
+      :x:/@.no?value
+
+  /*
+   * Adding currently iterated SQL parameter into [.pars],
+   * which also contains all SQL insert parameters.
+   */
+  set:x:/+2/*/*?name
+    src:@no{0}
+      :x:/@.no?value
+  eval-x:x:/+/*/*
+  add:x:/@.pars
+    src
+      foo:x:/@_dp/#?value
+
+  /*
+   * Incrementing counter, to make sure our next parameter
+   * gets a unique name.
+   */
+  set:x:/@.no?value
+    +:x:/@.no?value
+      _:1
+
+
+
+
+
+/*
+ * Trimming [.pars] for excessive ",".
+ */
+trim:x:/@.pars?value
+  chars:,
+
+
+
+
+
+/*
+ * Executing our SQL.
+ */
+p5.mysql.connect:[camphora]
+  add:x:/+
+    src:x:/@.pars/*
+  p5.mysql.update:update `{0}` set {1} where id=@id
+    :{app-name}
+    :x:/@trim?value
+    @id:x:/../*/id?value.long

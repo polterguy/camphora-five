@@ -1,12 +1,7 @@
+
 /*
- * File responsible for databinding the grid for a Camphora Five generated app.
- *
- * Optionally pass in __[id]__, at which case, only the specified database id item
- * will be re-databound, and no other items will be touched.
- *
- * You can also optionally pass in __[feed-more]__ and set its value to boolean _"true"_,
- * at which point the existing items will not be cleared, but rather the grid
- * will have 20 more items appended to itself.
+ * This file will insert a database item,
+ * with all given arguments, which should be database columns.
  */
 
 
@@ -14,7 +9,7 @@
 
 
 /*
- * Signal node, to separate arguments from the rest of our lambda.
+ * Separating arguments from the rest of our lambda.
  */
 .signal
 
@@ -23,619 +18,86 @@
 
 
 /*
- * Sanity checking arguments.
+ * Sanity checking invocation.
  */
 micro.lambda.contract.optional:x:/..
-  offset:long
-  id:long
-  feed-more:bool
+  filter
+  page
+  order-by
+  order-dir
 
 
 
 
 
 /*
- * Offset, defaulting to 0
+ * Setting properties, if given.
  */
-.offset:long:0
-
-
-
-
-
-/*
- * Sorting column, defaulting to "id" and "ascending".
- */
-.sort-column:id
-.sort-column-direction:desc
-p5.web.viewstate.get:camphora.sort-column
-if:x:/@p5.web.viewstate.get/*?value
+for-each:x:/@.signal/--(/filter|/page|/order-by|/order-dir)
 
   /*
-   * Explicit sort column specified.
+   * Changing name of [foo] node below to property event name.
    */
-  set:x:/@.sort-column?value
-    src:x:/@p5.web.viewstate.get/*?value
+  set:x:/..for-each/*/foo?name
+    src:camphora.datagrid.{0}
+      :x:/@_dp/#?name
 
   /*
-   * Now figuring out direction.
+   * The below [foo] node is actually our property setter invocation,
+   * but its name is changed above, before we invoke it.
+   *
+   * Before we can invoke it though, we'll need to apply its arguments.
    */
-  p5.web.viewstate.get:camphora.sort-column-direction
-  set:x:/@.sort-column-direction?value
-    src:x:/@p5.web.viewstate.get/*?value
+  add:x:/+2/*
+    src:x:/@_dp/#/*
+  eval-x:x:/+/*
+  foo
+    value:x:/@_dp/#?value
 
 
 
 
 
 /*
- * Figuring out if a filter exists.
+ * Retrieving properties from persistent property events.
  */
-p5.web.viewstate.get:camphora.filter
-
-
-
-
-
-/*
- * Figuring out path of app's "/helpers/" folder.
- */
-split:x:/..?name
-  =:/
-set:x:/@split/0/-
-join:x:/@split/*?name
-  sep:/
-
-
-
-
-
-/*
- * Loading app declaration file.
- */
-load-file:/{0}/app-manifest.hl
-  :x:/@join?value
-
-
-
-
-
-/*
- * Splitting URL, to figure out which type of request this is.
- *
- * URL could be "/tag" request for instance.
- */
-p5.web.get-location
-p5.web.get-root-location
-replace:x:/@p5.web.get-location?value
-  src:x:/@p5.web.get-root-location?value
-split:x:/@replace?value
-  =:/
-  =:?
-
-
-
-
-
-/*
- * Creating our SQL fields definition, by figuring out which columns are supposed to be visible in
- * the datagrid.
- */
-_cols
-for-each:x:/@load-file/*/*/field
+.properties
+  camphora.datagrid.filter
+  camphora.datagrid.page
+  camphora.datagrid.order-by
+  camphora.datagrid.order-dir
+for-each:x:/@.properties/*?name
 
   /*
-   * Checking if field is supposed to be visible in grid.
+   * Invoking property getter event, making sure we set its correct
+   * name before we do.
    */
-  if:x:/@_dp/#/*/show?value
-
-    /*
-     * Adding column to SQL.
-     */
-    set:x:/@_cols?value
-      src:{0},`{1}`
-        :x:/@_cols?value
-        :x:/@_dp/#/*/name?value
+  set:x:/..for-each/*/foo?name
+    src:x:/@_dp?value
+  foo
+  add:x:/../*/micro.widgets.mysql.datagrid.databind
+    src:x:/./-/*
 
 
 
 
 
 /*
- * Trimming away redundant "," on columns declaration.
+ * Databinding MySQL datagrid.
  */
-set:x:/@_cols?value
-  trim:x:/@_cols?value
-    chars:,
+micro.widgets.mysql.datagrid.databind:camphora-datagrid
 
 
 
 
 
 /*
- * Creating our SQL "where" statement, according to filter and "tag" requested.
+ * Making sure we signal to any callers whether or not the datagrid has
+ * anymore previous items, and what page we are currently viewing in its
+ * dataset.
  */
-_where
-_tag
-for-each:x:/@load-file/*/*/field
-
-  /*
-   * Checking if we have a [tag] condition.
-   */
-  if:x:/@split/*?count
-    >:int:2
-    and:x:/@split/1?name
-      =:tag
-
-    /*
-     * User requested items having a #hash-tag, now checking if currently iterated
-     * field is a [textarea] type of field, and if so, we add it as a criteria.
-     */
-    if:x:/@_dp/#/*/type?value
-      =:textarea
-
-      /*
-       * Currently iterated [field] is a [textarea] field, and user requested a 
-       * specific #hash-tag - Making sure we add our #hash-tag condition.
-       */
-      set:x:/@_tag?value
-        src:"`{0}` regexp @tag"
-          :x:/@_dp/#/*/name?value
-      eval-x:x:/+/*/*
-      add:x:/../*/p5.mysql.connect/*/p5.mysql.select
-        src
-          @tag:#{0}
-            :x:/@split/2?name
-
-  /*
-   * Checking if we have a filter.
-   */
-  if:x:/../*/p5.web.viewstate.get/*/camphora.filter?value
-
-    /*
-     * Checking if user is filtering on a specific column.
-     */
-    split:x:/../*/p5.web.viewstate.get/*/camphora.filter?value
-      =:":"
-    if:x:/@split/*?count
-      =:int:2
-      and:x:@"/@load-file/*/*/field/*/name/""=:regex:/^{0}$/i"""
-        :x:/@split/0?name
-
-      /*
-       * Filtering criteria is specifying a column, and column exists.
-       * Now checking if currently iterated column is that column, making sure
-       * our check is case insensitive.
-       */
-      to-lower:x:/@split/0?name
-      if:x:/@_dp/#/*/name?value
-        =:x:/@to-lower?value
-
-        /*
-         * Currently iterated column is requested filtering column.
-         */
-        set:x:/@_where?value
-          src:" where (`{0}` = @exact"
-            :x:/@split/0?name
-        eval-x:x:/+/*/*
-        add:x:/../*/p5.mysql.connect/*/p5.mysql.select
-          src
-            @exact:x:/@split/1?name
-
-    else
-
-      /*
-       * Query parameter was given, and it was not filtering on a specific column,
-       * making sure we create our "where" condition.
-       */
-      if:x:/@_where?value
-
-        /*
-         * Adding "or" parts to SQL.
-         */
-        set:x:/@_where?value
-          src:"{0} or "
-            :x:/@_where?value
-
-      else
-
-        /*
-         * Adding first parts of our "where" clause.
-         */
-        set:x:/@_where?value
-          src:" where ("
-
-      /*
-       * Adding up "where" for currently iterated column.
-       */
-      set:x:/@_where?value
-        src:@"{0}`{1}` like @filter"
-          :x:/@_where?value
-          :x:/@_dp/#/*/name?value
-
-      /*
-       * Making sure we pass in [@filter] to [p5.mysql.select], unless it has already
-       * been added.
-       */
-      if:x:/../*/p5.mysql.connect/*/p5.mysql.select/*/\@filter
-        not
-
-        /*
-         * First column we're adding a filter for.
-         */
-        eval-x:x:/+/*/*
-        add:x:/../*/p5.mysql.connect/*/p5.mysql.select
-          src
-            @filter:@"%{0}%"
-              :x:/../*/p5.web.viewstate.get/*/camphora.filter?value
-
-
-
-
-
-/*
- * Adding closing ")" to where clause, if there is a where clause.
- */
-if:x:/@_where?value
-  set:x:/@_where?value
-    src:"{0})"
-      :x:/@_where?value
-
-
-
-
-
-/*
- * Checking if user requested a tag, and/or an ID, and massaging "where" parts accordingly.
- */
-if:x:/@_tag?value
-  if:x:/@_where?value
-    or:x:/../*/id?value
-
-    /*
-     * There's either a tag declaration or an id request, hence we'll need to
-     * add condition as "AND".
-     */
-    set:x:/@_tag?value
-      src:" and {0}"
-        :x:/@_tag?value
-  else
-
-    /*
-     * Tag is the only "where" parts, hence adding it as "WHERE" condition.
-     */
-    set:x:/@_tag?value
-      src:" where {0}"
-        :x:/@_tag?value
-
-
-
-
-
-/*
- * Checking if caller supplied an [id] argument.
- */
-if:x:/@.signal/--/id?value
-
-  /*
-   * [id] argument was supplied, modifying where clause to accommodate for 
-   * only specified id.
-   */
-  if:x:/@_where?value
-
-    /*
-     * Adding "id" clause as AND parameter to SQL.
-     */
-    set:x:/@_where?value
-      src:@"{0} and id = @id"
-        :x:/@_where?value
-
-  else
-
-    /*
-     * Adding "id" clause as main where parts to SQL.
-     */
-    set:x:/@_where?value
-      src:@" where id = @id"
-
-  /*
-   * Adding [@id] parameter to SQL.
-   */
-  add:x:/../*/p5.mysql.connect/*/p5.mysql.select
-    src
-      @id:x:/../*/id?value
-
-
-
-
-
-/*
- * Checking if this is a [feed-more] invocation, at which point we add an argument
- * to our SQL, which only selects items with a lower ID than what was previously selected.
- */
-if:x:/../*/feed-more?value
-
-  /*
-   * Retrieving our previous offset, and adding 20 to it.
-   */
-  p5.web.viewstate.get:camphora.offset
-  +:x:/@p5.web.viewstate.get/*?value.long
-    _:20
-  set:x:/@.offset?value
-    src:x:/@+?value
-
-
-
-
-
-/*
- * Loading file containing edit-template widgets.
- */
-load-file:/modules/{0}/helpers/edit-item-template-widgets.hl
-  :x:/../*/split/[0,1]/0/-2?name
-
-
-
-
-
-/*
- * Opening database connection.
- */
-p5.mysql.connect:[camphora]
-
-  /*
-   * Executing SQL query, now parametrized accordingly.
-   */
-  p5.mysql.select:@"select id, {0} from `{1}`{2}{3} order by `{4}` {5} limit 20 offset @offset"
-    :x:/@_cols?value
-    :x:/../*/split/[0,1]/0/-2?name
-    :x:/@_where?value
-    :x:/@_tag?value
-    :x:/../*/.sort-column?value
-    :x:/../*/.sort-column-direction?value
-    @offset:x:/../*/.offset?value
-
-  /*
-   * Storing ID from last record from above SQL in viewstate, to be able to know
-   * from which point we should keep on feeding items, if file is invoked later with
-   * a [feed-more] argument.
-   */
-  p5.web.viewstate.set:camphora.offset
-    src:x:/../*/.offset?value
-
-  /*
-   * Checking if this is the end of our dataset, and if so, informing client to
-   * stop polling server for new data when scrolling to the bottom occurs.
-   */
-  if:x:/@p5.mysql.select/*?count
-    =:int:0
-
-    /*
-     * Signaling to client that there's no point int allowing user to poll server
-     * for more records as he continues scrolling.
-     */
-    p5.web.send-javascript:"p5.camphora_end_of_dataset = true;"
-
-  /*
-   * Looping through above results, and creating a row in grid for each row in database.
-   */
-  for-each:x:/@p5.mysql.select/*
-
-    /*
-     * First adding [item] to databind invocation.
-     */
-    add:x:/../*/micro.widgets.grid.databind
-      src:item
-
-    /*
-     * Then looping through each cell, making sure we HTML encode it before we
-     * append it's value into currently iterated [item].
-     */
-    for-each:x:/@_dp/#/*(!/id)
-
-      /*
-       * Special handling of "checkbox" type of items, to create some candy.
-       */
-      if:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
-        :x:/@_dp/#?name
-        =:checkbox
-
-        /*
-         * Checkbox type of item.
-         */
-        if:x:/@_dp/#?value.int
-          =:int:1
-
-          /*
-           * Item is checked.
-           */
-          set:x:/+/*/*?name
-            src:x:/@_dp/#?name
-          add:x:/../*/micro.widgets.grid.databind/0/-
-            src
-              foo:@"<span class=""icon-checkmark""></span>"
-                style:"text-align:right;width:5px;font-size:1.5rem;"
-
-        else
-
-          /*
-           * Item is NOT checked.
-           */
-          set:x:/+/*/*?name
-            src:x:/@_dp/#?name
-          add:x:/../*/micro.widgets.grid.databind/0/-
-            src
-              foo:""
-                style:"width:5px;"
-
-      /*
-       * Special handling of "created" type of items, to show the creation date formatted
-       * for when the record was inserted into database.
-       */
-      else-if:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
-        :x:/@_dp/#?name
-        =:created
-
-        /*
-         * Formatting date, before we add it to our grid.
-         */
-        p5.types.date.format:x:/@_dp/#?value
-          format:"ddd d. MMM yyyy - HH:mm"
-        set:x:/+2/*/*?name
-          src:x:/@_dp/#?name
-        eval-x:x:/+/*/*
-        add:x:/../*/micro.widgets.grid.databind/0/-
-          src
-            foo:x:/@p5.types.date.format?value
-              style:"white-space:nowrap;width:5px;"
-              class:camphora-date-column
-
-      else-if:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
-        :x:/@_dp/#?name
-        =:textarea
-
-        /*
-         * Textarea's content is turned into Markdown using intelligent parsing.
-         */
-        eval-x:x:/+/*
-        camphora._internal.html.markdown2html:x:/@_dp/#?value
-          app-name:x:/../*/split/[0,1]/1?name
-
-        /*
-         * Adding item to grid's databind invocation.
-         */
-        eval-x:x:/+2/*/**
-        set:x:/+/*/*?name
-          src:x:/@_dp/#?name
-        add:x:/../*/micro.widgets.grid.databind/0/-
-          src
-            foo:x:/@camphora._internal.html.markdown2html?value
-              .data-field:x:/@_dp/#?name
-              class:camphora-multiline-grid-cell
-
-      else-if:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
-        :x:/@_dp/#?name
-        =:text
-        or:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
-          :x:/@_dp/#?name
-          =:number
-
-        /*
-         * Text widgets, select widget, and radio widgets are rendered as "nowrap", 
-         * in addition to that their values are HTML encoded, to avoid HTML injection in items.
-         */
-        p5.html.html-encode:x:/@_dp/#?value
-
-        /*
-         * Adding item to grid's databind invocation.
-         */
-        eval-x:x:/+2/*/**
-        set:x:/+/*/*?name
-          src:x:/@_dp/#?name
-        add:x:/../*/micro.widgets.grid.databind/0/-
-          src
-            foo:x:/@p5.html.html-encode?value
-              .data-field:x:/@_dp/#?name
-              style:"white-space:nowrap;width:5px;"
-
-      else-if:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
-        :x:/@_dp/#?name
-        =:radio
-        or:x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/type?value
-          :x:/@_dp/#?name
-          =:select
-
-        /*
-         * Radio or select type of column, making sure we create clickable widgets,
-         * which will automatically filter on value when clicked.
-         */
-        p5.html.html-encode:x:/@_dp/#?value
-
-        /*
-         * Adding item to grid's databind invocation.
-         */
-        p5.html.url-encode:"{0}:{1}"
-          :x:/@load-file/@load-file/*/*/field/*/name/={0}/./*/name?value
-            :x:/@_dp/#?name
-          :x:/@_dp/#?value
-        eval-x:x:/+2/*/**(/innerValue|/.data-field|/href)
-        set:x:/+/*/*?name
-          src:x:/@_dp/#?name
-        add:x:/../*/micro.widgets.grid.databind/0/-
-          src
-            foo
-              style:"white-space:nowrap;"
-              widgets
-                a
-                  innerValue:x:/@p5.html.html-encode?value
-                  .data-field:x:/@_dp/#?name
-                  href:{0}?q={1}
-                    :x:/@split/0?name
-                    :x:/@p5.html.url-encode?value
-
-    /*
-     * User is allowed to edit rows, loading our file that contains our "Edit row"
-     * template, and adding it into invocation that adds row to grid.
-     */
-    add:x:/..for-each/*/add/[2,3]/*/src
-      src:x:/@load-file/*/*
-
-    /*
-     * Adding row to grid.
-     */
-    eval-x:x:/+/*/*/.row/*/.id
-    add:x:/../*/micro.widgets.grid.databind/0/-
-      src
-        .row
-          .id:x:/@_dp/#/*/id?value
-
-
-
-
-
-/*
- * Checking if this is a "replace" operation, at which point an [id] argument
- * was specified, and we're supposed to keep our existing items, and simply replace
- * a single record in datagrid.
- */
-if:x:/../*/id?value
-
-  /*
-   * Making sure our item replaces existing grid item, instead of appending.
-   */
-  p5.web.widgets.find
-    .id:x:/../*/id?value
-  add:x:/../*/micro.widgets.grid.databind
-    src
-      keep-items:bool:true
-  eval-x:x:/+/*/*
-  add:x:/../*/micro.widgets.grid.databind/*/*/.row
-    src
-      .replace:x:/@p5.web.widgets.find/*/*?value
-
-
-
-
-
-/*
- * Checking if this is a "feed more" invocation, at which point we don't clean
- * out existing items in grid.
- */
-if:x:/../*/feed-more?value
-
-  /*
-   * User requested to have more items fed to the grid, and not to databind grid
-   * all over again, by emptying it first
-   */
-  add:x:/../*/micro.widgets.grid.databind
-    src
-      keep-items:bool:true
-
-
-
-
-
-/*
- * Databinding grid.
- */
-micro.widgets.grid.databind:camphora-crud-grid
+camphora.datagrid.page
+eval-x:x:/+/*
+camphora.datagrid.page-changed
+  page:x:/@camphora.datagrid.page/*?value.long
+  more-pages:x:/@micro.widgets.mysql.datagrid.databind/*/more-pages?value

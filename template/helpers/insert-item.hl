@@ -1,0 +1,102 @@
+
+/*
+ * This file will insert a database item,
+ * with all given arguments, which should be database columns.
+ */
+
+
+
+
+
+/*
+ * Separating arguments from the rest of our lambda.
+ */
+.signal
+
+
+
+
+
+/*
+ * Parametrizing SQL insert statement with column names, and SQL parameters.
+ */
+.cols
+.pars
+.no:int:0
+for-each:x:/@.signal/--/<-(!/=)
+
+  /*
+   * Concatenating currently iterated item into [.cols], which
+   * is our "column names" parts of our insert SQL.
+   */
+  set:x:/@.cols?value
+    src:{0},`{1}`
+      :x:/@.cols?value
+      :x:/@_dp/#?name
+
+  /*
+   * Concatenating currently iterated SQL parameter, into [.pars],
+   * which is our parameter names to our insert SQL.
+   */
+  set:x:/@.pars?value
+    src:{0},@no{1}
+      :x:/@.pars?value
+      :x:/@.no?value
+
+  /*
+   * Adding currently iterated SQL parameter into [.pars],
+   * which also contains all SQL insert parameters.
+   */
+  set:x:/+2/*/*?name
+    src:@no{0}
+      :x:/@.no?value
+  eval-x:x:/+/*/*
+  add:x:/@.pars
+    src
+      foo:x:/@_dp/#?value
+
+  /*
+   * Incrementing counter, to make sure our next parameter
+   * gets a unique name.
+   */
+  set:x:/@.no?value
+    +:x:/@.no?value
+      _:1
+
+
+
+
+
+/*
+ * Trimming away superflous "," in [.cols] and [.pars], to
+ * make sure we get a "clean" insert SQL.
+ */
+set:x:/@.cols?value
+  trim:x:/@.cols?value
+    chars:,
+set:x:/@.pars?value
+  trim:x:/@.pars?value
+    chars:,
+
+
+
+
+
+/*
+ * Adding all parameters into SQL insert statement.
+ */
+add:x:/../*/p5.mysql.connect/*/p5.mysql.insert
+  src:x:/@.pars/*
+
+
+
+
+
+/*
+ * Inserting into database.
+ */
+p5.mysql.connect:[camphora]
+  p5.mysql.insert:@"insert into `{0}` ({1}) values ({2})"
+    :{app-name}
+    :x:/@.cols?value
+    :x:/@.pars?value

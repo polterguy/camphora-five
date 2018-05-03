@@ -1,9 +1,6 @@
 /*
- * File responsible for uploading a CSV file, and importing its content
- * into your Camphora Five database.
- *
- * Expects __[app-name]__ being the name of our app, and __[files]__ being a
- * collection of CSV files to import.
+ * File responsible for importing the specified __[file]__ CSV
+ * file into your database.
  *
  * __Notice__ - The CSV file must conform to your database schema for your module.
  */
@@ -16,8 +13,7 @@
  * Sanity checking invocation.
  */
 micro.lambda.contract.min:x:/..
-  app-name:string
-  files
+  file:string
 
 
 
@@ -30,17 +26,7 @@ micro.lambda.contract.min:x:/..
  * will kick in, and automatically convert file to a lambda object, since we don't
  * explicitly informs our [load-file] invocation to not do this.
  */
-load-file:x:/../*/files/0?value
-
-
-
-
-
-/*
- * This will contain our column definition, used for our insert SQL, in the format
- * of "`col1`, `col2`, etc".
- */
-_cols
+load-file:x:/../*/file?value
 
 
 
@@ -50,7 +36,7 @@ _cols
  * This will contains our parameter definition, used for our insert SQL, in the format
  * of "@0, @1, @2, etc".
  */
-_pars
+.pars
 
 
 
@@ -58,7 +44,7 @@ _pars
 
 /*
  * This will contain our parameters, and their values will change for each insert SQL,
- * and it will have a children collection matching that of the the above [_pars],
+ * and it will have a children collection matching that of its value,
  * e.g. "@0:foo, @1:bar, etc".
  */
 .cols
@@ -75,24 +61,24 @@ _pars
  * our SQL insert invocation, which includes the column declaration, parameter declaration,
  * and a parameter collection. The latter will dynamically change for each insert invocation.
  */
-_no:int:0
+.no:int:0
 for-each:x:/@load-file/*/*/[0,1]/*?name
 
   /*
-   * Creating column declaration as value of [_cols] for currently iterated column.
+   * Creating column declaration as value of [.cols] for currently iterated column.
    */
-  set:x:/@_cols?value
+  set:x:/@.cols?value
     src:{0},`{1}`
-      :x:/@_cols?value
+      :x:/@.cols?value
       :x:/@_dp?value
 
   /*
-   * Creating SQL parameter declaration as value of [_pars] for currently iterated column.
+   * Creating SQL parameter declaration as value of [.pars] for currently iterated column.
    */
-  set:x:/@_pars?value
+  set:x:/@.pars?value
     src:{0},@{1}
-      :x:/@_pars?value
-      :x:/@_no?value
+      :x:/@.pars?value
+      :x:/@.no?value
 
   /*
    * Creating a parameter collection inside of [.cols], in format of "@n", where
@@ -100,9 +86,9 @@ for-each:x:/@load-file/*/*/[0,1]/*?name
    */
   add:x:/@.cols
     src:@{0}
-      :x:/@_no?value
-  set:x:/@_no?value
-    +:x:/@_no?value
+      :x:/@.no?value
+  set:x:/@.no?value
+    +:x:/@.no?value
       _:1
 
 
@@ -112,11 +98,11 @@ for-each:x:/@load-file/*/*/[0,1]/*?name
 /*
  * Trimming away redundant "," on columns SQL declaration and parameter SQL declaration.
  */
-set:x:/@_cols?value
-  trim:x:/@_cols?value
+set:x:/@.cols?value
+  trim:x:/@.cols?value
     chars:,
-set:x:/@_pars?value
-  trim:x:/@_pars?value
+set:x:/@.pars?value
+  trim:x:/@.pars?value
     chars:,
 
 
@@ -146,16 +132,16 @@ p5.mysql.connect:[camphora]
        * Looping through each parameter existing in [.cols], and changing its value
        * to the currently iterated value from our CSV file.
        */
-      _no:int:0
+      .no:int:0
       while:x:/@.cols/{0}
-        :x:/@_no?value
+        :x:/@.no?value
 
         /*
          * Checking if currently iterated column's value is empty '', at which
          * point we insert a null value, to allow the database's default value to kick in.
          */
         if:x:/@_dp/#/{0}?name
-          :x:/@_no?value
+          :x:/@.no?value
           =:
 
           /*
@@ -163,7 +149,7 @@ p5.mysql.connect:[camphora]
            * to null, to allow the default database value to kick in.
            */
           set:x:/@.cols/{0}?value
-            :x:/@_no?value
+            :x:/@.no?value
 
         else
 
@@ -173,16 +159,16 @@ p5.mysql.connect:[camphora]
            * from our currently iterated row.
            */
           set:x:/@.cols/{0}?value
-            :x:/@_no?value
+            :x:/@.no?value
             src:x:/@_dp/#/{0}?name
-              :x:/@_no?value
+              :x:/@.no?value
 
         /*
          * Incrementing column counter, to let the next iteration of our [while] loop
          * to handle the next column (or the iteration to stop, because there are no more columns).
          */
-        set:x:/@_no?value
-          +:x:/@_no?value
+        set:x:/@.no?value
+          +:x:/@.no?value
             _:1
 
       /*
@@ -199,11 +185,20 @@ p5.mysql.connect:[camphora]
        * for each column in our database.
        */
       p5.mysql.insert:@"insert into `{0}` ({1}) values ({2})"
-        :x:/../*/app-name?value
-        :x:/@_cols?value
-        :x:/@_pars?value
+        :{app-name}
+        :x:/@.cols?value
+        :x:/@.pars?value
 
     /*
      * Committing transaction.
      */
     p5.mysql.transaction.commit
+
+
+
+
+
+/*
+ * Updating count of items.
+ */
+camphora._count-changed

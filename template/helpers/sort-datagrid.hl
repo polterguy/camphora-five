@@ -1,0 +1,80 @@
+
+/*
+ * This file will sort your Camphora app's datagrid according
+ * to the specified __[column]__ argument.
+ */
+
+
+
+
+
+/*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.min:x:/..
+  column:string
+
+
+
+
+
+/*
+ * Removing sort order CSS classed on all header buttons, except
+ * the currently clicked one.
+ */
+p5.web.widgets.find-like:camphora-datagrid
+  class:camphora-sort-column
+  .column
+p5.web.widgets.find-first:camphora-datagrid
+  .column:x:/../*/column?value
+delete-widget-property:x:/@p5.web.widgets.find-like/*/*(!/={0})?value
+  :x:/@p5.web.widgets.find-first/*/*?value
+  class
+
+
+
+
+
+/*
+ * Checking if we're already sorting by this column, at which point
+ * we reverse the current sort order.
+ */
+get-widget-property:x:/@p5.web.widgets.find-first/*/*?value
+  class
+if:x:/@get-widget-property/*/*?value
+  ~:camphora-sort-column-asc
+
+  /*
+   * We're already sorting ascending, making sure we sort descending.
+   */
+  set-widget-property:x:/@p5.web.widgets.find-first/*/*?value
+    class:camphora-sort-column-desc
+  add:x:/../*/camphora.datagrid.databind
+    src
+      order-dir:desc
+
+else
+
+  /*
+   * Sorting ascending by default.
+   */
+  set-widget-property:x:/@p5.web.widgets.find-first/*/*?value
+    class:camphora-sort-column-asc
+  add:x:/../*/camphora.datagrid.databind
+    src
+      order-dir:asc
+
+
+
+
+
+/*
+ * Databinding datagrid, passing in order by argument, and making sure
+ * we reset [page] property.
+ *
+ * Notice, we keep our [filter] here.
+ */
+eval-x:x:/+/*
+camphora.datagrid.databind
+  order-by:x:/../*/column?value
+  page
