@@ -7,7 +7,7 @@
 
 
 /*
- * Retrieves our app's name, and other URL entities.
+ * Retrieves URL entities to see if client is requesting a custom "view".
  */
 micro.url.get-entities
 

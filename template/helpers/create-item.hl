@@ -1,6 +1,8 @@
-
 /*
- * File responsible for creating a new CRUD item.
+ * File responsible for creating a new item.
+ *
+ * Displays a modal widget with an input field for all fields in app
+ * that user can supply himself.
  */
 
 
@@ -10,22 +12,7 @@
 /*
  * Figuring out path of app's "/helpers/" folder.
  */
-split:x:/..?name
-  =:/
-set:x:/@split/0/-
-join:x:/@split/*?name
-  sep:/
-
-
-
-
-
-/*
- * Adding widgets returned from above file invocation to [widgets:data] segment below.
- */
-add:x:/../*/create-widgets/**/widgets/=data
-  micro.evaluate.file:/{0}/create-item-widgets.hl
-    :x:/@join?value
+micro.path.get-folder:x:/..?name
 
 
 
@@ -34,111 +21,70 @@ add:x:/../*/create-widgets/**/widgets/=data
 /*
  * Creating a modal widget, asking user to supply his data for his new record.
  */
-eval-x:x:/+/**/_helper-folder
 create-widgets
   micro.widgets.modal:camphora-new-item-modal
     widgets
+
+      /*
+       * Some generic header.
+       */
       h3
-        innerValue:Supply data for your item
+        innerValue:Data for your '{0}' record
+          :{app-name}
+
+      /*
+       * Widget wrapping our actual column values.
+       */
       div
         widgets:data
+
+      /*
+       * Button strip for "Save" and "Cancel" buttons.
+       */
       div
-        class:right
+        class:right strip
         widgets
-          div
-            class:strip
-            widgets
-              button:camphora-save-record-button
-                innerValue:Save
-                onclick
 
-                  /*
-                   * Forward evaluated above.
-                   */
-                  _helper-folder:x:/@join?value
+          /*
+           * Save new record button.
+           */
+          button:camphora-save-record-button
+            innerValue:Save
+            onclick
 
-                  /*
-                   * Serializing form's data.
-                   */
-                  micro.form.serialize:camphora-new-item-modal
+              /*
+               * Serializing form's data.
+               */
+              micro.form.serialize:camphora-new-item-modal
+              add:x:/+
+                src:x:/@micro.form.serialize/*
+              camphora.database.insert
 
-                  /*
-                   * Figuring out table's name.
-                   */
-                  split:x:/@_helper-folder?value
-                    =:/
-                  eval-x:x:/+
-                  _table:x:/@split/0/-2?name
+              /*
+               * Deleting modal widget.
+               */
+              delete-widget:camphora-new-item-modal
 
-                  /*
-                   * Parametrizing SQL insert statement with column names, and SQL parameters.
-                   */
-                  _cols
-                  _pars
-                  _par-names
-                  _no:int:0
-                  for-each:x:/@micro.form.serialize/*
-                    set:x:/@_cols?value
-                      src:{0},`{1}`
-                        :x:/@_cols?value
-                        :x:/@_dp/#?name
-                    set:x:/@_par-names?value
-                      src:{0},@no{1}
-                        :x:/@_par-names?value
-                        :x:/@_no?value
-                    eval-x:x:/+2/*/*
-                    set:x:/+/*/*?name
-                      src:@no{0}
-                        :x:/@_no?value
-                    add:x:/@_pars
-                      src
-                        foo:x:/@_dp/#?value
-                    set:x:/@_no?value
-                      +:x:/@_no?value
-                        _:1
+              /*
+               * Re-databinding datagrid, making sure we remove filter, page,
+               * and order parameters.
+               */
+              camphora.datagrid.databind
+                filter
+                page
+                order-by
+                order-dir
 
-                  /*
-                   * Trimming away additional ",".
-                   */
-                  set:x:/@_cols?value
-                    trim:x:/@_cols?value
-                      chars:,
-                  set:x:/@_par-names?value
-                    trim:x:/@_par-names?value
-                      chars:,
+              /*
+               * Updates count.
+               */
+              camphora.count-changed
 
-                  /*
-                   * Adding all parameters into SQL insert statement.
-                   */
-                  add:x:/../*/p5.mysql.connect/*/p5.mysql.insert
-                    src:x:/@_pars/*
+          button
+            innerValue:Cancel
+            onclick
 
-                  /*
-                   * Inserting into database.
-                   */
-                  p5.mysql.connect:[camphora]
-                    p5.mysql.insert:@"insert into `{0}` ({1}) values ({2})"
-                      :x:/@_table?value
-                      :x:/@_cols?value
-                      :x:/@_par-names?value
-
-                  /*
-                   * Deleting modal widget, and re-databinding datagrid.
-                   */
-                  delete-widget:camphora-new-item-modal
-                  micro.evaluate.file:/{0}/databind-grid.hl
-                    :x:/@_helper-folder?value
-
-                  /*
-                   * Updates count.
-                   */
-                  camphora.update-count
-
-              button
-                innerValue:Cancel
-                onclick
-
-                  /*
-                   * Simply closing modal widget.
-                   */
-                  delete-widget:camphora-new-item-modal
+              /*
+               * Simply closing modal widget.
+               */
+              delete-widget:camphora-new-item-modal

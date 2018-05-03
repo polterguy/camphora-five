@@ -1,50 +1,31 @@
 /*
  * Main CSS file for Camphora Five CRUD app.
  */
-.container {
-    margin-bottom:150px;
+.camphora-datagrid tr td {
+    cursor: pointer;
+    vertical-align: text-top;
 }
-.camphora-crud-grid-wrapper {
-    display:inline-block;
-    width:100%;
-}
-.camphora-crud-grid-wrapper table tr td {
-    vertical-align:top;
-    cursor:default;
-}
-.camphora-crud-grid-wrapper table tr:first-child td {
-}
-.camphora-edit-column {
-    text-align:right;
-}
-.camphora-edit-row,
-.camphora-edit-row:hover,
-.camphora-edit-row:active,
-.camphora-edit-row:focus {
-    background-color: transparent !important;
-}
-.camphora-edit-row {
-    border-top:none !important;
-}
-.camphora-date-column {
-    font-style: italic;
-    font-size: .8rem;
-}
-.camphora-date-edit-item {
-    font-style: italic;
-    font-size: .8rem;
-    text-align: right;
-}
-.camphora-sort-column:after {
+.camphora-sort-column-asc>span:after {
     padding-left:.5rem;
     font-family:'icomoon' !important;
-}
-.camphora-sort-column-asc:after {
     content: '\ea48';
 }
-.camphora-sort-column-desc:after {
+.camphora-sort-column-desc>span:after {
+    padding-left:.5rem;
+    font-family:'icomoon' !important;
     content: '\ea49';
 }
-.camphora-multiline-grid-cell {
-    white-space:pre;
+.camphora-datagrid tr td.camphora-pre-cell {
+    white-space: pre;
+}
+.camphora-datagrid tr.camphora-row-is-edited td {
+    background: transparent !important;
+    font-weight: bold;
+}
+.camphora-datagrid tr.camphora-row-is-edited:hover td {
+    background: rgba(0,0,0,.1) !important;
+}
+.camphora-datagrid tr.camphora-edit-row td {
+    background: transparent !important;
+    border-top: none;
 }

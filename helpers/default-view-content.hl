@@ -1,17 +1,15 @@
 /*
- * The default view content when the user creates a Camphora Five _"view"_.
+ * The default view content when the user creates a new Camphora
+ * Five _"view"_.
+ *
+ * Notice, before you generate your app, you can reference your
+ * app's database table, and/or its name, by using `{app-name}`
+ * in your nodes' values.
  *
  * Although you can do whatever you wish from within your view,
  * the most common task is probably to view records, or create
  * some sort of custom editor for your items, not necessarily
  * resembling the default editor/viewer.
- *
- * Below is an example of how to create a widget for each `name`
- * item in your `my-app` app.
- *
- * Notice, this example code highly unlikely evaluates correctly,
- * unless your app is actually called _'my-app'_ and has a _'name'_ field
- * within it.
  */
 micro.css.include
 
@@ -31,13 +29,14 @@ create-widget
 
 
 /*
- * Then we connect to our database, select all records from `my-table`,
- * and create one paragraph for each `name`, injecting it into our column
- * created above.
+ * Then we connect to our database, select all records from our table,
+ * and create one paragraph for each second column, injecting it into
+ * our Micro CSS column created above.
  */
 p5.mysql.connect:[camphora]
-  p5.mysql.select:select * from `my-app`
+  p5.mysql.select:select * from `{0}`
+    :{app-name}
   for-each:x:/@p5.mysql.select/*
     create-widget
       parent:my-column
-      innerValue:x:/@_dp/#/*/name?value
+      innerValue:x:/@_dp/#/1?value

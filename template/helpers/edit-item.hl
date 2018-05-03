@@ -13,7 +13,7 @@
  * Sanity checking argument.
  */
 micro.lambda.contract.min:x:/..
-  parent:string
+  row-widget-id:string
   id:long
 
 
@@ -21,143 +21,84 @@ micro.lambda.contract.min:x:/..
 
 
 /*
- * Figuring out path of app's "/helpers/" folder.
+ * How many visible columns we have in our table in total.
  */
-split:x:/..?name
-  =:/
-set:x:/@split/0/-
-join:x:/@split/*?name
-  sep:/
+.column-count
 
 
 
 
 
 /*
- * Selecting item from database, and parametrizing invocation of file responsible
- * for creating our editing widget(s).
+ * Toggling editing row CSS class on row caller wants to edit.
+ */
+micro.css.toggle:x:/../*/row-widget-id?value
+  class:camphora-row-is-edited
+
+
+
+
+
+/*
+ * Checking if item is already being edited.
+ */
+p5.web.widgets.find-first:camphora-datagrid
+  .edit:x:/../*/id?value
+if:x:/-/*/*?value
+
+  /*
+   * Editor for item is already open hence we close it,
+   * to allow for "toggling" functionality on editors
+   */
+  delete-widget:x:/@p5.web.widgets.find-first/*/*?value
+  return
+
+
+
+
+
+/*
+ * Selecting item from database.
  */
 p5.mysql.connect:[camphora]
+
+  /*
+   * Selecting record from database.
+   */
   p5.mysql.select:@"select * from `{0}` where id = @id"
-    :x:/@split/0/-2?name
+    :{app-name}
     @id:x:/../*/id?value
-  add:x:/../*/micro.evaluate.file
-    src:x:/@p5.mysql.select/*/*(!/id)
+
+  /*
+   * Applying values to [create-widget] invocation below.
+   */
+  for-each:x:/@p5.mysql.select/*/*
+    set:x:/../*/create-widget/**/={{0}}?value
+      :x:/@_dp/#?name
+      src:x:/@_dp/#?value
 
 
 
 
 
 /*
- * Evaluating file responsible for creating widgets for us.
+ * Including "CR/LF" JavaScript to make sure we click "Save" button,
+ * when user press the Return key in a textbox widget, and that we close editor
+ * when user presses Esc key in a textbox.
  */
-micro.evaluate.file:/{0}/create-item-widgets.hl
-  :x:/@join?value
-
-
-
-
-
-/*
- * Adding widgets created in above invocation to [create-widget] invocation below.
- */
-add:x:/../*/create-widget/*/widgets
-  src:x:/@micro.evaluate.file/*
-
-
-
-
-
-/*
- * Adding Save and Close buttons.
- */
-eval-x:x:/+/**/_app-name
-add:x:/../*/create-widget/*/widgets
-  src
-    div
-      class:right
-      widgets
-        div
-          class:strip
-          widgets
-            button:camphora-save-record-button
-              innerValue:@"<span class=""icon-floppy-disk""></span>"
-              title:Save record
-              class:large
-              onclick
-
-                /*
-                 * Forward evaluated above.
-                 */
-                _app-name:x:/@split/0/-2?name
-
-                /*
-                 * Serializing form data, and updating database.
-                 */
-                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                  .edit
-                micro.form.serialize:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                get-widget-property:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                  .edit
-
-                /*
-                 * Figuring out column names for database table, and parametrizing update SQL.
-                 */
-                _cols
-                _no:int:0
-                for-each:x:/@micro.form.serialize/*
-                  set:x:/@_cols?value
-                    src:{0},`{1}`=@no{2}
-                      :x:/@_cols?value
-                      :x:/@_dp/#?name
-                      :x:/@_no?value
-                  eval-x:x:/+2/*/*
-                  set:x:/+/*/*?name
-                    src:@no{0}
-                      :x:/@_no?value
-                  add:x:/../*/p5.mysql.connect/*/p5.mysql.update
-                    src
-                      foo:x:/@_dp/#?value
-                  set:x:/@_no?value
-                    +:x:/@_no?value
-                      _:1
-                set:x:/@_cols?value
-                  trim:x:/@_cols?value
-                    chars:,
-
-                /*
-                 * Updating database.
-                 */
-                p5.mysql.connect:[camphora]
-                  p5.mysql.update:@"update `{0}` set {1} where id = @id"
-                    :x:/@_app-name?value
-                    :x:/@_cols?value
-                    @id:x:/@get-widget-property/*/*?value
-
-                /*
-                 * Re-databinding grid for updated item only.
-                 */
-                eval-x:x:/+/*/id
-                micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
-                  :x:/@_app-name?value
-                  id:x:/@get-widget-property/*/*?value
-
-                /*
-                 * Deleting edit widget.
-                 */
-                delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-
-            button
-              innerValue:@"<span class=""icon-cross""></span>"
-              title:Close editor for record
-              onclick
-
-                /*
-                 * Simply deleting editing widget.
-                 */
-                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                  .edit
-                delete-widget:x:/-/*/*?value
+p5.web.include-javascript:@"function p5_camphora_edit_item_onkeydown(e) {
+  if (e.keyCode == 13) {
+    var el = event.target;
+    while ((el = el.parentElement) && !el.classList.contains('camphora-edit-row'));
+    p5.$(el.getElementsByClassName('large')[0]).raise('onclick');
+    return false;
+  } else if (e.keyCode == 27) {
+    var el = event.target;
+    while ((el = el.parentElement) && !el.classList.contains('camphora-edit-row'));
+    p5.$(el).raise('.onclose');
+    return false;
+  }
+}"
 
 
 
@@ -166,7 +107,72 @@ add:x:/../*/create-widget/*/widgets
 /*
  * Creating editing widget for record.
  */
+eval-x:x:/+/**/.editor-row
 create-widget
-  parent:x:/../*/parent?value
-  class:shaded rounded air-inner air-bottom air-top bg
+  after:x:/../*/row-widget-id?value
+  element:tr
+  .edit:x:/../*/id?value
+  class:camphora-edit-row
+  .onclose
+
+    /*
+     * Contains the ID of our editor row.
+     */
+    .editor-row:x:/../*/row-widget-id?value
+    micro.css.toggle:x:/-?value
+      class:camphora-row-is-edited
+
+    /*
+     * Deleting editor widget.
+     */
+    delete-widget:x:/../*/_event?value
+
   widgets
+    td
+      colspan:x:/@.column-count?value
+      widgets
+        div
+          class:shaded rounded air-inner air-top air-bottom bg
+          widgets
+            div
+              widgets:data
+            div
+              class:right strip
+              widgets
+                button
+                  innerValue:@"<span class=""icon-floppy-disk""></span>"
+                  title:Saves your data and closes editor
+                  class:large camphora-save-button
+                  onclick
+
+                    /*
+                     * Contains the name of our app.
+                     */
+                    .app-name:{app-name}
+
+                    /*
+                     * Contains the ID of our editor row.
+                     */
+                    .editor-row:x:/../*/row-widget-id?value
+                    micro.css.toggle:x:/-?value
+                      class:camphora-row-is-edited
+
+                    /*
+                     * Finding main editor widget for item, and serializing its
+                     * form widgets.
+                     */
+                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                      .edit
+                    micro.form.serialize:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
+                    /*
+                     * Updating item in database.
+                     */
+                    add:x:/+
+                      src:x:/@micro.form.serialize/*
+                    camphora.database.update
+
+                    /*
+                     * Deleting editor widget.
+                     */
+                    delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value

@@ -1,0 +1,322 @@
+/*
+ * This file will create a view record widget hierarchy for a Campora app.
+ *
+ * Expects one [field] for each field that exists in app.
+ */
+
+
+
+
+
+/*
+ * Signal node to separate arguments from the rest of our lambda.
+ */
+.signal
+
+
+
+
+
+/*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.min:x:/..
+  field
+
+
+
+
+
+/*
+ * Figuring out which data to ask user by, by creating an associated widget for
+ * each [field] specified by caller.
+ */
+.first:bool:true
+for-each:x:/@.signal/--/<-/field
+
+  /*
+   * Figuring out type of field, and creating an associated widget accordingly.
+   */
+  switch:x:/@_dp/#/*/type?value
+
+    /*
+     * Single line textbox type of data.
+     */
+    case:text
+    case:number
+
+      /*
+       * Checking if this is our first "focusable" item.
+       */
+      if:x:/@.first?value
+        add:x:/..case/*/add/*/*/*/*/input
+          src
+            oninit
+
+              /*
+               * The first of our "focusable items" gets focus automatically.
+               */
+              micro.page.set-focus:x:/../*/_event?value
+
+        /*
+         * Making sure we know that we've passed our first focusable itme.
+         */
+        set:x:/@.first?value
+          src:bool:false
+
+      /*
+       * Adding type="number" attribute if this is a "number" type of field,
+       * otherwise setting "maxlength" attribute to 256, to avoid having user
+       * type in a value which is larger than our column can handle in our database.
+       */
+      if:x:/@_dp/#/*/type?value
+        =:number
+
+        /*
+         * Number type of textbox.
+         */
+        add:x:/..case/*/add/*/*/*/*/input
+          src
+            type:number
+
+      else
+
+        /*
+         * Plain "text" type of textbox.
+         */
+        add:x:/..case/*/add/*/*/*/*/input
+          src
+            type:text
+            maxlength:256
+
+      /*
+       * Adding widget to modal window.
+       */
+      eval-x:x:/+/*/*/*/*/*(/innerValue|/placeholder|/.data-field|/value)
+      add:x:/../*/return
+        src
+          div
+            class:strip fill
+            widgets
+              label
+                innerValue:x:/@_dp/#/*/name?value
+                class:capitalize description-9
+              input
+                placeholder:{0} ...
+                  :x:/@_dp/#/*/name?value
+                .data-field:x:/@_dp/#/*/name?value
+                onkeydown:@"return p5_camphora_edit_item_onkeydown(event)"
+                value:{{{0}}}
+                  :x:/@_dp/#/*/name?value
+
+    /*
+     * Multi line textbox type of data.
+     */
+    case:textarea
+
+      /*
+       * Checking if this is our first iteration.
+       */
+      if:x:/@.first?value
+        add:x:/..case/*/add/*/*
+          src
+            oninit
+
+              /*
+               * The first of our "focusable items" gets focus automatically.
+               */
+              micro.page.set-focus:x:/../*/_event?value
+
+        /*
+         * Making sure we know that we've passed our first focusable itme.
+         */
+        set:x:/@.first?value
+          src:bool:false
+
+      /*
+       * Adding widget to modal window.
+       */
+      eval-x:x:/+/*/*/*(/placeholder|/.data-field|/innerValue)
+      add:x:/../*/return
+        src
+          label
+            innerValue:x:/@_dp/#/*/name?value
+            class:capitalize
+          literal
+            element:textarea
+            class:fill
+            rows:7
+            placeholder:{0} ...
+              :x:/@_dp/#/*/name?value
+            .data-field:x:/@_dp/#/*/name?value
+            innerValue:{{{0}}}
+              :x:/@_dp/#/*/name?value
+
+    /*
+     * Select type of data.
+     */
+    case:select
+
+      /*
+       * Adding each option for select field.
+       */
+      for-each:x:/@_dp/#/*/type/*
+
+        /*
+         * Adding option element to select dropdown list.
+         */
+        eval-x:x:/+/*/*/*/innerValue
+        add:x:/..case/*/add/*/*/*/widgets/*/select/*/widgets
+          src
+            option
+              innerValue:x:/@_dp/#?name
+
+      /*
+       * Now adding option element to modal widget.
+       */
+      eval-x:x:/+/*/*/*/*/*(/innerValue|/.data-field|/oninit/*/.value)
+      add:x:/../*/return
+        src
+          div
+            class:strip fill
+            widgets
+              label
+                innerValue:x:/@_dp/#/*/name?value
+                class:capitalize description-9
+              select
+                class:fill
+                .data-field:x:/@_dp/#/*/name?value
+                oninit
+
+                  /*
+                   * Setting value of select widget to whatever was
+                   * supplied during instantiation.
+                   */
+                  .value:{{{0}}}
+                    :x:/@_dp/#/*/name?value
+                  set-widget-property:x:/../*/_event?value
+                    value:x:/@.value?value
+
+                widgets
+
+    /*
+     * Checkbox type of field.
+     */
+    case:checkbox
+
+      /*
+       * Adding widget to modal window.
+       */
+      eval-x:x:/+/*/*/*/*/*/*/*(/innerValue|/.data-field|/oninit/*/.value)
+      add:x:/../*/return
+        src
+          div
+            widgets
+              label
+                class:capitalize
+                widgets
+                  span
+                    innerValue:x:/@_dp/#/*/name?value
+                  input
+                    type:checkbox
+                    .data-field:x:/@_dp/#/*/name?value
+                    oninit
+
+                      /*
+                       * Setting value of checkbox widget to to checked if its value
+                       * from database was checked.
+                       */
+                      .value:{{{0}}}
+                        :x:/@_dp/#/*/name?value
+                      if:x:/-?value.int
+                        =:int:1
+                        set-widget-property:x:/../*/_event?value
+                          checked
+
+    /*
+     * Radiobutton type of data.
+     */
+    case:radio
+
+      /*
+       * Adding each option for radiobutton field.
+       */
+      for-each:x:/@_dp/#/*/type/*
+
+        /*
+         * Adding radio button to modal widget.
+         */
+        eval-x:x:/+/*/*/*/*/*(/innerValue|/name|/.data-value|/oninit/*(/.value|/.data-value))
+        add:x:/..case/*/add/*/*/*/widgets
+          src
+            label
+              class:capitalize
+              widgets
+                span
+                  innerValue:x:/@_dp/#?name
+                input
+                  type:radio
+                  name:x:/@for-each/@_dp/#/*/name?value
+                  .data-value:x:/@_dp/#?name
+                  oninit
+
+                    /*
+                     * Setting value of readiobutton widget to to checked if its value
+                     * from database was the [.data-field] value for this widget.
+                     */
+                    .data-value:x:/@_dp/#?name
+                    .value:{{{0}}}
+                      :x:/..case/@_dp/#/*/name?value
+                    if:x:/@.value?value
+                      =:x:/@.data-value?value
+                      set-widget-property:x:/../*/_event?value
+                        checked
+
+      /*
+       * Now adding radiobutton group widget to modal widget.
+       */
+      add:x:/../*/return
+        src
+          div
+            widgets
+
+    /*
+     * Created type of field.
+     */
+    case:created
+
+      /*
+       * Adding widget to modal window.
+       */
+      eval-x:x:/+/*/*/*/*(/.value|/.name)
+      add:x:/../*/return
+        src
+          literal
+            element:p
+            oninit
+
+              /*
+               * Formatting date and setting [innerValue] widget.
+               */
+              .name:x:/@_dp/#/*/name?value
+              .value:{{{0}}}
+                :x:/@_dp/#/*/name?value
+              p5.types.date.format:x:/-?value
+                format:@"ddd d. MMM HH:mm yyyy"
+              set-widget-property:x:/../*/_event?value
+                innerValue:{0}; {1}
+                  :x:/@.name?value
+                  :x:/@p5.types.date.format?value
+
+
+
+
+
+/*
+ * Returning items to caller.
+ */
+return
+  input
+    type:hidden
+    .data-field:id
+    value:{id}

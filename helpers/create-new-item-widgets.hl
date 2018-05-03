@@ -1,0 +1,286 @@
+/*
+ * This file will create a form collection to an insert
+ * widget for a camphora app.
+ *
+ * Expects one [field] for each field that exists in app.
+ */
+
+
+
+
+
+/*
+ * Signal node to separate arguments from the rest of our lambda.
+ */
+.signal
+
+
+
+
+
+/*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.min:x:/..
+  field
+
+
+
+
+
+/*
+ * Figuring out which data to ask user by, by creating an associated widget for
+ * each [field] specified by caller.
+ */
+.first:bool:true
+for-each:x:/@.signal/--/<-/field
+
+  /*
+   * Figuring out type of field, and creating an associated widget accordingly.
+   */
+  switch:x:/@_dp/#/*/type?value
+
+    /*
+     * Single line textbox type of data.
+     */
+    case:text
+    case:number
+
+      /*
+       * Checking if this is our first "focusable" item.
+       */
+      if:x:/@.first?value
+        add:x:/..case/*/add/*/*/*/*/input
+          src
+            oninit
+
+              /*
+               * The first of our "focusable items" gets focus automatically.
+               */
+              micro.page.set-focus:x:/../*/_event?value
+
+        /*
+         * Making sure we know that we've passed our first focusable itme.
+         */
+        set:x:/@.first?value
+          src:bool:false
+
+      /*
+       * Adding type="number" attribute if this is a "number" type of field,
+       * otherwise setting "maxlength" attribute to 256, to avoid having user
+       * type in a value which is larger than our column can handle in our database.
+       */
+      if:x:/@_dp/#/*/type?value
+        =:number
+
+        /*
+         * Number type of textbox.
+         */
+        add:x:/..case/*/add/*/*/*/*/input
+          src
+            type:number
+
+      else
+
+        /*
+         * Plain "text" type of textbox.
+         */
+        add:x:/..case/*/add/*/*/*/*/input
+          src
+            type:text
+            maxlength:256
+
+      /*
+       * Adding widget to modal window.
+       */
+      eval-x:x:/+/*/*/*/*/*(/innerValue|/placeholder|/.data-field)
+      add:x:/../*/return
+        src
+          div
+            class:strip fill
+            widgets
+              label
+                innerValue:x:/@_dp/#/*/name?value
+                class:capitalize description-7
+              input
+                placeholder:{0} ...
+                  :x:/@_dp/#/*/name?value
+                .data-field:x:/@_dp/#/*/name?value
+                onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-save-record-button').raise('onclick');return false;}"
+
+    /*
+     * Multi line textbox type of data.
+     */
+    case:textarea
+
+      /*
+       * Checking if this is our first iteration.
+       */
+      if:x:/@.first?value
+        add:x:/..case/*/add/*/*
+          src
+            oninit
+
+              /*
+               * The first of our "focusable items" gets focus automatically.
+               */
+              micro.page.set-focus:x:/../*/_event?value
+
+        /*
+         * Making sure we know that we've passed our first focusable itme.
+         */
+        set:x:/@.first?value
+          src:bool:false
+
+      /*
+       * Adding widget to modal window.
+       */
+      eval-x:x:/+/*/*/*(/placeholder|/.data-field|/innerValue)
+      add:x:/../*/return
+        src
+          label
+            innerValue:x:/@_dp/#/*/name?value
+            class:capitalize
+          literal
+            element:textarea
+            class:fill
+            rows:7
+            placeholder:{0} ...
+              :x:/@_dp/#/*/name?value
+            .data-field:x:/@_dp/#/*/name?value
+
+    /*
+     * Select type of data.
+     */
+    case:select
+
+      /*
+       * Adding each option for select field.
+       */
+      for-each:x:/@_dp/#/*/type/*
+
+        /*
+         * Adding option element to select dropdown list.
+         */
+        eval-x:x:/+/*/*/*/innerValue
+        add:x:/..case/*/add/*/*/*/widgets/*/select/*/widgets
+          src
+            option
+              innerValue:x:/@_dp/#?name
+
+      /*
+       * Now adding option element to modal widget.
+       */
+      eval-x:x:/+/*/*/*/*/*(/innerValue|/.data-field)
+      add:x:/../*/return
+        src
+          div
+            class:strip fill
+            widgets
+              label
+                innerValue:x:/@_dp/#/*/name?value
+                class:capitalize
+              select
+                class:fill
+                .data-field:x:/@_dp/#/*/name?value
+                widgets
+
+    /*
+     * Checkbox type of field.
+     */
+    case:checkbox
+
+      /*
+       * Adding widget to modal window.
+       */
+      eval-x:x:/+/**(/innerValue|/.data-field)
+      add:x:/../*/return
+        src
+          div
+            widgets
+              label
+                class:capitalize
+                widgets
+                  span
+                    innerValue:x:/@_dp/#/*/name?value
+                  input
+                    type:checkbox
+                    .data-field:x:/@_dp/#/*/name?value
+
+    /*
+     * Created type of field.
+     */
+    case:created
+
+      /*
+       * Adding widget to modal window.
+       */
+      p5.types.date.now
+      eval-x:x:/+/*/*/*(/value|/.data-field)
+      add:x:/../*/return
+        src
+          input
+            type:hidden
+            .data-field:x:/@_dp/#/*/name?value
+            value:x:/@p5.types.date.now?value.string
+
+    /*
+     * Radiobutton type of data.
+     */
+    case:radio
+
+      /*
+       * Adding each option for radiobutton field.
+       */
+      .first:bool:true
+      for-each:x:/@_dp/#/*/type/*
+
+        /*
+         * Checking if this is our first radio button.
+         */
+        if:x:/@.first?value
+
+          /*
+           * This is our first radio button, making sure its checked by default.
+           */
+          add:x:/..for-each/*/add/*/*/*/*/input
+            src:checked
+
+          /*
+           * Making sure consecutive radio buttons are not checked.
+           */
+          set:x:/@.first?value
+            src:bool:false
+
+        /*
+         * Adding radio button to modal widget.
+         */
+        eval-x:x:/+/**(/innerValue|/name|/.data-value)
+        add:x:/..case/*/add/*/*/*/widgets
+          src
+            label
+              class:capitalize
+              widgets
+                span
+                  innerValue:x:/@_dp/#?name
+                input
+                  type:radio
+                  name:x:/@for-each/@_dp/#/*/name?value
+                  .data-value:x:/@_dp/#?name
+
+      /*
+       * Now adding radiobutton group widget to modal widget.
+       */
+      add:x:/../*/return
+        src
+          div
+            widgets
+
+
+
+
+
+/*
+ * Returning items to caller.
+ */
+return

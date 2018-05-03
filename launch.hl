@@ -8,8 +8,8 @@
 
 
 /*
- * Making sure user has a folder where we can store his apps, if it doesn't
- * exist from before.
+ * Making sure user has a folder where we can store his CRUD app
+ * manifest files, if it doesn't exist from before.
  */
 .first:bool:false
 if

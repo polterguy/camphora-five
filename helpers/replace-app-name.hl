@@ -1,0 +1,52 @@
+
+/*
+ * This file will recursively load all Hyperlambda files from the
+ * specified [folder], and replace all occurrencies of '{app-name}'
+ * with the given [app-name] value.
+ */
+
+
+
+
+
+/*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.min:x:/..
+  folder:string
+  app-name:string
+
+
+
+
+
+/*
+ * Loading all Hyperlambda files from specified [folder].
+ */
+list-files:x:/../*/folder?value
+  filter:.hl
+load-file:x:/-/*?name
+  convert:false
+for-each:x:/-/*
+  hyper2lambda:x:/@_dp/#?value
+    keep-comments:true
+  set:x:/@hyper2lambda/**/={app-name}?value
+    src:x:/../*/app-name?value
+  lambda2hyper:x:/@hyper2lambda/*
+    comments:unroll
+  save-file:x:/@_dp/#?name
+    src:x:/@lambda2hyper?value
+
+
+
+
+
+/*
+ * Recursively invoking self for each folder inside of [folder].
+ */
+list-folders:x:/../*/folder?value
+for-each:x:/-/*?name
+  eval-x:x:/+/*
+  micro.evaluate.file:@CAMPHORA/helpers/replace-app-name.hl
+    folder:x:/@_dp?value
+    app-name:x:/../*/app-name?value

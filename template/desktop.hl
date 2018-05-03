@@ -7,6 +7,7 @@ container
   widgets
     literal
       element:span
+      innerValue:{app-name}
     literal
       element:span
       class:icon-paragraph-justify

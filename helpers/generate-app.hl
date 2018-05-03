@@ -11,17 +11,20 @@
 
 
 /*
- * Sanity check.
+ * Sanity checking arguments.
  */
 micro.lambda.contract.min:x:/..
   filename:string
+micro.lambda.contract.optional:x:/..
+  delete-data:bool
 
 
 
 
 
 /*
- * Figuring out app's folder name.
+ * Figuring out app's name, which becomes its default
+ * folder, and its database name.
  */
 split:x:/../*/filename?value
   =:/
@@ -48,28 +51,21 @@ if
 /*
  * Creating folder structure for our app.
  */
-create-folder:/modules/{0}/
-  :x:/@split/0/-2?name
+copy-folder:@CAMPHORA/template/
+  dest:/modules/{0}/
+    :x:/@split/0/-2?name
 
 
 
 
 
 /*
- * Copying all files and folders from "template" folder into app's folder.
+ * Making sure app manifest file is copied to 'helpers'
+ * folder for app.
  */
-list-files:@CAMPHORA/template/
-copy-file:x:/@list-files/*?name
-  dest:/modules/{0}/
+copy-file:x:/../*/filename?value
+  dest:/modules/{0}/helpers/app-manifest.hl
     :x:/@split/0/-2?name
-list-folders:@CAMPHORA/template/
-for-each:x:/-/*?name
-  split:x:/@_dp?value
-    =:/
-  copy-folder:x:/@_dp?value
-    dest:/modules/{0}/{1}/
-      :x:/..for-each/@split/0/-2?name
-      :x:/@split/0/-?name
 
 
 
@@ -77,7 +73,7 @@ for-each:x:/-/*?name
 
 /*
  * Checking if manifest for application specified that we should create a
- * desktop icon, or not
+ * desktop icon, or not.
  */
 load-file:x:/../*/filename?value
 if:x:/@load-file/*/*/desktop-icon?value
@@ -89,41 +85,14 @@ if:x:/@load-file/*/*/desktop-icon?value
   delete-file:/modules/{0}/desktop.hl
     :x:/@split/0/-2?name
 
-else
-
-  /*
-   * Loading and modifying app's "desktop.hl" file, to make sure it displays
-   * what app this actually is.
-   *
-   * Making sure we keep comments in file.
-   */
-  load-file:/modules/{0}/desktop.hl
-    :x:/@split/0/-2?name
-    convert:false
-  hyper2lambda:x:/@load-file/*?value
-    keep-comments:true
-  eval-x:x:/+/*/*
-  add:x:/@hyper2lambda/*/*/widgets/*/literal/[0,1]
-    src
-      innerValue:x:/@split/0/-2?name
-  lambda2hyper:x:/@hyper2lambda/*
-    comments:unroll
-  save-file:/modules/{0}/desktop.hl
-    :x:/@split/0/-2?name
-    src:x:/@lambda2hyper?value
-
 
 
 
 
 /*
- * Copying file that declares our app into folder for app, for then to load the
- * file, and removing all [views] from it, to create a separate Hyperlambda file,
- * encapsulating each view in its own separate Hyperlambda file.
+ * Loading app manifest file, and creating one 'view' file
+ * from each [view] in our manifest file.
  */
-copy-file:x:/../*/filename?value
-  dest:/modules/{0}/helpers/app-manifest.hl
-    :x:/@split/0/-2?name
 load-file:/modules/{0}/helpers/app-manifest.hl
   :x:/@split/0/-2?name
 for-each:x:/@load-file/*/*/views/*
@@ -140,7 +109,7 @@ for-each:x:/@load-file/*/*/views/*
 
 "
       :x:/@_dp/#?value
-set:x:/@load-file/*/*/views/*?value
+set:x:/@load-file/*/*/views
 lambda2hyper:x:/@load-file/*/*
 save-file:/modules/{0}/helpers/app-manifest.hl
   :x:/@split/0/-2?name
@@ -169,7 +138,212 @@ if:x:/../*/delete-data?value
 
 
 /*
- * Evaluating startup file.
+ * Making sure we replace '{app-name}', values in all nodes, in all files,
+ * inside module's folder.
+ */
+eval-x:x:/+/*
+micro.evaluate.file:@CAMPHORA/helpers/replace-app-name.hl
+  folder:/modules/{0}/
+    :x:/@split/0/-2?name
+  app-name:x:/@split/0/-2?name
+
+
+
+
+
+/*
+ * Creating our actual MySQL datagrid according to our CRUD app
+ * manifest file's content.
+ *
+ * We do this by loading the "launch-implementation.hl" file and
+ * modify the datagrid inside of it, according to the [field] definitions
+ * found in our app manifest file.
+ */
+load-file:/modules/{0}/launch-implementation.hl
+  :x:/@split/0/-2?name
+  convert:false
+hyper2lambda:x:/@load-file/*?value
+  keep-comments:true
+for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
+
+  /*
+   * Used as a buffer for currently iterated column declaration.
+   */
+  .column
+    foo
+      .header
+        widgets
+          a
+            href:#
+            innerValue:@"{0} <span></span>"
+              :x:/@_dp/#/*/name?value
+            .column:x:/@_dp/#/*/name?value
+            onclick
+
+              /*
+               * Forward evaluated above.
+               */
+              camphora.datagrid._header-clicked:x:/../*/_event?value
+
+  /*
+   * Setting the column's name, forward declaring its [innerValue],
+   * and all [.column] references inside of it.
+   */
+  set:x:/@.column/*?name
+    src:x:/@_dp/#/*/name?value
+  eval-x:x:/@.column/**(/innerValue|/.column)
+
+  /*
+   * Checking if this is a checkbox type of column, at which point
+   * we make sure its value is displayed as a check mark if its value
+   * is actually checked.
+   */
+  if:x:/@_dp/#/*/type?value
+    =:checkbox
+
+    /*
+     * Checkbox type of column, making sure we display its value
+     * as a checkmark, by making it become a [.lambda] type of column.
+     */
+    set:x:/+/*/*/*/foo?value
+      src:x:/@_dp/#/*/name?value
+    add:x:/@.column/*
+      src
+        .lambda
+          foo
+
+          /*
+           * Checking if checkbox value should be checked.
+           */
+          if:x:/../*/row/*/{0}?value
+            :x:/@foo?value
+            =:int:1
+
+            /*
+             * We should create a checkbox icon.
+             */
+            return
+              literal
+                element:span
+                class:icon-checkmark
+
+    /*
+     * Since a [.lambda] column isn't part of the SQL executed towards the
+     * database, we'll need to also add an invisible column with the name of
+     * our checkbox column.
+     */
+    set:x:/+/*/*?name
+      src:x:/@_dp/#/*/name?value
+    add:x:/@.column
+      src
+        foo
+          visible:bool:false
+
+  /*
+   * Checking if this is a multiline textarea type of widget, at which point
+   * we make sure we display it as pre formatted.
+   */
+  else-if:x:/@_dp/#/*/type?value
+    =:textarea
+
+    /*
+     * Applying preformatted class to the cell.
+     */
+    add:x:/@.column/*
+      src
+        class:camphora-pre-cell
+
+  /*
+   * Adding column to [columns] declaration of MySQL datagrid.
+   */
+  add:x:/@hyper2lambda/**/micro.widgets.mysql.datagrid/*/columns
+    src:x:/@.column/*
+
+
+
+
+
+/*
+ * Saving file again, now with [columns] declarations.
+ */
+lambda2hyper:x:/@hyper2lambda/*
+  comments:unroll
+save-file:/modules/{0}/launch-implementation.hl
+  :x:/@split/0/-2?name
+  src:x:/@lambda2hyper?value
+
+
+
+
+
+/*
+ * Creating our "insert new item" file, according to app manifest file.
+ *
+ * We do this by loading the "create-item.hl" file and modify the wizard
+ * form collection inside of it according to what fields our app has.
+ */
+load-file:/modules/{0}/helpers/create-item.hl
+  :x:/@split/0/-2?name
+  convert:false
+hyper2lambda:x:/@load-file/*?value
+  keep-comments:true
+add:x:/+/*
+  src:x:/../*/load-file/[0,1]/*/*/field
+add:x:/@hyper2lambda/*/create-widgets/**/widgets/=data
+  micro.evaluate.file:@CAMPHORA/helpers/create-new-item-widgets.hl
+
+
+
+
+
+/*
+ * Saving file again, now with wizard form declarations declarations.
+ */
+lambda2hyper:x:/@hyper2lambda/*
+  comments:unroll
+save-file:/modules/{0}/helpers/create-item.hl
+  :x:/@split/0/-2?name
+  src:x:/@lambda2hyper?value
+
+
+
+
+
+/*
+ * Making sure that our "edit-item.hl" file knows how many visible columns
+ * there are in the datagrid in total in its [.column-count] node.
+ */
+load-file:/modules/{0}/helpers/edit-item.hl
+  :x:/@split/0/-2?name
+  convert:false
+hyper2lambda:x:/@load-file/*?value
+  keep-comments:true
+set:x:/@hyper2lambda/*/.column-count?value
+  src:x:@"/../*/load-file/[0,1]/*/*/field/*/show/""=:bool:true""?count"
+add:x:/+/*
+  src:x:/../*/load-file/[0,1]/*/*/field
+add:x:/@hyper2lambda/*/create-widget/**/widgets/=data
+  micro.evaluate.file:@CAMPHORA/helpers/create-edit-item-widgets.hl
+
+
+
+
+
+/*
+ * Saving file again, now with wizard form declarations declarations.
+ */
+lambda2hyper:x:/@hyper2lambda/*
+  comments:unroll
+save-file:/modules/{0}/helpers/edit-item.hl
+  :x:/@split/0/-2?name
+  src:x:/@lambda2hyper?value
+
+
+
+
+
+/*
+ * Evaluating startup file for app.
  */
 micro.evaluate.file:/modules/{0}/startup.hl
   :x:/@split/0/-2?name

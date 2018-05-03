@@ -19,8 +19,7 @@ micro.url.get-entities
 /*
  * Changing the title of page.
  */
-p5.web.page.set-title:Camphora - {0}
-  :x:/@micro.url.get-entities/0?name
+p5.web.page.set-title:{app-name}
 
 
 
@@ -39,492 +38,298 @@ p5.web.include-css-file:/modules/{0}/media/main.css
 
 
 /*
- * Loading file containing app manifest.
+ * Creating main wire frame for app, containing toolbar and datagrid.
  */
-load-file:/modules/{0}/helpers/app-manifest.hl
-  :x:/@micro.url.get-entities/0?name
-
-
-
-
-
-/*
- * Iterating through each field in app, adding one column for each field that is
- * supposed to be visible in the grid - But only if settings for app has told us to
- * actually show any headers at all.
- *
- * Notice, we're tracking the first textarea type of column, and making it "100%" wide,
- * which will prioritize the first column in regards to spacing, and make all other columns
- * reduce accordingly in size, to have no more width than what's absolutely necessary
- * in order to show their values, without breaking text into multiple lines.
- */
-if:x:/@load-file/*/*/show-headers?value
-
-  /*
-   * Tracking first header of type [textarea], since we want to make sure it have
-   * priority in spacing, by making it 100% width, which will force it to become the
-   * largest column in our datagrid.
-   */
-  _first:bool:true
-
-  /*
-   * Looping through each [field] declaration in "app-manifest.hl" file for app.
-   */
-  for-each:x:/@load-file/*/*/field
-
-    /*
-     * Checking if field is supposed to be visible in grid.
-     */
-    if:x:/@_dp/#/*/show?value
-      =:bool:false
-
-      /*
-       * Current field is not supposed to be visible in the datagrid.
-       */
-      continue
-
-    /*
-     * Checking if this is a "checked" type of field.
-     */
-    if:x:/@_dp/#/*/type?value
-      =:checkbox
-
-      /*
-       * Yup, checkbox column type - Reducing width of column.
-       *
-       * This little CSS trick will make the column no wider than what it absolutely
-       * needs to be, to show its header (th) cell.
-       */
-      add:x:/..for-each/*/add/*/*
-        src
-          style:"width:5px;"
-
-    else-if:x:/@_first?value
-      and:x:/@_dp/#/*/type?value
-        =:textarea
-
-      /*
-       * This is our first text or textarea column, making it 100% wide, to throw
-       * our CSS trick from above (read comments above).
-       */
-      add:x:/..for-each/*/add/*/*
-        src
-          style:"width:100%;"
-
-    /*
-     * Adding a column to our datagrid below.
-     */
-    set:x:/+2/*/*?name
-      src:x:/@_dp/#/*/name?value
-    eval-x:x:/+/*/*/*/*/*/innerValue
-    add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
-      src
-        foo
-          class:capitalize
-          widgets
-            a
-              href:#
-              role:button
-              innerValue:x:/@_dp/#/*/name?value
-              onclick
-
-                /*
-                 * Forward evaluated below before widget is created.
-                 */
-                _app-name:x:/@micro.url.get-entities/0?name
-
-                /*
-                 * Evaluating file responsible for sorting datagrid by clicked column.
-                 */
-                add:x:/+
-                  src:x:/../*(/_app-name|/_event)
-                micro.evaluate.file:/modules/{0}/helpers/sort-by-column.hl
-                  :x:/@_app-name?value
-
-
-
-
-
-/*
- * Creating Edit row header, but only if headers are supposed to be shown.
- */
-if:x:/@load-file/*/*/show-headers?value
-
-  /*
-   * Headers are visible for app, adding the "Edit" header.
-   */
-  add:x:/../*/create-widget/**/micro.widgets.grid/*/columns
-    src
-      ""
-        style:"width:5px;text-align:right;"
-
-
-
-
-
-/*
- * Figuring out if a query search parameter was supplied.
- */
-p5.web.query.get:q
-if:x:/@p5.web.query.get/*?value
-
-  /*
-   * Query parameter was given.
-   */
-  eval-x:x:/+/*/*/value
-  add:x:/../*/create-widget/**/input/=camphora-search-query
-    src
-      value:x:/@p5.web.query.get/*?value
-
-
-
-
-
-/*
- * Checking if we have alternative views, and if so, making sure we display our
- * "view views" button.
- */
-if:x:/@load-file/*/*/views/*?count
-  >:int:0
-
-  /*
-   * There are alternative views, making sure we inject our "view views" button.
-   *
-   * First injecting a datagrid item for each view in app.
-   */
-  for-each:x:/@load-file/*/*/views/*?name
-    eval-x:x:/+/*/*/*/*/*/*
-    add:x:/..if/*/insert-after/**/micro.widgets.grid/*/rows
-      src
-        item
-          View
-            widgets
-              a
-                innerValue:x:/@_dp?value
-                style:"display:block;"
-                target:_blank
-                href:/{0}/{1}
-                  :x:/@micro.url.get-entities/0?name
-                  :x:/@_dp?value
-
-  /*
-   * Then inserting our open modal window button, that allows the user to select
-   * a specific view.
-   */
-  insert-after:x:/../*/create-widget/**/widgets/=toolbar/0
-    src
-      button
-        innerValue:@"<span class=""icon-eye""></span>"
-        title:View alternative views
-        onclick
-
-          /*
-           * Showing a modal window, allowing user to open up alternative views for app.
-           */
-          create-widgets
-            micro.widgets.modal:camphora-view-views
-              widgets
-                h3
-                  innerValue:Alternative views
-                micro.widgets.grid
-                  class:hover striped
-                  rows
-                div
-                  class:right
-                  widgets
-                    button
-                      innerValue:Close
-                      title:Close window
-                      oninit
-
-                        /*
-                         * Setting initial focus to "close" button.
-                         */
-                        micro.page.set-focus:x:/../*/_event?value
-
-                      onclick
-
-                        /*
-                         * Closing "view views" modal window.
-                         */
-                        delete-widget:camphora-view-views
-
-
-
-
-
-/*
- * Creating main wire-frame grid.
- */
-eval-x:x:/+/**(/_app-name)
+eval-x:x:/+/**/.app-folder
 create-widget:camphora-main-container
   class:container
   widgets
-
-    /*
-     * Obscurer show when more items are requested.
-     */
-    micro.widgets.cover:camphora-feed-more-obscurer
-      style:"display:none;"
-      message:"Please wait while we fetch more items ..."
-
     div
       class:row
       widgets
         div
           class:col-100
-          oninit
-
-            /*
-             * Including JavaScript to determine is user is at the bottom of page,
-             * at which point we "auto-feed" grid with more items.
-             */
-            p5.web.include-javascript:@"
-window.onscroll = function() {
-  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-    if (!p5.camphora_end_of_dataset) {
-      if(p5.camphora_ongoing_scroll) {
-        return;
-      }
-      p5.camphora_ongoing_scroll = true;
-      var obsc = p5.$('camphora-feed-more-obscurer').el;
-      obsc.style.display = 'block';
-      var el = p5.$('camphora-crud-grid');
-      el.raise('.onfeed',{
-        onsuccess:function() {
-          p5.camphora_ongoing_scroll = false;
-          obsc.style.display = 'none';
-        }
-      });
-    }
-  }
-};"
           widgets
             div
-              class:row
+              class:strip toolbar right
+              widgets:toolbar
+
+                /*
+                 * Add new record button.
+                 */
+                button
+                  innerValue:@"<span class=""icon-plus""></span>"
+                  class:large
+                  title:Create new record
+                  onclick
+
+                    /*
+                     * Forward evaluated above.
+                     */
+                    .app-folder:x:/@micro.url.get-entities/0?name
+
+                    /*
+                     * Evaluating file responsible for creating a new record.
+                     */
+                    micro.evaluate.file:/modules/{0}/helpers/create-item.hl
+                      :x:/@.app-folder?value
+
+                /*
+                 * Download records as a CSV file button.
+                 */
+                button
+                  innerValue:@"<span class=""icon-download2""></span>"
+                  title:Download items as CSV file
+                  onclick
+
+                    /*
+                     * Forward evaluated above.
+                     */
+                    .app-folder:x:/../*/micro.url.get-entities/0?name
+
+                    /*
+                     * Evaluating file responsible for exporting items to client.
+                     */
+                    micro.evaluate.file:/modules/{0}/helpers/export-items.hl
+                      :x:/@.app-folder?value
+
+                /*
+                 * Upload CSV file button.
+                 */
+                micro.widgets.upload-button
+                  title:Import a CSV file from your local disc
+                  accept:.csv
+                  .onupload
+
+                    /*
+                     * Forward evaluated above.
+                     */
+                    .app-folder:x:/../*/micro.url.get-entities/0?name
+
+                    /*
+                     * Evaluating "upload" Hyperlambda file.
+                     */
+                    add:x:/+
+                      src:x:/../*/files
+                    micro.evaluate.file:/modules/{0}/helpers/upload-file.hl
+                      :x:/@.app-folder?value
+
+                    /*
+                     * Re-databinding datagrid.
+                     */
+                    camphora.datagrid.databind
+                      filter
+                      page
+                      order-by
+                      order-dir
+
+                button
+                  innerValue:@"<span class=""icon-bin""></span>"
+                  title:Deletes all items in your database
+                  onclick
+
+                    /*
+                     * Forward evaluated above.
+                     */
+                    .app-folder:x:/../*/micro.url.get-entities/0?name
+
+                    /*
+                     * Evaluates file responsible for actually deleting all items.
+                     */
+                    micro.evaluate.file:/modules/{0}/helpers/delete-all.hl
+                      :x:/@.app-folder?value
+
+                    /*
+                     * Re-databinding datagrid.
+                     */
+                    camphora.datagrid.databind
+                      filter
+                      page
+                      order-by
+                      order-dir
+
+                a
+                  role:button
+                  class:button
+                  innerValue:@"<span class=""icon-home3""></span>"
+                  title:Return to home
+                  href:/
+
+            div
+              class:strip right
               widgets
-                div
-                  class:col
-                  widgets
-                    div
-                      class:strip toolbar right
-                      widgets:toolbar
-                        button:camphora-add-new-record-button
-                          innerValue:@"<span class=""icon-plus""></span>"
-                          class:large
-                          title:Create new record
-                          onclick
+                input:camphora-search-query
+                  type:text
+                  placeholder:Search ...
+                  onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-search-button').raise('onclick');return false;}"
+                  events
 
-                            /*
-                             * Forward evaluated above.
-                             */
-                            _app-name:x:/@micro.url.get-entities/0?name
+                    /*
+                     * Updates count.
+                     */
+                    camphora.count-changed
 
-                            /*
-                             * Making sure user is not editing another item, since this will
-                             * raise an exception, due to static IDs in widgets.
-                             */
-                            p5.web.widgets.find
-                              .edit
-                            if:x:/@p5.web.widgets.find/*/*?value
+                      /*
+                       * Modifying placeholder to contain record count.
+                       */
+                      p5.mysql.connect:[camphora]
+                        p5.mysql.scalar:@"select count(*) from `{0}`"
+                          :{app-name}
+                        set-widget-property:x:/../*/_event?value
+                          placeholder:Search amongst {0} records ...
+                            :x:/@p5.mysql.scalar?value
 
-                              /*
-                               * Warning use that he needs to finish up editing existing item,
-                               * before he can create new items.
-                               */
-                              micro.windows.info:You have to finish editing your item, before you can create a new item
-                                class:micro-windows-info warning
-                              return
+                  oninit
 
-                            /*
-                             * Evaluating file responsible for creating a new record.
-                             */
-                            micro.evaluate.file:/modules/{0}/helpers/create-item.hl
-                              :x:/@_app-name?value
+                    /*
+                     * Setting focus initially to search textbox, and
+                     * making sure we set initial count of records.
+                     */
+                    camphora.count-changed
+                    micro.page.set-focus:x:/../*/_event?value
 
-                        button
-                          innerValue:@"<span class=""icon-download2""></span>"
-                          title:Download items as CSV file
-                          onclick
+                button:camphora-search-button
+                  innerValue:@"<span class=""icon-search""></span>"
+                  title:Search for items
+                  onclick
 
-                            /*
-                             * Forward evaluated above.
-                             */
-                            _app-name:x:/@micro.url.get-entities/0?name
+                    /*
+                     * Forward evaluated above.
+                     */
+                    .app-folder:x:/../*/micro.url.get-entities/0?name
 
-                            /*
-                             * Evaluating file responsible for exporting items to client.
-                             */
-                            eval-x:x:/+/*/app-name
-                            micro.evaluate.file:/modules/{0}/helpers/export-items.hl
-                              :x:/@_app-name?value
-                              app-name:x:/@_app-name?value
+                    /*
+                     * Resets the CSS classes of all "sort header linkbuttons".
+                     */
+                    p5.web.widgets.find-like:camphora-datagrid
+                      class:camphora-sort-column
+                    delete-widget-property:x:/@p5.web.widgets.find-like/*/*?value
+                      class
 
-                        micro.widgets.upload-button:camphora-import-csv-file
-                          title:Import a CSV file from your local disc
-                          accept:.csv
-                          .onupload
+                    /*
+                     * Checking if there actually is a [filter] condition.
+                     */
+                    get-widget-property:camphora-search-query
+                      value
+                    if:x:/@get-widget-property/*/*?value
+                      !=:
 
-                            /*
-                             * Evaluating "upload" Hyperlambda file.
-                             */
-                            micro.url.get-entities
-                            add:x:/+2
-                              src:x:/../*/files
-                            eval-x:x:/+/*/app-name
-                            micro.evaluate.file:/modules/{0}/helpers/upload-file.hl
-                              :x:/@micro.url.get-entities/0?name
-                              app-name:x:/@micro.url.get-entities/0?name
+                      /*
+                       * A filter condition should be used, loading manifest file to
+                       * figure out what columns we should add to our [filter] argument.
+                       */
+                      load-file:/modules/{0}/helpers/app-manifest.hl
+                        :x:/@.app-folder?value
 
-                            /*
-                             * For simplicity reasons, we simply reload current URL.
-                             */
-                            p5.web.reload-location
+                      /*
+                       * Used as buffer to hold [filter] argument.
+                       */
+                      .filter
 
-                        button:camphora-delete-all-button
-                          innerValue:@"<span class=""icon-bin""></span>"
-                          title:Deletes all items in your database
-                          onclick
+                      /*
+                       * Adding 'like' fields, if there are any such fields.
+                       */
+                      if:x:/@load-file/*/*/field/*/type(/=text|/=textarea)/./*/name
 
-                            /*
-                             * Forward evaluated above.
-                             */
-                            _app-name:x:/@micro.url.get-entities/0?name
+                        /*
+                         * There exists "like" type of fields in app.
+                         */
+                        for-each:x:/@load-file/*/*/field/*/type(/=text|/=textarea)/./*/name?value
+                          if:x:/@.filter?value
+                            set:x:/@.filter?value
+                              src:{0} or
+                                :x:/@.filter?value
+                          set:x:/@.filter?value
+                            src:{0} `{1}` like @filter
+                              :x:/@.filter?value
+                              :x:/@_dp?value
 
-                            /*
-                             * Evaluates file responsible for actually deleting all items.
-                             */
-                            micro.evaluate.file:/modules/{0}/helpers/delete-all.hl
-                              :x:/@_app-name?value
+                        /*
+                         * Adding [filter] argument to databind invocation.
+                         */
+                        eval-x:x:/+/*/*
+                        add:x:/@.filter
+                          src
+                            @filter:%{0}%
+                              :x:/@get-widget-property/*/*?value
 
-                        a
-                          role:button
-                          class:button
-                          innerValue:@"<span class=""icon-home3""></span>"
-                          title:Return to home
-                          href:/
+                      /*
+                       * Adding 'equal' fields, if there are any such fields.
+                       */
+                      if:x:/@load-file/*/*/field/*/type(/=number|/=select|/=radio)/./*/name
 
-                    div
-                      class:strip right
-                      widgets
-                        input:camphora-search-query
-                          type:text
-                          placeholder:Search ...
-                          onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-search-button').raise('onclick');return false;}"
-                          events
+                        /*
+                         * There exists "equal" type of fields in app.
+                         */
+                        for-each:x:/@load-file/*/*/field/*/type(/=number|/=select|/=radio)/./*/name?value
+                          if:x:/@.filter?value
+                            set:x:/@.filter?value
+                              src:{0} or
+                                :x:/@.filter?value
+                          set:x:/@.filter?value
+                            src:{0} `{1}` = @value
+                              :x:/@.filter?value
+                              :x:/@_dp?value
 
-                            /*
-                             * Updates count.
-                             */
-                            camphora.update-count
+                        /*
+                         * Adding [value] argument to databind invocation.
+                         */
+                        eval-x:x:/+/*/*
+                        add:x:/@.filter
+                          src
+                            @value:x:/@get-widget-property/*/*?value
 
-                              /*
-                               * Forward evaluated above.
-                               */
-                              _app-name:x:/@micro.url.get-entities/0?name
+                      /*
+                       * Adding entire filter argument to databind invocation.
+                       */
+                      trim:x:/@.filter?value
+                      eval-x:x:/+2/*/*
+                      add:x:/+/*/*
+                        src:x:/@.filter/*
+                      add:x:/../*/camphora.datagrid.databind
+                        src
+                          filter:x:/@trim?value
 
-                              /*
-                               * Modifying placeholder to contain record count.
-                               */
-                              p5.mysql.connect:[camphora]
-                                p5.mysql.scalar:@"select count(*) from `{0}`"
-                                  :x:/@_app-name?value
-                                set-widget-property:x:/../*/_event?value
-                                  placeholder:Search amongst {0} records ...
-                                    :x:/@p5.mysql.scalar?value
+                    else
 
-                          oninit
+                      /*
+                       * No filter condition, making sure we reset it in databind invocation.
+                       */
+                      add:x:/../*/camphora.datagrid.databind
+                        src:filter
 
-                            /*
-                             * Setting focus initially to search textbox, and
-                             * making sure we set initial count of records.
-                             */
-                            camphora.update-count
-                            micro.page.set-focus:x:/../*/_event?value
+                    /*
+                     * Re-databinding datagrid.
+                     */
+                    camphora.datagrid.databind
+                      page
+                      order-by
+                      order-dir
 
-                        button:camphora-search-button
-                          innerValue:@"<span class=""icon-search""></span>"
-                          title:Search for items
-                          onclick
+                    /*
+                     * Selecting textbox content, and setting focus to it.
+                     */
+                    micro.page.set-focus:camphora-search-query
 
-                            /*
-                             * Forward evaluated above.
-                             */
-                            _app-name:x:/@micro.url.get-entities/0?name
+                button:camphora-previous-button
+                  innerValue:@"<span class=""icon-arrow-left""></span>"
+                  title:Previous page
+                  onclick
 
-                            /*
-                             * Figuring out filter, setting it to viewstate,
-                             * and re-databinding grid.
-                             */
-                            get-widget-property:camphora-search-query
-                              value
-                            if:x:/@get-widget-property/*/*?value
-                              !=:
+                    /*
+                     * Paging to previous page.
+                     */
+                    camphora.datagrid.databind.previous
 
-                              /*
-                               * Filter was given, storing it in ViewState before re-databinding grid,
-                               * and making sure we enable our "clear filter button".
-                               */
-                              p5.web.viewstate.set:camphora.filter
-                                src:x:/@get-widget-property/*/*?value
-                              delete-widget-property:camphora-remove-all-filters
-                                disabled
+                button:camphora-next-button
+                  innerValue:@"<span class=""icon-arrow-right""></span>"
+                  title:Next page
+                  onclick
 
-                            else
-
-                              /*
-                               * Filter was NOT given, removing it from ViewState before re-databinding grid,
-                               * and making sure we disable our "clear filter button".
-                               */
-                              p5.web.viewstate.set:camphora.filter
-                              set-widget-property:camphora-remove-all-filters
-                                disabled
-
-                            /*
-                             * Re-databinding grid.
-                             */
-                            micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
-                              :x:/@_app-name?value
-
-                            /*
-                             * Selecting textbox content, and setting focus to it.
-                             */
-                            micro.page.set-focus:camphora-search-query
-
-                        button:camphora-remove-all-filters
-                          innerValue:@"<span class=""icon-cross""></span>"
-                          title:Remove all search and tag filters
-                          disabled
-                          oninit
-
-                            /*
-                             * Checking if current URL is a request for items with
-                             * a specific "hash tag", at which point we enable the clear button.
-                             */
-                            micro.url.get-entities
-                            if:x:/@micro.url.get-entities/1?name
-                              =:tag
-
-                              /*
-                               * Current request is a request for a specific tag, hence
-                               * we enable the "clear filter" button, to allow user to
-                               * clear the tag, and go to "root" URL of app.
-                               */
-                              delete-widget-property:x:/../*/_event?value
-                                disabled
-
-                          onclick
-
-                            /*
-                             * Forward evaluated above.
-                             */
-                            _app-name:x:/@micro.url.get-entities/0?name
-
-                            /*
-                             * To clear out any viewstate and tags, we simply re-direct
-                             * the client to base URL of app.
-                             */
-                            p5.web.set-location:x:/@_app-name?value
+                    /*
+                     * Paging to next page.
+                     */
+                    camphora.datagrid.databind.next
 
     div
       class:row air-top
@@ -532,33 +337,651 @@ window.onscroll = function() {
         div
           class:col-100
           widgets
-            div
-              class:camphora-crud-grid-wrapper
-              widgets
-                micro.widgets.grid:camphora-crud-grid
-                  class:striped hover
-                  .onfeed
+            micro.widgets.mysql.datagrid:camphora-datagrid
+              .row
+                onclick
+
+                  /*
+                   * Invoking event responsible for allowing the user
+                   * to view the details for some specific record from his database.
+                   */
+                  eval-x:x:/+/*
+                  camphora.datagrid._view-item
+                    id:x:/../*/.row/*/id?value
+                    row-widget-id:x:/../*/_event?value
+
+              database:camphora
+              table:{app-name}
+              page-size:25
+              class:hover striped camphora-datagrid
+              databind:bool:false
+              oninit
+
+                /*
+                 * Making sure we use our internal databind event, since we don't
+                 * databind the datagrid by default.
+                 */
+                camphora.datagrid.databind
+
+              columns
+                id
+                  visible:bool:false
+              events
+
+
+                /*
+                 * Sorts the datagrid according to the given [column].
+                 */
+                camphora.datagrid.sort
+
+                  /*
+                   * Sanity checking invocation.
+                   */
+                  micro.lambda.contract.min:x:/..
+                    column:string
+
+                  /*
+                   * Removing sort order CSS classed on all header buttons, except
+                   * the currently clicked one.
+                   */
+                  p5.web.widgets.find-like:camphora-datagrid
+                    class:camphora-sort-column
+                    .column
+                  p5.web.widgets.find-first:camphora-datagrid
+                    .column:x:/../*/column?value
+                  delete-widget-property:x:/@p5.web.widgets.find-like/*/*(!/={0})?value
+                    :x:/@p5.web.widgets.find-first/*/*?value
+                    class
+
+                  /*
+                   * Checking if we're already sorting by this column, at which point
+                   * we reverse the current sort order.
+                   */
+                  get-widget-property:x:/@p5.web.widgets.find-first/*/*?value
+                    class
+                  if:x:/@get-widget-property/*/*?value
+                    ~:camphora-sort-column-asc
 
                     /*
-                     * Feeding grid with more items.
+                     * We're already sorting ascending, making sure we sort descending.
                      */
-                    _app-name:x:/@micro.url.get-entities/0?name
-                    micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
-                      :x:/@_app-name?value
-                      feed-more:bool:true
+                    set-widget-property:x:/@p5.web.widgets.find-first/*/*?value
+                      class:camphora-sort-column-desc
+                    add:x:/../*/camphora.datagrid.databind
+                      src
+                        order-dir:desc
 
-                  columns
-                  oninit
-
-                    /*
-                     * Forward evaluated above.
-                     */
-                    _app-name:x:/@micro.url.get-entities/0?name
+                  else
 
                     /*
-                     * Evaluating file responsible for databinding grid.
+                     * Sorting ascending by default.
                      */
-                    eval-x:x:/+/*/url
-                    micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
-                      :x:/@_app-name?value
-                      url:x:/@_app-name?value
+                    set-widget-property:x:/@p5.web.widgets.find-first/*/*?value
+                      class:camphora-sort-column-asc
+                    add:x:/../*/camphora.datagrid.databind
+                      src
+                        order-dir:asc
+
+                  /*
+                   * Databinding datagrid, passing in order by argument, and making sure
+                   * we reset [page] property.
+                   *
+                   * Notice, we keep our [filter] here.
+                   */
+                  eval-x:x:/+/*
+                  camphora.datagrid.databind
+                    order-by:x:/../*/column?value
+                    page
+
+                  /*
+                   * Setting focus to search button.
+                   */
+                  micro.page.set-focus:camphora-search-query
+
+
+                /*
+                 * Updates an existing item in the database.
+                 *
+                 * Expects a collection of column/values as arguments, and at the minimum
+                 * an [id] argument.
+                 */
+                camphora.database.update
+
+                  /*
+                   * Separating arguments from the rest of our lambda.
+                   */
+                  .signal
+
+                  /*
+                   * Sanity checking invocation.
+                   */
+                  micro.lambda.contract.min:x:/..
+                    id:long
+
+                  /*
+                   * Parametrizing update SQL with column names and SQL parameters.
+                   */
+                  .pars
+                  .no:int:0
+                  for-each:x:/@.signal/--/<-(!/_event!/id!/=)
+
+                    /*
+                     * Concatenating currently iterated SQL parameter, into [.pars],
+                     * which is our parameter names to our insert SQL.
+                     */
+                    set:x:/@.pars?value
+                      src:{0},`{1}`=@no{2}
+                        :x:/@.pars?value
+                        :x:/@_dp/#?name
+                        :x:/@.no?value
+
+                    /*
+                     * Adding currently iterated SQL parameter into [.pars],
+                     * which also contains all SQL insert parameters.
+                     */
+                    set:x:/+2/*/*?name
+                      src:@no{0}
+                        :x:/@.no?value
+                    eval-x:x:/+/*/*
+                    add:x:/@.pars
+                      src
+                        foo:x:/@_dp/#?value
+
+                    /*
+                     * Incrementing counter, to make sure our next parameter
+                     * gets a unique name.
+                     */
+                    set:x:/@.no?value
+                      +:x:/@.no?value
+                        _:1
+
+                  /*
+                   * Trimming [.pars] for excessive ",".
+                   */
+                  trim:x:/@.pars?value
+                    chars:,
+
+                  /*
+                   * Executing our SQL.
+                   */
+                  p5.mysql.connect:[camphora]
+                    add:x:/+
+                      src:x:/@.pars/*
+                    p5.mysql.update:update `{0}` set {1} where id=@id
+                      :{app-name}
+                      :x:/@trim?value
+                      @id:x:/../*/id?value.long
+
+
+                /*
+                 * Inserts a new item into the database.
+                 *
+                 * Expects a collection of column/values as arguments.
+                 */
+                camphora.database.insert
+
+                  /*
+                   * Separating arguments from the rest of our lambda.
+                   */
+                  .signal
+
+                  /*
+                   * Parametrizing SQL insert statement with column names, and SQL parameters.
+                   */
+                  .cols
+                  .pars
+                  .no:int:0
+                  for-each:x:/@.signal/--/<-(!/_event!/=)
+
+                    /*
+                     * Concatenating currently iterated item into [.cols], which
+                     * is our "column names" parts of our insert SQL.
+                     */
+                    set:x:/@.cols?value
+                      src:{0},`{1}`
+                        :x:/@.cols?value
+                        :x:/@_dp/#?name
+
+                    /*
+                     * Concatenating currently iterated SQL parameter, into [.pars],
+                     * which is our parameter names to our insert SQL.
+                     */
+                    set:x:/@.pars?value
+                      src:{0},@no{1}
+                        :x:/@.pars?value
+                        :x:/@.no?value
+
+                    /*
+                     * Adding currently iterated SQL parameter into [.pars],
+                     * which also contains all SQL insert parameters.
+                     */
+                    set:x:/+2/*/*?name
+                      src:@no{0}
+                        :x:/@.no?value
+                    eval-x:x:/+/*/*
+                    add:x:/@.pars
+                      src
+                        foo:x:/@_dp/#?value
+
+                    /*
+                     * Incrementing counter, to make sure our next parameter
+                     * gets a unique name.
+                     */
+                    set:x:/@.no?value
+                      +:x:/@.no?value
+                        _:1
+
+                  /*
+                   * Trimming away superflous "," in [.cols] and [.pars], to
+                   * make sure we get a "clean" insert SQL.
+                   */
+                  set:x:/@.cols?value
+                    trim:x:/@.cols?value
+                      chars:,
+                  set:x:/@.pars?value
+                    trim:x:/@.pars?value
+                      chars:,
+
+                  /*
+                   * Adding all parameters into SQL insert statement.
+                   */
+                  add:x:/../*/p5.mysql.connect/*/p5.mysql.insert
+                    src:x:/@.pars/*
+
+                  /*
+                   * Inserting into database.
+                   */
+                  p5.mysql.connect:[camphora]
+                    p5.mysql.insert:@"insert into `{0}` ({1}) values ({2})"
+                      :{app-name}
+                      :x:/@.cols?value
+                      :x:/@.pars?value
+
+
+                /*
+                 * Sets or gets the current [page] property for datagrid.
+                 */
+                camphora.datagrid.page
+
+                  /*
+                   * Checking if this is a "set" invocation or a "get" invocation.
+                   */
+                  if:x:/../*/value
+
+                    /*
+                     * Then checking if it's not a 'set to null' invocation.
+                     */
+                    if:x:/../*/value?value
+
+                      /*
+                       * Some actual value for our property value.
+                       */
+                      p5.web.viewstate.set:camphora.datagrid.page
+                        src:x:/../*/value?value
+
+                    else
+
+                      /*
+                       * 'Set to null' invocation.
+                       */
+                      p5.web.viewstate.set:camphora.datagrid.page
+
+                  else
+
+                    /*
+                     * "get" invocation, returning current value to caller, but
+                     * only if there actually is a value for property.
+                     */
+                    p5.web.viewstate.get:camphora.datagrid.page
+                    if:x:/-/*?value
+                      eval-x:x:/+/*
+                      return
+                        page:x:/@p5.web.viewstate.get/*?value.long
+                    else
+                      return
+                        page:long:0
+
+
+                /*
+                 * Sets or gets the current [order-by] property for datagrid.
+                 */
+                camphora.datagrid.order-by
+
+                  /*
+                   * Checking if this is a "set" invocation or a "get" invocation.
+                   */
+                  if:x:/../*/value
+
+                    /*
+                     * Then checking if it's not a 'set to null' invocation.
+                     */
+                    if:x:/../*/value?value
+
+                      /*
+                       * Some actual value for our property value.
+                       */
+                      p5.web.viewstate.set:camphora.datagrid.order-by
+                        src:x:/../*/value?value
+
+                    else
+
+                      /*
+                       * 'Set to null' invocation.
+                       */
+                      p5.web.viewstate.set:camphora.datagrid.order-by
+
+                  else
+
+                    /*
+                     * "get" invocation, returning current value to caller, but
+                     * only if there actually is a value for property.
+                     */
+                    p5.web.viewstate.get:camphora.datagrid.order-by
+                    if:x:/-/*?value
+                      eval-x:x:/+/*
+                      return
+                        order-by:x:/@p5.web.viewstate.get/*?value
+
+
+                /*
+                 * Sets or gets the current [order-dir] property for datagrid.
+                 */
+                camphora.datagrid.order-dir
+
+                  /*
+                   * Checking if this is a "set" invocation or a "get" invocation.
+                   */
+                  if:x:/../*/value
+
+                    /*
+                     * Then checking if it's not a 'set to null' invocation.
+                     */
+                    if:x:/../*/value?value
+
+                      /*
+                       * Some actual value for our property value.
+                       */
+                      p5.web.viewstate.set:camphora.datagrid.order-dir
+                        src:x:/../*/value?value
+
+                    else
+
+                      /*
+                       * 'Set to null' invocation.
+                       */
+                      p5.web.viewstate.set:camphora.datagrid.order-dir
+
+                  else
+
+                    /*
+                     * "get" invocation, returning current value to caller, but
+                     * only if there actually is a value for property.
+                     */
+                    p5.web.viewstate.get:camphora.datagrid.order-dir
+                    if:x:/-/*?value
+                      eval-x:x:/+/*
+                      return
+                        order-dir:x:/@p5.web.viewstate.get/*?value
+
+
+                /*
+                 * Sets or gets the current [filter] property for datagrid.
+                 */
+                camphora.datagrid.filter
+
+                  /*
+                   * Checking if this is a "set" invocation or a "get" invocation.
+                   */
+                  if:x:/../*/value
+
+                    /*
+                     * Then checking if it's not a 'set to null' invocation.
+                     */
+                    if:x:/../*/value?value
+
+                      /*
+                       * Some actual value for our property value.
+                       */
+                      add:x:/+2/*/*
+                        src:x:/../*/value/*
+                      eval-x:x:/+/*/*
+                      p5.web.viewstate.set:camphora.datagrid.filter
+                        src
+                          filter:x:/../*/value?value
+
+                    else
+
+                      /*
+                       * 'Set to null' invocation.
+                       */
+                      p5.web.viewstate.set:camphora.datagrid.filter
+
+                  else
+
+                    /*
+                     * "get" invocation, returning current value to caller, but
+                     * only if there actually is a value for property.
+                     */
+                    p5.web.viewstate.get:camphora.datagrid.filter
+                    if:x:/-/*/*
+                      add:x:/+
+                        src:x:/@p5.web.viewstate.get/*/*
+                      return
+
+
+                /*
+                 * Databinds our datagrid.
+                 *
+                 * Optionally pass in [filter], [page], [order-by] and [order-dir].
+                 * If these arguments are not given, the event will determine the current
+                 * persistent property values of these arguments from the above property events.
+                 */
+                camphora.datagrid.databind
+
+                  /*
+                   * Separating arguments from the rest of our lambda.
+                   */
+                  .signal
+
+                  /*
+                   * Sanity checking invocation.
+                   */
+                  micro.lambda.contract.optional:x:/..
+                    filter
+                    page
+                    order-by
+                    order-dir
+
+                  /*
+                   * Setting properties, if given.
+                   */
+                  for-each:x:/@.signal/--(/filter|/page|/order-by|/order-dir)
+
+                    /*
+                     * Changing name of [foo] node below to property event name.
+                     */
+                    set:x:/..for-each/*/foo?name
+                      src:camphora.datagrid.{0}
+                        :x:/@_dp/#?name
+
+                    /*
+                     * The below [foo] node is actually our property setter invocation,
+                     * but its name is changed above, before we invoke it.
+                     *
+                     * Before we can invoke it though, we'll need to apply its arguments.
+                     */
+                    add:x:/+2/*
+                      src:x:/@_dp/#/*
+                    eval-x:x:/+/*
+                    foo
+                      value:x:/@_dp/#?value
+
+                  /*
+                   * Retrieving properties from persistent property events.
+                   */
+                  .properties
+                    camphora.datagrid.filter
+                    camphora.datagrid.page
+                    camphora.datagrid.order-by
+                    camphora.datagrid.order-dir
+                  for-each:x:/@.properties/*?name
+
+                    /*
+                     * Invoking property getter event, making sure we set its correct
+                     * name before we do.
+                     */
+                    set:x:/..for-each/*/foo?name
+                      src:x:/@_dp?value
+                    foo
+                    add:x:/../*/micro.widgets.mysql.datagrid.databind
+                      src:x:/./-/*
+
+                  /*
+                   * Databinding MySQL datagrid.
+                   */
+                  micro.widgets.mysql.datagrid.databind:camphora-datagrid
+
+                  /*
+                   * Enabling or disabling our previous and next buttons, depending upon
+                   * where we are in our dataset, and if we have more pages.
+                   */
+                  camphora.datagrid.page
+                  if:x:/-/*?value
+                    =:long:0
+                    or:x:/@camphora.datagrid.page/*
+                      not
+
+                    /*
+                     * Disabling "previous" button.
+                     */
+                    set-widget-property:camphora-previous-button
+                      disabled
+
+                  else
+
+                    /*
+                     * Enabling "previous" button.
+                     */
+                    delete-widget-property:camphora-previous-button
+                      disabled
+
+                  /*
+                   * Then disabling/enabling our "next" button.
+                   */
+                  if:x:/@micro.widgets.mysql.datagrid.databind/*/more-pages?value
+                    !=:bool:true
+
+                    /*
+                     * Disabling "next" button.
+                     */
+                    set-widget-property:camphora-next-button
+                      disabled
+
+                  else
+
+                    /*
+                     * Enabling "next" button.
+                     */
+                    delete-widget-property:camphora-next-button
+                      disabled
+
+
+                /*
+                 * Pages datagrid to previous page.
+                 */
+                camphora.datagrid.databind.previous
+
+                  /*
+                   * Decrementing page property.
+                   */
+                  camphora.datagrid.page
+                  -:x:/-/*?value
+                    _:1
+                  eval-x:x:/+/*
+                  camphora.datagrid.page
+                    value:x:/@-?value
+                  camphora.datagrid.databind
+
+                  /*
+                   * Setting focus to search button.
+                   */
+                  micro.page.set-focus:camphora-search-query
+
+
+                /*
+                 * Pages datagrid to next page.
+                 */
+                camphora.datagrid.databind.next
+
+                  /*
+                   * Decrementing page property.
+                   */
+                  camphora.datagrid.page
+                  +:x:/-/*?value
+                    _:1
+                  eval-x:x:/+/*
+                  camphora.datagrid.page
+                    value:x:/@+?value
+                  camphora.datagrid.databind
+
+                  /*
+                   * Setting focus to search button.
+                   */
+                  micro.page.set-focus:camphora-search-query
+
+
+                /*
+                 * Invoked when a header is clicked.
+                 *
+                 * Expects [_arg] being the widget ID to the link button that was clicked.
+                 */
+                camphora.datagrid._header-clicked
+
+                  /*
+                   * Sanity checking invocation.
+                   */
+                  micro.lambda.contract.min:x:/..
+                    _arg:string
+
+                  /*
+                   * Getting [column] value that we should sort by.
+                   */
+                  get-widget-property:x:/../*/_arg?value
+                    .column
+
+                  /*
+                   * Doing the actual sorting.
+                   */
+                  eval-x:x:/+/*
+                  camphora.datagrid.sort
+                    column:x:/@get-widget-property/*/*?value
+
+
+                /*
+                 * Allows the user to edit some specific item.
+                 *
+                 * Expects [id] being database ID of item to edit and
+                 * [parent] being widget ID of "tr" row which wraps the item.
+                 */
+                camphora.datagrid._view-item
+
+                  /*
+                   * Sanity checking invocation.
+                   */
+                  micro.lambda.contract.min:x:/..
+                    id:long
+                    row-widget-id:string
+
+                  /*
+                   * Forward evaluated above.
+                   */
+                  .app-folder:x:/../*/micro.url.get-entities/0?name
+
+                  /*
+                   * Evaluating file responsible for allowing the user to edit some item.
+                   */
+                  eval-x:x:/+/*
+                  micro.evaluate.file:/modules/{0}/helpers/edit-item.hl
+                    :x:/@.app-folder?value
+                    id:x:/../*/id?value
+                    row-widget-id:x:/../*/row-widget-id?value
