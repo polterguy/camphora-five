@@ -151,7 +151,7 @@ micro.evaluate.file:@CAMPHORA/helpers/replace-app-name.hl
  * modify the datagrid inside of it, according to the [field] definitions
  * found in our app manifest file.
  */
-load-file:/modules/{0}/launch-implementation.hl
+load-file:/modules/{0}/startup/widgets/camphora.widgets.datagrid.hl
   :x:/@split/0/-2?name
   convert:false
 hyper2lambda:x:/@load-file/*?value
@@ -265,6 +265,39 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
 
 /*
  * Saving file again, now with [columns] declarations.
+ */
+lambda2hyper:x:/@hyper2lambda/*
+  comments:unroll
+save-file:/modules/{0}/startup/widgets/camphora.widgets.datagrid.hl
+  :x:/@split/0/-2?name
+  src:x:/@lambda2hyper?value
+
+
+
+
+
+/*
+ * Making sure "launch-implementation.hl" actually instantiates the correct
+ * extension widget.
+ */
+load-file:/modules/{0}/launch-implementation.hl
+  :x:/@split/0/-2?name
+  convert:false
+hyper2lambda:x:/@load-file/*?value
+  keep-comments:true
+set:x:/@hyper2lambda/**/widgets/=crud-widget/**/camphora.widgets.datagrid?name
+  src:camphora.widgets.datagrid.{0}
+    :x:/@split/0/-2?name
+set:x:/@hyper2lambda/**/widgets/=toolbar-widget/**/camphora.widgets.toolbar?name
+  src:camphora.widgets.toolbar.{0}
+    :x:/@split/0/-2?name
+
+
+
+
+
+/*
+ * Saving file again, now with wizard form declarations declarations.
  */
 lambda2hyper:x:/@hyper2lambda/*
   comments:unroll
