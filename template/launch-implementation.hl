@@ -50,7 +50,29 @@ create-widget:camphora-main-container
      * Help context Active Event.
      */
     desktop.help.get-context
+
+      /*
+       * Returning the root folder for Camphora's help files.
+       */
       return:@CAMPHORA/help-files/Camphora Five/index.hl
+
+
+    /*
+     * Invoked when for some reasons the number of items have been
+     * changed in the database. The new item count will be passed in
+     * as [_arg].
+     *
+     * We simply update the title of our page, to reflect the number
+     * of items in the database.
+     */
+    camphora.count-changed
+
+      /*
+       * Setting the title of our page, to reflect the number of items.
+       */
+      p5.web.page.set-title:{0} records of type {1}
+        :x:/../*/_arg?value
+        :{app-name}
 
 
   widgets

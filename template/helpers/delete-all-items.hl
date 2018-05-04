@@ -36,12 +36,12 @@ micro.windows.confirm
     /*
      * Re-databinding datagrid, and updating count.
      */
-    camphora.count-changed
     camphora.datagrid.databind
       filter
       page
       order-by
       order-dir
+    camphora.count-changed:long:0
 
     /*
      * Making sure we signal that the current filter has been

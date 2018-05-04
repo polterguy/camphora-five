@@ -131,9 +131,10 @@ create-event:camphora.widgets.toolbar.{0}
 
                 /*
                  * Invoked when for some reasons the number of items have been
-                 * changed in the database.
+                 * changed in the database. The new item count will be passed
+                 * in as [_arg].
                  *
-                 * In this widget lambda event, we simply setthe placeholder's
+                 * In this widget lambda event, we simply set the placeholder's
                  * value of the filter textbox such that it displays the total
                  * number of items.
                  */
@@ -142,12 +143,10 @@ create-event:camphora.widgets.toolbar.{0}
                   /*
                    * Modifying placeholder to contain record count.
                    */
-                  p5.mysql.connect:[camphora]
-                    p5.mysql.scalar:@"select count(*) from `{0}`"
+                  set-widget-property:x:/../*/_event?value
+                    placeholder:Search amongst {0} {1} records ...
+                      :x:/../*/_arg?value
                       :{app-name}
-                    set-widget-property:x:/../*/_event?value
-                      placeholder:Search amongst {0} records ...
-                        :x:/@p5.mysql.scalar?value
 
 
                 /*
@@ -166,10 +165,16 @@ create-event:camphora.widgets.toolbar.{0}
               oninit
 
                 /*
-                 * Setting focus initially to search textbox, and
-                 * making sure we set initial count of records.
+                 * Making sure we set initial count of records.
                  */
-                camphora.count-changed
+                p5.mysql.connect:[camphora]
+                  p5.mysql.scalar:select count(*) from `{0}`
+                    :{app-name}
+                  camphora.count-changed:x:/@p5.mysql.scalar?value
+
+                /*
+                 * Setting initial focus to search textbox.
+                 */
                 micro.page.set-focus:x:/../*/_event?value
 
 

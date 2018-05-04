@@ -194,14 +194,16 @@ p5.mysql.connect:[camphora]
      */
     p5.mysql.transaction.commit
 
+  /*
+   * Figuring out new count of items.
+   */
+  p5.mysql.scalar:@"select count(*) from `{0}`"
+    :{app-name}
 
-
-
-
-/*
- * Updating count of items.
- */
-camphora.count-changed
+  /*
+   * Updating count of items.
+   */
+  camphora.count-changed:x:/@p5.mysql.scalar?value
 
 
 
