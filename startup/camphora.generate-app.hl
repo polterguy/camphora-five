@@ -1,5 +1,5 @@
 /*
- * Creates the Active Event that will generate a Camphora Five module.
+ * Creates the Active Event that will generate a Camphora Five app.
  *
  * Expects __[manifest]__ being the manifest declaration for module and __[\_arg]__
  * being the name for your Camphora Five module.
@@ -25,6 +25,6 @@ create-event:camphora.generate-app
    * Generating app.
    */
   eval-x:x:/+/*
-  micro.evaluate.file:@CAMPHORA/helpers/generate-app.hl
+  micro.evaluate.file:@CAMPHORA/helpers/generator/generate-app.hl
     filename:~/documents/private/camphora/{0}.hl
       :x:/../*/_arg?value

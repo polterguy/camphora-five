@@ -4,6 +4,8 @@
  *
  * Optionally pass in __[name]__, __[type]__, __[options]__ and __[show]__ to
  * edit an existing field, instead of creating a new one.
+ *
+ * This widget is used when editing your Camphora Five app.
  */
 create-event:camphora.widgets._internals.field-definition
 

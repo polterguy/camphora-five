@@ -134,7 +134,7 @@ if:x:/../*/delete-data?value
  * inside module's folder.
  */
 eval-x:x:/+/*
-micro.evaluate.file:@CAMPHORA/helpers/replace-app-name.hl
+micro.evaluate.file:@CAMPHORA/helpers/generator/replace-app-name.hl
   folder:/modules/{0}/
     :x:/@split/0/-2?name
   app-name:x:/@split/0/-2?name
@@ -323,7 +323,7 @@ hyper2lambda:x:/@load-file/*?value
 add:x:/+/*
   src:x:/../*/load-file/[0,1]/*/*/field
 add:x:/@hyper2lambda/*/create-widgets/**/widgets/=data
-  micro.evaluate.file:@CAMPHORA/helpers/create-new-item-widgets.hl
+  micro.evaluate.file:@CAMPHORA/helpers/generator/create-new-item-widgets.hl
 
 
 
@@ -356,7 +356,7 @@ set:x:/@hyper2lambda/*/.column-count?value
 add:x:/+/*
   src:x:/../*/load-file/[0,1]/*/*/field
 add:x:/@hyper2lambda/*/create-widget/**/widgets/=data
-  micro.evaluate.file:@CAMPHORA/helpers/create-edit-item-widgets.hl
+  micro.evaluate.file:@CAMPHORA/helpers/generator/create-edit-item-widgets.hl
 
 
 

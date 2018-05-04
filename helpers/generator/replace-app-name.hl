@@ -47,6 +47,6 @@ for-each:x:/-/*
 list-folders:x:/../*/folder?value
 for-each:x:/-/*?name
   eval-x:x:/+/*
-  micro.evaluate.file:@CAMPHORA/helpers/replace-app-name.hl
+  micro.evaluate.file:@CAMPHORA/helpers/generator/replace-app-name.hl
     folder:x:/@_dp?value
     app-name:x:/../*/app-name?value

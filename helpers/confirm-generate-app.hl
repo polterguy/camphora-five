@@ -108,7 +108,7 @@ create-widgets
                      * Evaluating file responsible for creating our app.
                      */
                     eval-x:x:/+/*
-                    micro.evaluate.file:@CAMPHORA/helpers/generate-app.hl
+                    micro.evaluate.file:@CAMPHORA/helpers/generator/generate-app.hl
                       filename:x:/@get-widget-property/*/*?value
 
                     /*

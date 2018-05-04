@@ -1,5 +1,5 @@
 /*
- * This file will create a view record widget hierarchy for a Campora app.
+ * This file will create a view field widget hierarchy for a Campora app.
  *
  * Expects one [field] for each field that exists in app.
  */
