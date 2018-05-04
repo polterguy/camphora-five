@@ -124,6 +124,11 @@ create-widget:camphora-main-container
              * We instantiate the widget such that it allows for editing
              * and deletion of items. If you don't want this feature, you
              * can change the [edit-items] value to "false".
+             *
+             * In addition we make sure the datagrid displays 10 items at
+             * the same time. Feel free to change the [page-size] argument
+             * if you want to display more or less items at the same time.
              */
             camphora.widgets.datagrid:camphora-datagrid
               edit-items:bool:true
+              page-size:long:10

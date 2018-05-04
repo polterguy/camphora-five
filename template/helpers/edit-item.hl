@@ -3,6 +3,10 @@
  *
  * Expects a __[parent]__, being the ID of the widget where the editing widget should
  * be injected - In addition to __[id]__ being the record's database ID.
+ *
+ * Optionally pass in __[edit-items]__ to indicate whether or not it is possible
+ * to edit and delete items in the datagrid, which is needed to add one addition
+ * colspan to the editor widget.
  */
 
 
@@ -24,6 +28,18 @@ micro.lambda.contract.min:x:/..
  * How many visible columns we have in our table in total.
  */
 .column-count
+
+
+
+
+
+/*
+ * We need to increment the [.column-count] by 1, to accommodate
+ * for the "delete item" row.
+ */
+set:x:/@.column-count?value
+  +:x:/@.column-count?value
+    _:1
 
 
 
