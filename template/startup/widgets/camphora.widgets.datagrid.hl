@@ -87,32 +87,21 @@ create-event:camphora.widgets.{0}.datagrid
                   camphora.datagrid.databind
 
   /*
-   * Retrieves URL entities, which we'll need later to know what the root folder
-   * of our app is.
-   */
-  micro.url.get-entities
-
-  /*
    * Returning actual widget to caller, making sure we forward
-   * evaluate [.app-folder] references inside of it first.
+   * evaluate any arguments.
    */
-  eval-x:x:/+/**/.app-folder|/+/*/*/page-size
+  eval-x:x:/+/*/*/page-size
   return
     micro.widgets.mysql.datagrid
       .row
         onclick
 
           /*
-           * Forward evaluated above.
-           */
-          .app-folder:x:/../*/micro.url.get-entities/0?name
-
-          /*
            * Evaluating file responsible for allowing the user to edit some item.
            */
           eval-x:x:/+/*
           micro.evaluate.file:/modules/{0}/helpers/edit-item.hl
-            :x:/@.app-folder?value
+            :{app-name}
             id:x:/../*/.row/*/id?value
             row-widget-id:x:/../*/_event?value
 
@@ -161,15 +150,10 @@ create-event:camphora.widgets.{0}.datagrid
         camphora.create-new-item
 
           /*
-           * Forward evaluated above.
-           */
-          .app-folder:x:/@micro.url.get-entities/0?name
-
-          /*
            * Evaluating file responsible for creating a new record.
            */
           micro.evaluate.file:/modules/{0}/helpers/create-item.hl
-            :x:/@.app-folder?value
+            :{app-name}
 
 
         /*
@@ -178,15 +162,10 @@ create-event:camphora.widgets.{0}.datagrid
         camphora.download-items
 
           /*
-           * Forward evaluated above.
-           */
-          .app-folder:x:/../*/micro.url.get-entities/0?name
-
-          /*
            * Evaluating file responsible for exporting items to client.
            */
           micro.evaluate.file:/modules/{0}/helpers/download-items.hl
-            :x:/@.app-folder?value
+            :{app-name}
 
 
         /*
@@ -205,16 +184,11 @@ create-event:camphora.widgets.{0}.datagrid
             column:string
 
           /*
-           * Forward evaluated above.
-           */
-          .app-folder:x:/@micro.url.get-entities/0?name
-
-          /*
            * Evaluating file responsible for creating a new record.
            */
           eval-x:x:/+/*/column
           micro.evaluate.file:/modules/{0}/helpers/sort-datagrid.hl
-            :x:/@.app-folder?value
+            :{app-name}
             column:x:/../*/column?value
 
 
@@ -242,16 +216,11 @@ create-event:camphora.widgets.{0}.datagrid
             _arg:string
 
           /*
-           * Forward evaluated above.
-           */
-          .app-folder:x:/@micro.url.get-entities/0?name
-
-          /*
            * Evaluating file responsible for creating a new record.
            */
           eval-x:x:/+/*/query
           micro.evaluate.file:/modules/{0}/helpers/search-datagrid.hl
-            :x:/@.app-folder?value
+            :{app-name}
             query:x:/../*/_arg?value
 
 
@@ -329,17 +298,12 @@ create-event:camphora.widgets.{0}.datagrid
             order-dir
 
           /*
-           * Forward evaluated above.
-           */
-          .app-folder:x:/../*/micro.url.get-entities/0?name
-
-          /*
            * Evaluating "databind grid" Hyperlambda file.
            */
           add:x:/+
             src:x:/@.signal/--/<-(!/_event)
           micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
-            :x:/@.app-folder?value
+            :{app-name}
 
 
         /*
@@ -362,16 +326,11 @@ create-event:camphora.widgets.{0}.datagrid
             _arg:string
 
           /*
-           * Forward evaluated above.
-           */
-          .app-folder:x:/../*/micro.url.get-entities/0?name
-
-          /*
            * Evaluating "upload CSV file" Hyperlambda file.
            */
           eval-x:x:/+/*/file
           micro.evaluate.file:/modules/{0}/helpers/import-csv-file.hl
-            :x:/@.app-folder?value
+            :{app-name}
             file:x:/../*/_arg?value
 
           /*
@@ -391,15 +350,10 @@ create-event:camphora.widgets.{0}.datagrid
         camphora.database.delete-all-items
 
           /*
-           * Forward evaluated above.
-           */
-          .app-folder:x:/../*/micro.url.get-entities/0?name
-
-          /*
            * Evaluates file responsible for actually deleting all items.
            */
           micro.evaluate.file:/modules/{0}/helpers/delete-all-items.hl
-            :x:/@.app-folder?value
+            :{app-name}
 
 
         /*
@@ -424,17 +378,12 @@ create-event:camphora.widgets.{0}.datagrid
             id:string
 
           /*
-           * Forward evaluated above.
-           */
-          .app-folder:x:/../*/micro.url.get-entities/0?name
-
-          /*
            * Evaluating "update item" Hyperlambda file.
            */
           add:x:/+
             src:x:/@.signal/--/<-(!/_event)
           micro.evaluate.file:/modules/{0}/helpers/update-item.hl
-            :x:/@.app-folder?value
+            :{app-name}
 
 
         /*
@@ -452,17 +401,12 @@ create-event:camphora.widgets.{0}.datagrid
           .signal
 
           /*
-           * Forward evaluated above.
-           */
-          .app-folder:x:/../*/micro.url.get-entities/0?name
-
-          /*
            * Evaluating "insert item" Hyperlambda file.
            */
           add:x:/+
             src:x:/@.signal/--/<-(!/_event)
           micro.evaluate.file:/modules/{0}/helpers/insert-item.hl
-            :x:/@.app-folder?value
+            :{app-name}
 
 
         /*

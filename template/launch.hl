@@ -9,6 +9,7 @@
 /*
  * Retrieves URL entities to see if client is requesting a custom "view".
  */
+.view
 micro.url.get-entities
 
 
@@ -22,22 +23,49 @@ if:x:/@micro.url.get-entities/*?count
   >:int:1
 
   /*
+   * Definitely a view request.
+   */
+  set:x:/@.view?value
+    src:x:/@micro.url.get-entities/1?name
+
+else-if:x:/@micro.url.get-entities/*?count
+  =:int:1
+  and:x:/@micro.url.get-entities/0?name
+    !=:{app-name}
+
+  /*
+   * This might happen if the current Camphora app is the "default app" declared
+   * in the server's web.config file.
+   */
+  set:x:/@.view?value
+    src:x:/@micro.url.get-entities/0?name
+
+
+
+
+
+/*
+ * Checking if client was requesting a view.
+ */
+if:x:/@.view?value
+
+  /*
    * Probably a request for a "view", making sure the view actually exists, before
    * we evaluate it.
    */
   if
     fetch:x:/0/0?value
       file-exists:/modules/{0}/views/{1}.hl
-        :x:/@micro.url.get-entities/0?name
-        :x:/@micro.url.get-entities/1?name
+        :{app-name}
+        :x:/@.view?value
 
     /*
      * View exists, evaluating its associated file, and returning early,
      * to avoid evaluation of the rest of our lambda.
      */
     micro.evaluate.file:/modules/{0}/views/{1}.hl
-      :x:/@micro.url.get-entities/0?name
-      :x:/@micro.url.get-entities/1?name
+      :{app-name}
+      :x:/@.view?value
 
   else
 
@@ -53,4 +81,4 @@ else
    * A normal request, evaluating file responsible for handling the request.
    */
   micro.evaluate.file:/modules/{0}/launch-implementation.hl
-    :x:/@micro.url.get-entities/0?name
+    :{app-name}

@@ -8,31 +8,12 @@
 
 
 /*
- * Retrieves URL entities, which we'll need later to know what the root folder
- * of our app is.
- */
-micro.url.get-entities
-
-
-
-
-
-/*
- * Changing the title of page.
- */
-p5.web.page.set-title:{app-name}
-
-
-
-
-
-/*
  * Including Micro's CSS files, in addition to our main CSS
  * file for currently evaluated Camphora app.
  */
 micro.css.include
 p5.web.include-css-file:/modules/{0}/media/main.css
-  :x:/@micro.url.get-entities/0?name
+  :{app-name}
 
 
 
