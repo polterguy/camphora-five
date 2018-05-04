@@ -32,7 +32,6 @@ micro.windows.confirm
       p5.mysql.delete:@"delete from `{0}`"
         :{app-name}
 
-
     /*
      * Re-databinding datagrid, and updating count.
      */

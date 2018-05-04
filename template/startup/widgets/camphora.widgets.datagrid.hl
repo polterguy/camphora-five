@@ -48,6 +48,51 @@ create-event:camphora.widgets.datagrid.{0}
   micro.url.get-entities
 
   /*
+   * Adding "delete item" row.
+   */
+  add:x:/../*/return/*/micro.widgets.mysql.datagrid/*/columns
+    src
+      Delete
+        .lambda
+          eval-x:x:/+/*/*/onclick/*/.id
+          return
+            a
+              href:#
+              innerValue:@"<span class=""icon-bin""></span>"
+              onclick
+
+                /*
+                 * Forward evaluated above.
+                 */
+                .id:x:/../*/row/*/id?value
+
+                /*
+                 * Opening database connection.
+                 */
+                p5.mysql.connect:[camphora]
+
+                  /*
+                   * Deleting item from database.
+                   */
+                  p5.mysql.delete:delete from `{0}` where id = @id
+                    :{app-name}
+                    @id:x:/@.id?value
+
+                  /*
+                   * Figuring out new count of items,and making sure we
+                   * signal that the count has changed.
+                   */
+                  p5.mysql.scalar:@"select count(*) from `{0}`"
+                    :{app-name}
+                  camphora.count-changed:x:/-?value
+
+                /*
+                 * Re-databinding datagrid, and updating count, making
+                 * sure we keep our current [filter] and [page] arguments.
+                 */
+                camphora.datagrid.databind
+
+  /*
    * Returning actual widget to caller, making sure we forward
    * evaluate [.app-folder] references inside of it first.
    */
