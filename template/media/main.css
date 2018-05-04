@@ -10,6 +10,9 @@
 .camphora-datagrid tr.camphora-grid-editable td {
     cursor: pointer;
 }
+.camphora-datagrid tr.camphora-grid-editable td div.camphora-no-pointer-cursor {
+    cursor: default;
+}
 .camphora-sort-column-asc>span:after {
     padding-left:.5rem;
     font-family:'icomoon' !important;

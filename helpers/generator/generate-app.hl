@@ -205,18 +205,18 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
      * Checkbox type of column, making sure we display its value
      * as a checkmark, by making it become a [.lambda] type of column.
      */
-    set:x:/+/*/*/*/foo?value
+    set:x:/+/*/*/*/.field-name?value
       src:x:/@_dp/#/*/name?value
     add:x:/@.column/*
       src
         .lambda
-          foo
+          .field-name
 
           /*
            * Checking if checkbox value should be checked.
            */
           if:x:/../*/row/*/{0}?value
-            :x:/@foo?value
+            :x:/@.field-name?value
             =:int:1
 
             /*
@@ -252,6 +252,54 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
     add:x:/@.column/*
       src
         class:camphora-pre-cell
+
+  /*
+   * Checking if this is a Markdown type of field, at which point
+   * we make sure we display it as pre formatted, and convert it to
+   * HTML before we display it in the datagrid.
+   */
+  else-if:x:/@_dp/#/*/type?value
+    =:markdown
+
+    /*
+     * Markdown type of field, making sure we transform content to HTML,
+     * in addition to displaying cell's content as pre-formatted.
+     */
+    set:x:/+/*/*/*/.field-name?value
+      src:x:/@_dp/#/*/name?value
+    add:x:/@.column/*
+      src
+        .lambda
+          .field-name
+
+          /*
+           * Transforming content to HTML.
+           */
+          markdown2html:x:/../*/row/*/{0}?value
+            :x:/@.field-name?value
+
+          /*
+           * Returning item to caller.
+           */
+          eval-x:x:/+/*/*/innerValue
+          return
+            literal
+              element:div
+              onclick:event.stopPropagation();
+              class:camphora-no-pointer-cursor
+              innerValue:x:/@markdown2html?value
+
+    /*
+     * Since a [.lambda] column isn't part of the SQL executed towards the
+     * database, we'll need to also add an invisible column with the name of
+     * our markdown column.
+     */
+    set:x:/+/*/*?name
+      src:x:/@_dp/#/*/name?value
+    add:x:/@.column
+      src
+        foo
+          visible:bool:false
 
   /*
    * Adding column to [columns] declaration of MySQL datagrid.
