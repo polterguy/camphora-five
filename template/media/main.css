@@ -1,6 +1,9 @@
 /*
  * Main CSS file for Camphora Five CRUD app.
  */
+.camphora-datagrid tr th {
+    text-transform: capitalize;
+}
 .camphora-datagrid tr td {
     vertical-align: text-top;
 }
