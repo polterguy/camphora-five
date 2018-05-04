@@ -36,7 +36,7 @@ if:x:/@p5.web.query.get/*?value
    * databind the widget towards the specified QUERY parameter.
    */
   eval-x:x:/+/*/*
-  add:x:/../*/create-widget/**/widgets(/=crud-widget|/=toolbar-widget)/0
+  add:x:/../*/create-widget/**/widgets/=crud-widget/0
     src
       query:x:/@p5.web.query.get/*?value
 
