@@ -205,12 +205,15 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
      * Checkbox type of column, making sure we display its value
      * as a checkmark, by making it become a [.lambda] type of column.
      */
-    set:x:/+/*/*/*/.field-name?value
-      src:x:/@_dp/#/*/name?value
+    eval-x:x:/+/*/*/*/.field-name
     add:x:/@.column/*
       src
         .lambda
-          .field-name
+
+          /*
+           * Forward evaluated above.
+           */
+          .field-name:x:/@_dp/#/*/name?value
 
           /*
            * Checking if checkbox value should be checked.
@@ -265,21 +268,69 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
      * Markdown type of field, making sure we transform content to HTML,
      * in addition to displaying cell's content as pre-formatted.
      */
-    set:x:/+/*/*/*/.field-name?value
-      src:x:/@_dp/#/*/name?value
+    eval-x:x:/+/*/*/*(/.app-name|/.field-name)
     add:x:/@.column/*
       src
         .lambda
-          .field-name
+
+          /*
+           * Forward evaluated above.
+           */
+          .field-name:x:/@_dp/#/*/name?value
+          .app-name:x:/../*/split/0/-2?name
 
           /*
            * Transforming content to HTML.
            */
-          markdown2html:x:/../*/row/*/{0}?value
+          eval-x:x:/+
+          .content:x:/../*/row/*/{0}?value
             :x:/@.field-name?value
+          if:x:/@.content?value
+            not
+            or:x:/@.content?value
+              =:
+
+              /*
+               * Nothing to do here, wmpty value, returning to avoid
+               * evaluation of the rest of our lambda.
+               */
+              return
+
+          /*
+           * Turning Markdown into HMTL.
+           */
+          markdown2html:x:/@.content?value
+
+          /*
+           * Semantically sanity checking Markdown according to HTML
+           * whitelist, to avoid injection of malicious HTML tags.
+           */
+          html2lambda:x:/@markdown2html?value
+          load-file:/modules/{0}/configuration/html-whitelist.hl
+            :x:/@.app-name?value
+          for-each:x:/@html2lambda/**
+            if:x:/@load-file/*/*/\{0}
+              :x:/@_dp/#?name
+              not
+
+              /*
+               * Illegals HTML tag, hence removing it.
+               */
+              set:x:/@_dp/#
+
+          /*
+           * Transforming lambda to HTML again.
+           */
+          lambda2html:x:/@html2lambda/*
 
           /*
            * Returning item to caller.
+           *
+           * Notice, to make it possible to actually click hyperlinks
+           * inside of our markdown cells, we'll have to explicitly allow
+           * that by stopping propagation of click event - Since otherwise
+           * the default [onclick] event handler for the row as a whole
+           * would prevent Hyperlinks from being possible to actually click.
            */
           eval-x:x:/+/*/*/innerValue
           return
@@ -287,7 +338,7 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
               element:div
               onclick:event.stopPropagation();
               class:camphora-no-pointer-cursor
-              innerValue:x:/@markdown2html?value
+              innerValue:x:/@lambda2html?value
 
     /*
      * Since a [.lambda] column isn't part of the SQL executed towards the
