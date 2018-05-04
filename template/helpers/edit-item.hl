@@ -189,6 +189,6 @@ create-widget
                     camphora.database.update
 
                     /*
-                     * Deleting editor widget.
+                     * Re-databinding datagrid.
                      */
-                    delete-widget:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                    camphora.datagrid.databind
