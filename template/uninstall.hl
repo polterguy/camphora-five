@@ -1,0 +1,16 @@
+/*
+ * Uninstallation file that will be invoked when your Camphora Five app
+ * for some reasons is uninstalled.
+ */
+
+
+
+
+
+/*
+ * Deleting all relevant Active Events, and that's it.
+ *
+ * Notice, this lambda object is dynamically populated when your app is generated.
+ */
+.events
+delete-event:x:/-/*?name

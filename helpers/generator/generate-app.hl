@@ -286,10 +286,10 @@ load-file:/modules/{0}/launch-implementation.hl
 hyper2lambda:x:/@load-file/*?value
   keep-comments:true
 set:x:/@hyper2lambda/**/widgets/=crud-widget/**/camphora.widgets.datagrid?name
-  src:camphora.widgets.datagrid.{0}
+  src:camphora.widgets.{0}.datagrid
     :x:/@split/0/-2?name
 set:x:/@hyper2lambda/**/widgets/=toolbar-widget/**/camphora.widgets.toolbar?name
-  src:camphora.widgets.toolbar.{0}
+  src:camphora.widgets.{0}.toolbar
     :x:/@split/0/-2?name
 
 
@@ -302,6 +302,39 @@ set:x:/@hyper2lambda/**/widgets/=toolbar-widget/**/camphora.widgets.toolbar?name
 lambda2hyper:x:/@hyper2lambda/*
   comments:unroll
 save-file:/modules/{0}/launch-implementation.hl
+  :x:/@split/0/-2?name
+  src:x:/@lambda2hyper?value
+
+
+
+
+
+/*
+ * Making sure "uninstall.hl" file knows which Active Event to delete.
+ */
+load-file:/modules/{0}/uninstall.hl
+  :x:/@split/0/-2?name
+  convert:false
+hyper2lambda:x:/@load-file/*?value
+  keep-comments:true
+add:x:/+/*
+  src:"camphora.widgets.{0}.datagrid"
+    :x:/@split/0/-2?name
+  src:"camphora.widgets.{0}.toolbar"
+    :x:/@split/0/-2?name
+add:x:/@hyper2lambda/*/.events
+  src
+
+
+
+
+
+/*
+ * Saving file again, now with wizard form declarations declarations.
+ */
+lambda2hyper:x:/@hyper2lambda/*
+  comments:unroll
+save-file:/modules/{0}/uninstall.hl
   :x:/@split/0/-2?name
   src:x:/@lambda2hyper?value
 

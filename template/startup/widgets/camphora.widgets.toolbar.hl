@@ -11,7 +11,7 @@
  * - __[download-items]__ - Whether or not downloading of items to CSV file should be allowed. The default value for this argument is boolean _"false"_.
  * - __[main-toolbar]__ - Whether or not the main toolbar should be created or not. The default value of this argument is _"false"_.
  */
-create-event:camphora.widgets.toolbar.{0}
+create-event:camphora.widgets.{0}.toolbar
   :{app-name}
 
   /*

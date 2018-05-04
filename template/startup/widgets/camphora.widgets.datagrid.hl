@@ -10,7 +10,7 @@
  * - __[edit-items]__ - Whether or not editing (and hence deletion) of items should be allowed. The default value for this argument is boolean _"false"_.
  * - __[page-size]__ - Number of items the datagrid should show at once. The default value is 25.
  */
-create-event:camphora.widgets.datagrid.{0}
+create-event:camphora.widgets.{0}.datagrid
   :{app-name}
 
   /*

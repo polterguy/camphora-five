@@ -8,8 +8,15 @@
 
 /*
  * Deleting all relevant Active Events, and that's it.
+ *
+ * Notice, to support generated apps to still be installed, even if
+ * root account uninstalls Camphora Five itself, we cannot delete
+ * all events starting with the _"camphora"_ namespace - But rather
+ * must manually delete all events explicitly named.
  */
 delete-event:p5.io.unroll-path.@CAMPHORA
-delete-event:desktop.help-files.camphora-five
-vocabulary:~camhpora.
-delete-event:x:/-/*?name
+delete-event:desktop.help-files.02-camphora-five
+delete-event:camphora.generate-app
+delete-event:camphora.version
+delete-event:camphora.widgets._internals.field-definition
+delete-event:camphora.widgets._internals.view-definition
