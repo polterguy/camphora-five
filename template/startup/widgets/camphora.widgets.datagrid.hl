@@ -5,9 +5,10 @@
 /*
  * This extension widget allows you to display your Camphora Five
  * CRUD app as a widget, injecting the entire app, anywhere on your
- * page. The event takes the following arguments.
+ * page. The event optionally takes the following arguments.
  *
- * - __[edit-items]__ - Whether or not editing (and hence deletion) of items should be allowed.
+ * - __[edit-items]__ - Whether or not editing (and hence deletion) of items should be allowed. The default value for this argument is boolean _"false"_.
+ * - __[page-size]__ - Number of items the datagrid should show at once. The default value is 25.
  */
 create-event:camphora.widgets.datagrid.{0}
   :{app-name}
@@ -17,6 +18,7 @@ create-event:camphora.widgets.datagrid.{0}
    */
   .defaults
     edit-items:bool:false
+    page-size:long:15
 
   /*
    * Checking if we should prevent editing (and deletion) of items.
@@ -49,7 +51,7 @@ create-event:camphora.widgets.datagrid.{0}
    * Returning actual widget to caller, making sure we forward
    * evaluate [.app-folder] references inside of it first.
    */
-  eval-x:x:/+/**/.app-folder
+  eval-x:x:/+/**/.app-folder|/+/*/*/page-size
   return
     micro.widgets.mysql.datagrid
       .row
@@ -71,7 +73,7 @@ create-event:camphora.widgets.datagrid.{0}
 
       database:camphora
       table:{app-name}
-      page-size:25
+      page-size:x:(/../*/page-size|/@.defaults/*/page-size)/$?value.long
       class:hover striped camphora-datagrid
       databind:bool:false
       oninit
@@ -348,15 +350,6 @@ create-event:camphora.widgets.datagrid.{0}
            */
           micro.evaluate.file:/modules/{0}/helpers/delete-all-items.hl
             :x:/@.app-folder?value
-
-          /*
-           * Re-databinding datagrid.
-           */
-          camphora.datagrid.databind
-            filter
-            page
-            order-by
-            order-dir
 
 
         /*

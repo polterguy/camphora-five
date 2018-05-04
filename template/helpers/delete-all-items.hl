@@ -32,7 +32,19 @@ micro.windows.confirm
       p5.mysql.delete:@"delete from `{0}`"
         :{app-name}
 
+
     /*
-     * Reloading root location for simplicity.
+     * Re-databinding datagrid, and updating count.
      */
-    p5.web.reload-location
+    camphora.count-changed
+    camphora.datagrid.databind
+      filter
+      page
+      order-by
+      order-dir
+
+    /*
+     * Making sure we signal that the current filter has been
+     * set to nothing.
+     */
+    camphora.filter-changed

@@ -80,6 +80,12 @@ create-widgets
                */
               camphora.count-changed
 
+              /*
+               * Making sure we signal that the current filter has been
+               * set to nothing.
+               */
+              camphora.filter-changed
+
           button
             innerValue:Cancel
             onclick

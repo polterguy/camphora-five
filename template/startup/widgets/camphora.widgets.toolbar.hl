@@ -104,6 +104,22 @@ create-event:camphora.widgets.toolbar.{0}
 
 
             /*
+             * Add new record button.
+             */
+            button
+              innerValue:@"<span class=""icon-plus""></span>"
+              class:large
+              title:Create new record
+              onclick
+
+                /*
+                 * Invoking widget lambda event that is responsible for
+                 * creating a new item.
+                 */
+                camphora.create-new-item
+
+
+            /*
              * Search textbox.
              */
             input:camphora-search-query
@@ -132,6 +148,19 @@ create-event:camphora.widgets.toolbar.{0}
                     set-widget-property:x:/../*/_event?value
                       placeholder:Search amongst {0} records ...
                         :x:/@p5.mysql.scalar?value
+
+
+                /*
+                 * Invoked when for some reasons the currently active filter
+                 * has been changed. The new search query will be given as [_arg].
+                 */
+                camphora.filter-changed
+
+                  /*
+                   * Setting widget's [value] to the given [_arg].
+                   */
+                  set-widget-property:x:/../*/_event?value
+                    value:x:/../*/_arg?value
 
 
               oninit
@@ -263,19 +292,3 @@ create-event:camphora.widgets.toolbar.{0}
                  * Paging to next page.
                  */
                 camphora.datagrid.databind.next
-
-
-            /*
-             * Add new record button.
-             */
-            button
-              innerValue:@"<span class=""icon-plus""></span>"
-              class:large
-              title:Create new record
-              onclick
-
-                /*
-                 * Invoking widget lambda event that is responsible for
-                 * creating a new item.
-                 */
-                camphora.create-new-item
