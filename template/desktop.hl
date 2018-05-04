@@ -8,6 +8,7 @@ container
     literal
       element:span
       innerValue:{app-name}
+      class:capitalize
     literal
       element:span
       class:icon-paragraph-justify

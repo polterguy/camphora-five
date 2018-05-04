@@ -17,3 +17,6 @@ When you have _"generated"_ your app, you can Create, Read, Update and Delete re
 the acronym _"CRUD"_. In addition, Camphora Five apps allows you to export and import items from Excel, or other
 systems, that somehow supports CSV files. This makes Camphora Five a perfect fit for creating your own web apps,
 from which you want to collect and edit your data, from where ever you are in the world.
+
+Your apps can also be customised as you see fit after you have generated them, by simply editing your
+app's properties using for instance Hyper IDE.

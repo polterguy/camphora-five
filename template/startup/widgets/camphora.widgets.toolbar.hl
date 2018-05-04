@@ -14,6 +14,10 @@
  *
  * - __[edit-items]__ - Whether or not editing (and hence deletion) of items should be allowed. The default value for this argument is boolean _"false"_.
  * - __[download-items]__ - Whether or not downloading of items to CSV file should be allowed. The default value for this argument is boolean _"false"_.
+ *
+ * __Notice__, this event is dynamically created for each of your Camphora Five apps, and its
+ * exact name varies from app to app, since the `{0}` parts of it is replaced with your
+ * app's name.
  */
 create-event:camphora.widgets.{0}.toolbar
   :{app-name}

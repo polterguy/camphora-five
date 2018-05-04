@@ -21,7 +21,7 @@ https://phosphorusfive.files.wordpress.com/2018/04/camphora-new-screenshot.png
 
 Then simply click the _"power cord"_ button, next to the _"Floppy disc save"_ button. This will both save your app,
 and generate it, at which point you can immediately start using your app. If you now go back to your desktop,
-by clicking the home button, you'll see your an icon for you app, resembling the following. If you want to,
+by clicking the home button, you'll see an icon for you app, resembling the following. If you want to,
 you can change your app's desktop icon - However, we'll have a look at this later.
 
 https://phosphorusfive.files.wordpress.com/2018/03/camphora-five-screenshot-address-book.png
@@ -31,7 +31,7 @@ If you open your app, and add some records to it, it'll end up resembling the fo
 https://phosphorusfive.files.wordpress.com/2018/03/camphora-five-address-book-screenshot.png
 
 When you have added some records to your database, you can export your items, and for instance import them
-as a CSV file into Excel or Numbers if you're on a Mac OS X based system.
+as a CSV file into Excel, Numbers or any other system that supports importing CSV files.
 
 ### Settings for your app
 
@@ -40,10 +40,6 @@ your app _"address-book"_ for instance, then its URL will be [/address-book](/ad
 important to remember for you, especially if you choose to not create a desktop icon for your app, since
 then there will be no explicit desktop icon created for your app, and the only method you have to actually
 open your app, is by remembering its URL.
-
-You can also choose to not have headers for your columns displayed. However, the columns for your CRUD app,
-also allows you to sort your data, both incrementally and decrementally - So if you choose to remove your
-app's columns, you can no longer sort your records.
 
 You can also choose to explicitly hide a specific column from the datagrid view of your app, by checking
 off the _"Show"_ checkbox on your columns. The data and column will still exist in your database, and you

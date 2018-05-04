@@ -17,5 +17,4 @@ field
     male
     female
   show:bool:true
-show-headers:bool:true
 desktop-icon:bool:true

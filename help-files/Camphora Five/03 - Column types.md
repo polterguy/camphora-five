@@ -5,30 +5,25 @@ list, and their most important traits explained.
 
 * __Singleline text__ - A single line text type of field
 * __Multiline text__ - Multiple lines of text field
+* __Markdown content__ - A Markdown field, that you can edit using a web based Markdown editor, and that will be formatted as HTML or _"rich text"_ when displayed
 * __Checkbox__ - A yes/no type of field
 * __Number__ - A number type of input
 * __Select dropdown__ - Allows the user to select from a pre-defined set of different options
 * __Radiobuttons__ - Similar to select dropdown, but will display the different options as radiobuttons
 * __Date/time created__ - Not per se an input field, but an automatically created field, that allows you to track when the item was actually created
 
-Some of the above field types have unique traits, such as for instance the _"Multiline text"_ type of field, which
-allows the user to actually provide Markdown, and/or #hash_tags, to easily allow for filtering items, and displaying
-content with rich formatting. Below is a screenshot of how a Multiline text item with both Markdown content,
-and a hashtag might appear for you - Both during editing, and during viewing the item in the datagrid.
-
-https://phosphorusfive.files.wordpress.com/2018/03/camphora-five-markdown-has-tags-screenshot.png
-
-Hashtags allows you to provide integral filtering capacity, as a part of your item's Multiline content, which
-might be useful for categorising your items, and easily later retrieve items according to their multiline text
-content. If you click the hashtag in your multiline text content, Camphora Five will filter your items, and
-only display items containing that specific hashtag. The syntax for Markdown is really beyond the scope of
-this documentation, but you can find several good references on Markdown, such as for
-instance [this one](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet). Markdown is however
-a very powerful syntax, and allows you to easily embed images, hyperlinks, and even tables, in addition to
-basic formatting, as an integral part of your item's content.
-
 The _"Date/time created"_ field type, is not really an input field, and cannot be changed - But rather serves
 to track at what exact date and time your item was created.
+
+### Markdown content fields
+
+These types of fields allows the user to apply rich formatting to text, using the Markdown syntax. The field
+will be edited with a Markdown type of editor, and when displayed it will be transformed into its rich text (HTML)
+counterpart. This field does not allow for malicious HTML injection, since every time its value is displayed, by
+default the value will be semantically checked for malicious HTML tags - Unless you create your own views, at which
+point you'll have to explicitly _"white wash"_ your own HTML.
+
+The list of legal elements can be configured though, and you can find it in your app's _"/configuration/"_ folder.
 
 ### Select and radiobutton fields
 
@@ -37,12 +32,7 @@ the field type definition will split in two, and expect you to supply a comma se
 values, from which the end user can select from, as he is creating new items, or editing existing items.
 An example of such a field could for instance be _"sex"_, containing a comma separated list of the following
 values; _"male,female"_. When the user is creating or editing an item, he will have to choose from only _"female"_
-or _"male"_ as his value for that specific field. The screenshot above illustrates this fairly well, since
-it contains a _"Radiobutton"_ type of field, which asks the user to supply the value for the _"sex"_ column.
-
-These types of columns also allows the user to filter items during _"gridview"_, by only items matching
-the specified value. This can be done by simply clicking for instance a _"female"_ value in your datagrid.
-This will automatically populate your filter textbox, with the value necessary to filter your items accordingly.
+or _"male"_ as his value for that specific field.
 
 ### Checkbox fields
 

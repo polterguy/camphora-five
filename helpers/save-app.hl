@@ -258,7 +258,7 @@ for-each:x:/@micro.form.serialize/*/.signal
  * Adding other types of settings for app.
  */
 add:x:/../*/.data
-  src:x:/@micro.form.serialize/*(/viewers|/editors|/skin|/show-headers|/desktop-icon)
+  src:x:/@micro.form.serialize/*(/viewers|/editors|/skin|/desktop-icon)
 
 
 

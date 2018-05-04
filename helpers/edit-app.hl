@@ -52,7 +52,6 @@ if:x:/-/*/*?value
  * Used to hold attributes of app retrieved from app-declaration file, if any.
  */
 .file-values
-  show-headers
   desktop-icon
 
 
@@ -85,8 +84,6 @@ if:x:/../*/filename?value
   /*
    * Applying settings for later references.
    */
-  set:x:/@.file-values/*/show-headers?value
-    src:x:/@load-file/*/*/show-headers?value
   set:x:/@.file-values/*/desktop-icon?value
     src:x:/@load-file/*/*/desktop-icon?value
 
@@ -134,8 +131,6 @@ else
     src:/users/{0}/documents/private/camphora/{1}.hl
       :x:/@whoami/*/username?value
       :x:/@.defaults/*/name?value
-  set:x:/@.file-values/*/show-headers?value
-    src:bool:true
   set:x:/@.file-values/*/desktop-icon?value
     src:bool:true
 
@@ -293,32 +288,11 @@ create-widget
                             micro.page.set-focus:x:/../*/_event?value
 
                   /*
-                   * Show headers checkbox.
+                   * Create desktop icon checkbox.
                    */
                   div
                     class:col
                     widgets
-                      label
-                        widgets
-                          span
-                            innerValue:Show headers
-                          input:camphora-show-headers
-                            type:checkbox
-                            .data-field:show-headers
-                            oninit
-
-                              /*
-                               * Forward evaluated before creation of widget.
-                               */
-                              .file-values
-                                show-headers:x:/../*/.file-values/*/show-headers?value
-                              if:x:/@.file-values/*/show-headers?value
-
-                                /*
-                                 * Widget should be initially checked.
-                                 */
-                                set-widget-property:x:/../*/_event?value
-                                  checked
 
                       /*
                        * Desktop icon checkbox.

@@ -11,6 +11,10 @@
  * - __[page-size]__ - Number of items the datagrid should show at once. The default value is 25.
  * - __[query]__ - Optional initial search query to databind the datagrid towards.
  * - __[page]__ - Optional initial page to databind the datagrid towards.
+ *
+ * __Notice__, this event is dynamically created for each of your Camphora Five apps, and its
+ * exact name varies from app to app, since the `{0}` parts of it is replaced with your
+ * app's name.
  */
 create-event:camphora.widgets.{0}.datagrid
   :{app-name}
@@ -404,6 +408,9 @@ create-event:camphora.widgets.{0}.datagrid
 
         /*
          * Deletes all items from our database.
+         *
+         * Will display a modal widget, asking the user to confirm deletion before
+         * actually deleting any items.
          */
         camphora.database.delete-all-items
 

@@ -13,10 +13,6 @@ allows you to see all the possible icons you can use for your app. If you want t
 you can evaluate the snippet below, for then to edit your app's _"desktop.hl"_ file, and change the parts
 of your `class` property that declares which icon to use.
 
-We can also help you edit your app, or create custom apps entirely from scratch for you,
-if you require additional features, or custom apps. This is a service we charge for. Feel free to
-send us an email at thomas@gaiasoul.com if you want to hear more about these types of services.
-
 ```hyperlambda-snippet
 /*
  * Loading HTML example file for IcoMoon.
@@ -98,18 +94,22 @@ Hyper IDE - There is a folder called _"/template/"_. This folder will be used as
 and normal Phosphorus Five module. The template folder again will contain most of the default files necessary to wire
 up your Phosphorus Five application, such as a _"desktop.hl"_ file, a _"launch.hl"_ file, etc.
 
-After your app has been generated, there will exist a file inside of your _"/helpers/"_ folder, inside of your CRUD
-app, which is called _"app-manifest.hl"_. This file actually declares the columns and settings for your app, and it
-should be fairly self explaining. However, you can actually modify this file by hand if you wish to, which eliminates
-the need to re-generate your app. This allows you to change your app's columns, views and settings, without having
-to _"re-generate"_ your app, and loose your manually edited changes.
+When your app is generated, it works in most regards exactly as any other type of Phosphorus Five module, and
+if you know Hyperlambda, and understands the Micro extension widgets, you can easily edit your app, and modify it
+as you see fit.
 
-Your Camphora Five app though, is dependent upon some helper services, which is supplied by Camphora Five itself. So
-your app will not function, if you for some reasons uninstall Camphora Five. These helper services, provides
-functionality such as transforming Markdown to HTML, etc. So hence your app is created from a _"template"_, which
-you can edit as you see fit, after you have initially generated your app. This allows you to create a Camphora CRUD
-app, which you edit after having generated it, to your exact needs, as you see fit. Just remember a crucial
-detail - **If you re-generate your app, these changes will be overwritten!!**
+One detail though, is that each _"view"_ you create, can be found within the _"/views/"_ folder. This folder by
+default will only contain one view, called _"default.hl"_. This is per se your main view for your app, and is quite
+easily edited in fact. This default view instantiates two custom extension widgets that were automatically created
+as your app was generated. These widgets are as follows.
+
+- __[camphora.widgets.xxx.toolbar]__ - The toolbar for your app, with the pager, filter textbox, etc.
+- __[camphora.widgets.xxx.datagrid]__ - The actual datagrid for your app.
+
+Notice, the _"xxx"_ parts above are of course the name of your app. As you instantiate your toolbar and datagrid,
+you can apply some arguments, to for instance prevent editing, setting the page-size, etc. These extension widgets
+can also (obviously) also be consumed in your own views. However, each view can only contain _one_ toolbar, and/or
+datagrid Camphora Five widget.
 
 #### About Markdown and Multiline fields
 
@@ -118,6 +118,5 @@ app, inside of your app's _"/configuration/"_ folder. This allows you to modify 
 particular app. Markdown is created as a _"leaky format"_, which allows you to create HTML tags inside
 your Markdown. These tags will be rendered _"as is"_ in your resulting HTML. However, your HTML
 whitelist file, declares which HTML elements and attributes of HTML elements are legal to render here - But only for your
-specific app, and not all apps in general.
-
-
+specific app, and not all apps in general. Any HTML tag found in a Markdown field, that does not exist in
+your whitelist file, will simply be entirely removed.
