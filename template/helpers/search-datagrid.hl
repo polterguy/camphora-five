@@ -12,6 +12,8 @@
  */
 micro.lambda.contract.min:x:/..
   query:string
+micro.lambda.contract.optional:x:/..
+  page:long
 
 
 
@@ -186,11 +188,34 @@ else
 
 
 /*
+ * Checking if caller provided an initial [page] value.
+ */
+if:x:/../*/page?value
+
+  /*
+   * Initial [page] argument supplied.
+   */
+  add:x:/../*/camphora.datagrid.databind
+    src:x:/../*/page
+
+else
+
+  /*
+   * No initial [page] argument supplied,making sure we set it to 0
+   * during invocation to databind.
+   */
+  add:x:/../*/camphora.datagrid.databind
+    src:page
+
+
+
+
+
+/*
  * Re-databinding datagrid, and making sure we reset all arguments,
  * except possibly the [filter] argument.
  */
 camphora.datagrid.databind
-  page
   order-by
   order-dir
 

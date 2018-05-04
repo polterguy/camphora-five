@@ -147,7 +147,7 @@ micro.evaluate.file:@CAMPHORA/helpers/generator/replace-app-name.hl
  * Creating our actual MySQL datagrid according to our CRUD app
  * manifest file's content.
  *
- * We do this by loading the "launch-implementation.hl" file and
+ * We do this by loading the "default.hl" file and
  * modify the datagrid inside of it, according to the [field] definitions
  * found in our app manifest file.
  */
@@ -277,10 +277,10 @@ save-file:/modules/{0}/startup/widgets/camphora.widgets.datagrid.hl
 
 
 /*
- * Making sure "launch-implementation.hl" actually instantiates the correct
+ * Making sure "default.hl" actually instantiates the correct
  * extension widget.
  */
-load-file:/modules/{0}/launch-implementation.hl
+load-file:/modules/{0}/views/default.hl
   :x:/@split/0/-2?name
   convert:false
 hyper2lambda:x:/@load-file/*?value
@@ -301,7 +301,7 @@ set:x:/@hyper2lambda/**/widgets/=toolbar-widget/**/camphora.widgets.toolbar?name
  */
 lambda2hyper:x:/@hyper2lambda/*
   comments:unroll
-save-file:/modules/{0}/launch-implementation.hl
+save-file:/modules/{0}/views/default.hl
   :x:/@split/0/-2?name
   src:x:/@lambda2hyper?value
 

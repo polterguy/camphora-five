@@ -7,9 +7,13 @@
  * CRUD app as a widget, injecting the entire app, anywhere on your
  * page. The extension widget takes the following arguments.
  *
+ * - __[main-toolbar]__ - Whether or not the main toolbar should be created or not. The default value of this argument is _"false"_.
+ *
+ * The above __[main-toolbar]__ argument can optionally be given the following sub arguments, which is only applied
+ * if the toolbar is actually displayed.
+ *
  * - __[edit-items]__ - Whether or not editing (and hence deletion) of items should be allowed. The default value for this argument is boolean _"false"_.
  * - __[download-items]__ - Whether or not downloading of items to CSV file should be allowed. The default value for this argument is boolean _"false"_.
- * - __[main-toolbar]__ - Whether or not the main toolbar should be created or not. The default value of this argument is _"false"_.
  */
 create-event:camphora.widgets.{0}.toolbar
   :{app-name}
@@ -19,8 +23,8 @@ create-event:camphora.widgets.{0}.toolbar
    */
   .defaults
     main-toolbar:bool:false
-    edit-items:bool:false
-    download-items:bool:false
+      edit-items:bool:false
+      download-items:bool:false
 
   /*
    * Checking if caller does not want a main toolbar, at which
@@ -41,7 +45,7 @@ create-event:camphora.widgets.{0}.toolbar
      * which point we remove the "upload CSV file" button, and the
      * "delete all items" button.
      */
-    if:x:(/../*/edit-items|/@.defaults/*/edit-items)/$?value.bool
+    if:x:(/../*/main-toolbar/*/edit-items|/@.defaults/*/main-toolbar/*/edit-items)/$?value.bool
       =:bool:false
 
       /*
@@ -53,7 +57,7 @@ create-event:camphora.widgets.{0}.toolbar
      * Checking if caller does not want to allow downloading of items, at
      * which point we remove the "download CSV file" button.
      */
-    if:x:(/../*/download-items|/@.defaults/*/download-items)/$?value.bool
+    if:x:(/../*/main-toolbar/*/download-items|/@.defaults/*/main-toolbar/*/download-items)/$?value.bool
       =:bool:false
 
       /*

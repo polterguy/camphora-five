@@ -1,6 +1,11 @@
 /*
  * This file is responsible for actually showing the main datagrid
  * for a Camphora Five app.
+ *
+ * Since the _"launch.hl"_ file for a Camphora app also loads up
+ * custom views, this is the actual implementation of the default
+ * view, showing your datagrid, and its toolbar for paging and
+ * filtering.
  */
 
 
@@ -14,6 +19,46 @@
 micro.css.include
 p5.web.include-css-file:/modules/{0}/media/main.css
   :{app-name}
+
+
+
+
+
+/*
+ * Checking if we have an HTTP GET QUERY parameter, indicating initial
+ * databind filtering.
+ */
+p5.web.query.get:q
+if:x:/@p5.web.query.get/*?value
+
+  /*
+   * Adding query to widget instantiation, to make sure we initially
+   * databind the widget towards the specified QUERY parameter.
+   */
+  eval-x:x:/+/*/*
+  add:x:/../*/create-widget/**/widgets(/=crud-widget|/=toolbar-widget)/0
+    src
+      query:x:/@p5.web.query.get/*?value
+
+
+
+
+
+/*
+ * Checking if we have an HTTP GET QUERY parameter, indicating initial
+ * page.
+ */
+p5.web.query.get:p
+if:x:/@p5.web.query.get/*?value
+
+  /*
+   * Adding query to widget instantiation, to make sure we initially
+   * databind the widget towards the specified QUERY parameter.
+   */
+  eval-x:x:/+/*/*
+  add:x:/../*/create-widget/**/widgets/=crud-widget/0
+    src
+      page:x:/@p5.web.query.get/*?value
 
 
 
@@ -80,11 +125,14 @@ create-widget:camphora-main-container
              * CSV file button, etc. If you don't want these buttons, or
              * this strip to be more accurate, you can set the [main-toolbar]
              * value to "false".
+             *
+             * In addition, we allow for editing items (delete all and upload CSV file),
+             * in addition to allowing the user to download his items as a CSV file.
              */
             camphora.widgets.toolbar
               main-toolbar:bool:true
-              edit-items:bool:true
-              download-items:bool:true
+                edit-items:bool:true
+                download-items:bool:true
 
 
     /*

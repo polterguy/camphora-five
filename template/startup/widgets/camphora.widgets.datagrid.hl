@@ -9,9 +9,20 @@
  *
  * - __[edit-items]__ - Whether or not editing (and hence deletion) of items should be allowed. The default value for this argument is boolean _"false"_.
  * - __[page-size]__ - Number of items the datagrid should show at once. The default value is 25.
+ * - __[query]__ - Optional initial search query to databind the datagrid towards.
+ * - __[page]__ - Optional initial page to databind the datagrid towards.
  */
 create-event:camphora.widgets.{0}.datagrid
   :{app-name}
+
+  /*
+   * Sanity checking invocation.
+   */
+  micro.lambda.contract.optional:x:/..
+    edit-items:bool
+    page-size:long
+    query:string
+    page:long
 
   /*
    * Defaults.
@@ -19,6 +30,7 @@ create-event:camphora.widgets.{0}.datagrid
   .defaults
     edit-items:bool:false
     page-size:long:10
+    page:long:0
 
   /*
    * Checking if we should prevent editing (and deletion) of items.
@@ -87,10 +99,23 @@ create-event:camphora.widgets.{0}.datagrid
                   camphora.datagrid.databind
 
   /*
+   * Checking if we should provide a default query.
+   */
+  if:x:/../*/query?value
+    and:x:/../*/query?value
+    !=:
+
+    /*
+     * Making sure our initial databind invocation contains our query.
+     */
+    set:x:/../*/return/*/*/oninit/*/.query?value
+      src:x:/../*/query?value
+
+  /*
    * Returning actual widget to caller, making sure we forward
    * evaluate any arguments.
    */
-  eval-x:x:/+/*/*/page-size
+  eval-x:x:/+/*/*(/page-size|/oninit/*/.page)
   return
     micro.widgets.mysql.datagrid
       .row
@@ -113,14 +138,38 @@ create-event:camphora.widgets.{0}.datagrid
       oninit
 
         /*
-         * Making sure we use our internal databind event, since we don't
-         * databind the datagrid by default.
-         *
-         * This ensures that we get to correctly enable/disable our pager buttons,
-         * since the databind widget lambda event checks the return value from
-         * the MySQL datagrid's databind invocation, and acts accordingly.
+         * Added before instantiation.
          */
-        camphora.datagrid.databind
+        .query
+        .page:x:(/../*/page|/@.defaults/*/page)/$?value
+
+        /*
+         * Checking if caller provided an initial [query] argument, at which
+         * point we databind the datagrid towards that given query, instead
+         * of invoking the default databind event.
+         */
+        if:x:/@.query?value
+
+          /*
+           * Initial databind query was given.
+           */
+          eval-x:x:/+/*
+          camphora.datagrid.search:x:/@.query?value
+            page:x:/@.page?value
+
+        else
+
+          /*
+           * Making sure we use our internal databind event, since we don't
+           * databind the datagrid by default.
+           *
+           * This ensures that we get to correctly enable/disable our pager buttons,
+           * since the databind widget lambda event checks the return value from
+           * the MySQL datagrid's databind invocation, and acts accordingly.
+           */
+          eval-x:x:/+/*
+          camphora.datagrid.databind
+            page:x:/@.page?value
 
 
       /*
@@ -214,6 +263,15 @@ create-event:camphora.widgets.{0}.datagrid
            */
           micro.lambda.contract.min:x:/..
             _arg:string
+          micro.lambda.contract.optional:x:/..
+            page:long
+
+          /*
+           * Checking if caller provided a [page] argument.
+           */
+          if:x:/../*/page?value
+            add:x:/../*/micro.evaluate.file
+              src:x:/../*/page
 
           /*
            * Evaluating file responsible for creating a new record.

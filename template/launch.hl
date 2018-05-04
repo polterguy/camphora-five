@@ -79,6 +79,9 @@ else
 
   /*
    * A normal request, evaluating file responsible for handling the request.
+   *
+   * Notice, if you'd like to change the _"default view"_ of your app, you
+   * can evaluate another file here.
    */
-  micro.evaluate.file:/modules/{0}/launch-implementation.hl
+  micro.evaluate.file:/modules/{0}/views/default.hl
     :{app-name}
