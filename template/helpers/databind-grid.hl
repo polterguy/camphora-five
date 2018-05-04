@@ -1,4 +1,3 @@
-
 /*
  * This file will insert a database item,
  * with all given arguments, which should be database columns.
@@ -92,12 +91,10 @@ micro.widgets.mysql.datagrid.databind:camphora-datagrid
 
 
 /*
- * Making sure we signal to any callers whether or not the datagrid has
- * anymore previous items, and what page we are currently viewing in its
- * dataset.
+ * Making sure we signal to any listeners that datagrid has been databound.
  */
 camphora.datagrid.page
 eval-x:x:/+/*
-camphora.datagrid.page-changed
+camphora.datagrid.databound
   page:x:/@camphora.datagrid.page/*?value.long
   more-pages:x:/@micro.widgets.mysql.datagrid.databind/*/more-pages?value

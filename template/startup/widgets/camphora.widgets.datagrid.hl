@@ -261,10 +261,13 @@ create-event:camphora.widgets.datagrid.{0}
         camphora.datagrid.page.previous
 
           /*
-           * Decrementing page property.
+           * Decrementing page property, making sure we never go beneath zero.
            */
           camphora.datagrid.page
-          -:x:/-/*?value
+          if:x:/-/*?value
+            =:long:0
+            return
+          -:x:/@camphora.datagrid.page/*?value
             _:1
           eval-x:x:/+/*
           camphora.datagrid.page

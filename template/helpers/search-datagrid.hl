@@ -137,6 +137,31 @@ if:x:/../*/query?value
         @equals:x:/../*/query?value
 
   /*
+   * Adding 'checkbox' fields, if there are any such fields, and the given query
+   * matches the name of the checkbox field.
+   */
+  if:x:/@.fields/*/field/*/type/=checkbox/./*/name/={0}
+    :x:/../*/query?value
+
+    /*
+     * Checking if this is the first filter condition, and if not,
+     * making sure we add an 'or' clause before we add our currently
+     * iterated filter.
+     */
+    if:x:/@.filter?value
+      set:x:/@.filter?value
+        src:"{0} or "
+          :x:/@.filter?value
+
+    /*
+     * Concatenating currently iterated filter into [.filter].
+     */
+    set:x:/@.filter?value
+      src:{0}`{1}` = 1
+        :x:/@.filter?value
+        :x:/../*/query?value
+
+  /*
    * Adding entire [.filter] argument to databind invocation,
    * including its children nodes, which might include [@value]
    * and [@filter].

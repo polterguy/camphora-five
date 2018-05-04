@@ -100,7 +100,7 @@ for-each:x:/@.signal/--/<-/field
             widgets
               label
                 innerValue:x:/@_dp/#/*/name?value
-                class:capitalize description-9
+                class:capitalize description-9 center
               input
                 placeholder:{0} ...
                   :x:/@_dp/#/*/name?value
@@ -182,7 +182,7 @@ for-each:x:/@.signal/--/<-/field
             widgets
               label
                 innerValue:x:/@_dp/#/*/name?value
-                class:capitalize description-9
+                class:capitalize description-9 center
               select
                 class:fill
                 .data-field:x:/@_dp/#/*/name?value

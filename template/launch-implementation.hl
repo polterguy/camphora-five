@@ -102,6 +102,8 @@ create-widget:camphora-main-container
              */
             camphora.widgets.toolbar
               main-toolbar:bool:true
+              edit-items:bool:true
+              download-items:bool:true
 
 
     /*

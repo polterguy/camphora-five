@@ -1,14 +1,10 @@
-
 /*
- * Startup file for Camphora Five.
- *
- * Creates the Camphora Five _"path"_ Active Event and evaluates all files in the _"/startup/"_
- * for Camphora Five.
+ * Creates our _"path"_ Active Event and evaluates all files in _"/startup/"_ folder.
  */
 
 
 /*
- * Creates our "path" Active Event for module.
+ * This is our _"path"_ Active Event for module.
  */
 micro.path.get-folder:x:/..?name
 trim-right:x:/@micro.path.get-folder?value
