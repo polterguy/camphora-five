@@ -150,6 +150,25 @@ for-each:x:/@.signal/--/<-/field
             .data-field:x:/@_dp/#/*/name?value
 
     /*
+     * Markdown CodeMirror editor type of data.
+     */
+    case:markdown
+
+      /*
+       * Adding widget to modal window.
+       */
+      eval-x:x:/+/*/*/*(/innerValue|/.data-field)
+      add:x:/../*/return
+        src
+          label
+            innerValue:x:/@_dp/#/*/name?value
+            class:capitalize
+          micro.widgets.codemirror
+            mode:markdown
+            track-dirty:bool:false
+            .data-field:x:/@_dp/#/*/name?value
+
+    /*
      * Select type of data.
      */
     case:select

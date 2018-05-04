@@ -136,6 +136,9 @@ create-event:camphora.widgets._internals.field-definition
                           innerValue:Multiline text
                           value:textarea
                         option
+                          innerValue:Markdown content
+                          value:markdown
+                        option
                           innerValue:Checkbox
                           value:checkbox
                         option

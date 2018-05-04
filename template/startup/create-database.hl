@@ -82,6 +82,7 @@ for-each:x:/@load-file/*/*/field
             :x:/@split/1?name
             :x:/@_dp/#/*/name?value
     case:textarea
+    case:markdown
       set:x:/@_cols?value
         src:{0}{1}
           :x:/@_cols?value
