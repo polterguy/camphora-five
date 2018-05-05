@@ -156,9 +156,11 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
         widgets
           a
             href:#
-            innerValue:@"{0} <span></span>"
+            title:x:/@_dp/#/*/name?value
+            innerValue:@"<span></span> {0}"
               :x:/@_dp/#/*/name?value
             .column:x:/@_dp/#/*/name?value
+            class:button
             onclick
 
               /*
@@ -166,15 +168,64 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
                */
               get-widget-property:x:/../*/_event?value
                 .column
+                class
 
               /*
                * Doing the actual sorting.
                */
               p5.web.widgets.find-first-ancestor:x:/../*/_event?value
                 .datagrid
+
+              /*
+               * Deleting sort order CSS classes on all header buttons, except
+               * the currently clicked one.
+               */
+              p5.web.widgets.find-like:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                class:camphora-sort-column
+                .column
+              micro.css.delete:x:/@p5.web.widgets.find-like/*/*(!/={0})?value
+                :x:/../*/_event?value
+                class:camphora-sort-column-asc camphora-sort-column-desc
+
+              /*
+               * Checking if we're already sorting by this column, at which point
+               * we reverse the current sort order.
+               */
+              if:x:/@get-widget-property/*/*/class?value
+                ~:camphora-sort-column-asc
+
+                /*
+                 * We're already sorting ascending, making sure we sort descending.
+                 */
+                micro.css.add:x:/../*/_event?value
+                  class:camphora-sort-column-desc
+                micro.css.delete:x:/../*/_event?value
+                  class:camphora-sort-column-asc
+                add:x:/../*/camphora.{0}.datagrid.sort
+                  :{app-name}
+                  src
+                    order-dir:desc
+
+              else
+
+                /*
+                 * Sorting ascending by default.
+                 */
+                micro.css.add:x:/../*/_event?value
+                  class:camphora-sort-column-asc
+                micro.css.delete:x:/../*/_event?value
+                  class:camphora-sort-column-desc
+                add:x:/../*/camphora.{0}.datagrid.sort
+                  :{app-name}
+                  src
+                    order-dir:asc
+
+              /*
+               * Doing our actual sorting.
+               */
               eval-x:x:/+/*
-              camphora.datagrid.sort:x:/-2/*/*?value
-                column:x:/@get-widget-property/*/*?value
+              camphora.datagrid.sort:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                column:x:/@get-widget-property/*/*/.column?value
 
   /*
    * Setting the column's name, forward declaring its [innerValue],
@@ -182,7 +233,7 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
    */
   set:x:/@.column/*?name
     src:x:/@_dp/#/*/name?value
-  eval-x:x:/@.column/**(/innerValue|/.column)
+  eval-x:x:/@.column/**(/innerValue|/.column|/title)
 
   /*
    * Checking if this is a checkbox type of column, at which point

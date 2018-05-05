@@ -13,58 +13,7 @@
 micro.lambda.contract.min:x:/..
   datagrid:string
   column:string
-
-
-
-
-
-/*
- * Removing sort order CSS classed on all header buttons, except
- * the currently clicked one.
- */
-p5.web.widgets.find-like:x:/../*/datagrid?value
-  class:camphora-sort-column
-  .column
-p5.web.widgets.find-first:x:/../*/datagrid?value
-  .column:x:/../*/column?value
-delete-widget-property:x:/@p5.web.widgets.find-like/*/*(!/={0})?value
-  :x:/@p5.web.widgets.find-first/*/*?value
-  class
-
-
-
-
-
-/*
- * Checking if we're already sorting by this column, at which point
- * we reverse the current sort order.
- */
-get-widget-property:x:/@p5.web.widgets.find-first/*/*?value
-  class
-if:x:/@get-widget-property/*/*?value
-  ~:camphora-sort-column-asc
-
-  /*
-   * We're already sorting ascending, making sure we sort descending.
-   */
-  set-widget-property:x:/@p5.web.widgets.find-first/*/*?value
-    class:camphora-sort-column-desc
-  add:x:/../*/camphora.{0}.datagrid.databind
-    :{app-name}
-    src
-      order-dir:desc
-
-else
-
-  /*
-   * Sorting ascending by default.
-   */
-  set-widget-property:x:/@p5.web.widgets.find-first/*/*?value
-    class:camphora-sort-column-asc
-  add:x:/../*/camphora.{0}.datagrid.databind
-    :{app-name}
-    src
-      order-dir:asc
+  order-dir:string
 
 
 
@@ -79,6 +28,7 @@ else
 eval-x:x:/+/*
 camphora.datagrid.databind:x:/../*/datagrid?value
   order-by:x:/../*/column?value
+  order-dir:x:/../*/order-dir?value
   page
 
 

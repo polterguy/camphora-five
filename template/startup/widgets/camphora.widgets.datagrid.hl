@@ -10,12 +10,27 @@
  *
  * - __[edit-items]__ - Whether or not editing (and hence deletion) of items should be allowed.
  * The default value for this argument is boolean _"false"_.
+ * - __[delete-items]__ - Whether or not deletion of individual items, and all filtered items should be allowed.
+ * The default value for this argument is boolean _"false"_.
  * - __[page-size]__ - Number of items the datagrid should display. The default value for this argument is 25.
  * - __[query]__ - Optional initial search query to databind the datagrid towards.
  * - __[page]__ - Optional initial page to databind the datagrid towards.
+ * - __[.row]__ - Optional argument allowing you to completely replace your entire datagrid's _".row"_ argument.
  *
  * __Notice__, this extension widget is dynamically created for each of your Camphora Five apps,
  * and its exact name varies from app to app, since its name is replaced when the app is generated.
+ *
+ * The __[.row]__ argument allows you to completely control the rendering of the datagrid's _"tr"_ elements
+ * for each row in your datagrid, allowing you (to among other things) override editing of items if you wish.
+ * Or change the style/class properties of your rows, etc. If you supply your own __[.row]__ argument, all
+ * event handlers inside of it (such as __[onclick]__ for instance) will automatically get the entire
+ * database row passed in as an argument named __[.row]__. This allows you to determine what item the
+ * user clicked by checking [.row]/[id] in your onclick event handlers.
+ *
+ * __Notice__, if you override the __[.row]__ with your own row, you can still use the __[camphora.datagrid.row-clicked]__
+ * widget lambda event to allow for the default editing to occur. Just remember to pass in __[database-id]__,
+ * __[row-widget-id]__ (widget ID of your "tr" element) and __[\_arg]__ being the widget id for your actual datagrid.
+ * See the main documentation for Camphora Five to understand how to accomplish this.
  */
 create-event:camphora.widgets.datagrid
 
@@ -24,17 +39,21 @@ create-event:camphora.widgets.datagrid
    */
   micro.lambda.contract.optional:x:/..
     edit-items:bool
+    delete-items:bool
     page-size:long
     query:string
     page:long
+    .row
 
   /*
    * Defaults.
    */
   .defaults
     edit-items:bool:false
+    delete-items:bool:false
     page-size:long:10
     page:long:0
+    class:hover camphora-datagrid
 
   /*
    * Checking if we should prevent editing (and deletion) of items.
@@ -58,78 +77,87 @@ create-event:camphora.widgets.datagrid
         class:camphora-grid-editable
 
     /*
-     * Adding "delete item" row.
+     * Checking if we should allow for deleting items.
      */
-    add:x:/../*/return/*/micro.widgets.mysql.datagrid/*/columns
-      src
-        Delete
-          .header
-            widgets
-              a
-                href:#
-                onclick
+    if:x:(/../*/delete-items|/@.defaults/*/delete-items)/$?value.bool
+      =:bool:true
 
-                  /*
-                   * Evaluates file responsible for actually deleting filtered items.
-                   */
-                  p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                    .datagrid
-                  eval-x:x:/+/*/datagrid
-                  micro.evaluate.file:/modules/{0}/helpers/delete-all-filtered-items.hl
-                    :{app-name}
-                    datagrid:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-
-                widgets
-                  literal
-                    element:span
-                    class:icon-bin
-          .lambda
-            eval-x:x:/+/*/*/onclick/*/.id
-            return
-              a
-                href:#
-                innerValue:@"<span class=""icon-bin""></span>"
-                onclick
-
-                  /*
-                   * Forward evaluated above.
-                   */
-                  .id:x:/../*/row/*/id?value
-
-                  /*
-                   * Figuring out ID of datagrid, which is needed later down
-                   * for our widget lambda event invocations.
-                   */
-                  p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                    .datagrid
-
-                  /*
-                   * Opening database connection.
-                   */
-                  p5.mysql.connect:[camphora]
+      /*
+       * Adding "delete item" row.
+       */
+      add:x:/../*/return/*/micro.widgets.mysql.datagrid/*/columns
+        src
+          Delete
+            class:camphora-delete-cell
+            .header
+              widgets
+                a
+                  href:#
+                  class:button
+                  onclick
 
                     /*
-                     * Deleting item from database.
+                     * Evaluates file responsible for actually deleting filtered items.
                      */
-                    p5.mysql.delete:delete from `{0}` where id = @id
+                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                      .datagrid
+                    eval-x:x:/+/*/datagrid
+                    micro.evaluate.file:/modules/{0}/helpers/delete-all-filtered-items.hl
                       :{app-name}
-                      @id:x:/@.id?value
+                      datagrid:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
+                  widgets
+                    literal
+                      element:span
+                      class:icon-bin
+            .lambda
+              eval-x:x:/+/*/*/onclick/*/.id
+              return
+                a
+                  href:#
+                  class:button
+                  innerValue:@"<span class=""icon-bin""></span>"
+                  onclick
 
                     /*
-                     * Figuring out new count of items,and making sure we
-                     * signal that the count has changed.
+                     * Forward evaluated above.
                      */
-                    p5.mysql.scalar:@"select count(*) from `{0}`"
-                      :{app-name}
-                    eval-x:x:/+/*
-                    camphora.count-changed
-                      count:x:/@p5.mysql.scalar?value
+                    .id:x:/../*/row/*/id?value
 
-                  /*
-                   * Re-databinding datagrid, making sure we keep our current
-                   * [filter], [page], [order-by] and [order-dir] arguments.
-                   */
-                  camphora.datagrid.databind:x:/-/*/*?value
+                    /*
+                     * Figuring out ID of datagrid, which is needed later down
+                     * for our widget lambda event invocations.
+                     */
+                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                      .datagrid
+
+                    /*
+                     * Opening database connection.
+                     */
+                    p5.mysql.connect:[camphora]
+
+                      /*
+                       * Deleting item from database.
+                       */
+                      p5.mysql.delete:delete from `{0}` where id = @id
+                        :{app-name}
+                        @id:x:/@.id?value
+
+                      /*
+                       * Figuring out new count of items,and making sure we
+                       * signal that the count has changed.
+                       */
+                      p5.mysql.scalar:@"select count(*) from `{0}`"
+                        :{app-name}
+                      eval-x:x:/+/*
+                      camphora.count-changed:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                        count:x:/@p5.mysql.scalar?value
+
+                    /*
+                     * Re-databinding datagrid, making sure we keep our current
+                     * [filter], [page], [order-by] and [order-dir] arguments.
+                     */
+                    camphora.datagrid.databind:x:/@p5.web.widgets.find-first-ancestor/*/*?value
 
   /*
    * Checking if we should provide a default query.
@@ -145,10 +173,31 @@ create-event:camphora.widgets.datagrid
       src:x:/../*/query?value
 
   /*
+   * Checking if caller supplied his own [.row] argument, at which point we
+   * completely drop the default row, and rather use the caller's [.row].
+   *
+   * This will completely bypass the default [onclick] (among other things) on
+   * the datagrid, effectively preventing editing of items, unless caller
+   * implements his own editing during [onclick] or something.
+   */
+  if:x:/../*/.row
+
+    /*
+     * Removing default [.row].
+     */
+    set:x:/../*/return/*/micro.widgets.mysql.datagrid/*/.row
+
+    /*
+     * Adding caller's [.row] argument.
+     */
+    add:x:/../*/return/*/micro.widgets.mysql.datagrid
+      src:x:/../*/.row
+
+  /*
    * Returning actual widget to caller, making sure we forward
    * evaluate any arguments.
    */
-  eval-x:x:/+/*/*(/page-size|/oninit/*/.page)
+  eval-x:x:/+/*/*(/page-size|/oninit/*/.page|/class)
   return
     micro.widgets.mysql.datagrid
       .datagrid
@@ -161,16 +210,14 @@ create-event:camphora.widgets.datagrid
           p5.web.widgets.find-first-ancestor:x:/../*/_event?value
             .datagrid
           eval-x:x:/+/*
-          micro.evaluate.file:/modules/{0}/helpers/edit-item.hl
-            :{app-name}
-            datagrid:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-            id:x:/../*/.row/*/id?value
+          camphora.datagrid.row-clicked:x:/@p5.web.widgets.find-first-ancestor/*/*?value
             row-widget-id:x:/../*/_event?value
+            database-id:x:/../*/.row/*/id?value
 
       database:camphora
       table:{app-name}
       page-size:x:(/../*/page-size|/@.defaults/*/page-size)/$?value.long
-      class:hover striped camphora-datagrid
+      class:x:(/../*/class|/@.defaults/*/class)/$?value
       databind:bool:false
       oninit
 
@@ -227,6 +274,44 @@ create-event:camphora.widgets.datagrid
        * This wraps the "API" for our datagrid.
        */
       events
+
+
+        /*
+         * Invoked when for some reasons a row was clicked.
+         * This event expects at the minimum the following arguments.
+         * - __[\_arg]__ - Datagrid's widget id.
+         * - __[database-id]__ - The database ID of the item for the row that was clicked.
+         * - __[row-widget-id]__ - The widget id of the "tr" element for your row.
+         *
+         * In this event we simply create our default "edit item" widget.
+         */
+        camphora.datagrid.row-clicked
+
+          /*
+           * Checking that this is the grid caller is referencing.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+            return
+
+          /*
+           * Sanity checking invocation.
+           */
+          micro.lambda.contract.min:x:/..
+            _arg:string
+            database-id:long
+            row-widget-id:string
+
+
+          /*
+           * Evaluating file responsible for creating our "edit item" widget.
+           */
+          eval-x:x:/+/*
+          micro.evaluate.file:/modules/{0}/helpers/edit-item.hl
+            :{app-name}
+            datagrid:x:/../*/_arg?value
+            id:x:/../*/database-id?value
+            row-widget-id:x:/../*/row-widget-id?value
 
 
         /*
@@ -290,6 +375,9 @@ create-event:camphora.widgets.datagrid
          * This event will not remove the current [filter] or tamper
          * with it in any ways. This allows you to sort with the current
          * [filter] being active.
+         *
+         * Optionally pass in [order-dir] being "asc" or "desc" to sort
+         * ascending or descending.
          */
         camphora.datagrid.sort
 
@@ -305,15 +393,17 @@ create-event:camphora.widgets.datagrid
            */
           micro.lambda.contract.min:x:/..
             column:string
+            order-dir:string
             _arg:string
 
           /*
            * Evaluating file responsible for creating a new record.
            */
-          eval-x:x:/+/*(/column|/datagrid)
+          eval-x:x:/+/*(/column|/datagrid|/order-dir)
           micro.evaluate.file:/modules/{0}/helpers/sort-datagrid.hl
             :{app-name}
             column:x:/../*/column?value
+            order-dir:x:/../*/order-dir?value
             datagrid:x:/../*/_arg?value
 
 

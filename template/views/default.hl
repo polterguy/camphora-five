@@ -21,6 +21,15 @@
 
 
 /*
+ * Changing title of page, to reflect item type.
+ */
+p5.web.page.set-title:{app-name}
+
+
+
+
+
+/*
  * Including Micro's CSS files, in addition to our main CSS
  * file for currently evaluated Camphora app.
  */
@@ -91,24 +100,6 @@ create-widget:camphora-main-container
       return:@CAMPHORA/help-files/Camphora Five/index.hl
 
 
-    /*
-     * Invoked when for some reasons the number of items have been
-     * changed in the database. The new item count will be passed in
-     * as [_arg].
-     *
-     * We simply update the title of our page, to reflect the number
-     * of items in the database.
-     */
-    camphora.count-changed
-
-      /*
-       * Setting the title of our page, to reflect the number of items.
-       */
-      p5.web.page.set-title:{0} records of type {1}
-        :x:/../*/count?value
-        :{app-name}
-
-
   widgets
 
     /*
@@ -163,5 +154,6 @@ create-widget:camphora-main-container
              * if you want to display more or less items at the same time.
              */
             camphora.widgets.datagrid:camphora-main-datagrid
-              edit-items:bool:true
+              edit-items:true
+              delete-items:true
               page-size:long:10

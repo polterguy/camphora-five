@@ -44,8 +44,8 @@ micro.page.set-focus:camphora-search-query
  */
 p5.web.widgets.find-like:x:/../*/datagrid?value
   class:camphora-sort-column
-delete-widget-property:x:/@p5.web.widgets.find-like/*/*?value
-  class
+micro.css.delete:x:/@p5.web.widgets.find-like/*/*?value
+  class:camphora-sort-column-asc camphora-sort-column-desc
 
 
 

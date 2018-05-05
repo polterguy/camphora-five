@@ -87,6 +87,9 @@ eval-x:x:/+/*/*
   camphora.datagrid.databound
     :camphora.{0}.datagrid.databound
       :x:/../*/app-name?value
+  camphora.datagrid.row-clicked
+    :camphora.{0}.datagrid.row-clicked
+      :x:/../*/app-name?value
 
 
 

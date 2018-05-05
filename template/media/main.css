@@ -1,11 +1,37 @@
 /*
  * Main CSS file for Camphora Five CRUD app.
  */
+.camphora-datagrid {
+    table-layout: fixed;
+}
 .camphora-datagrid tr th {
     text-transform: capitalize;
+    padding: 0;
+}
+.camphora-datagrid tr th:last-child {
+    width: 4rem;
+}
+.camphora-datagrid tr th a {
+    display: block;
+    margin-right: .5rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.camphora-datagrid tr th:last-child a {
+    margin-right: 0;
 }
 .camphora-datagrid tr td {
     vertical-align: text-top;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+.camphora-datagrid tr td.camphora-delete-cell {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.camphora-datagrid tr td.camphora-delete-cell a.button {
 }
 .camphora-datagrid tr.camphora-grid-editable td {
     cursor: pointer;
