@@ -9,8 +9,6 @@
 
 /*
  * Deleting all relevant Active Events, and that's it.
- *
- * Notice, this lambda object is dynamically populated when your app is generated.
  */
-.events
-delete-event:x:/-/*?name
+delete-event:camphora.widgets.datagrid
+delete-event:camphora.widgets.toolbar

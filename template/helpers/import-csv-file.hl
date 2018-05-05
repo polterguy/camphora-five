@@ -1,6 +1,6 @@
 /*
  * File responsible for importing the specified __[file]__ CSV
- * file into your database.
+ * file into your database for the specified __[datagrid]__ datagrid.
  *
  * __Notice__ - The CSV file must conform to your database schema for your module.
  */
@@ -13,6 +13,7 @@
  * Sanity checking invocation.
  */
 micro.lambda.contract.min:x:/..
+  datagrid:string
   file:string
 
 
@@ -203,14 +204,16 @@ p5.mysql.connect:[camphora]
   /*
    * Updating count of items.
    */
-  camphora.count-changed:x:/@p5.mysql.scalar?value
+  eval-x:x:/+/*
+  camphora.count-changed:x:/../*/datagrid?value
+    count:x:/@p5.mysql.scalar?value
 
 
 
 
 
 /*
- * Making sure we signal that the current filter has been
+ * Making sure we signal that the current filter and sort has been
  * set to nothing.
  */
-camphora.filter-changed
+camphora.filter-changed:x:/../*/datagrid?value

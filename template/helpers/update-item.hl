@@ -1,7 +1,7 @@
-
 /*
  * This file will update the specified __[id]__ database item,
- * with all given arguments, which should be database columns.
+ * for the specified __[datagrid]__ datagrid, with all given arguments,
+ * which should be database columns.
  */
 
 
@@ -21,10 +21,11 @@
  * Sanity checking invocation.
  */
 micro.lambda.contract.min:x:/..
+  datagrid:string
   id:long
 if:x:/@.signal/--?count
-  =:int:1
-  throw:No arguments given to update besides the 'id'
+  <:int:3
+  throw:No arguments supplied to 'update-item.hl'.
 
 
 
@@ -35,7 +36,7 @@ if:x:/@.signal/--?count
  */
 .pars
 .no:int:0
-for-each:x:/@.signal/--/<-(!/_event!/id!/=)
+for-each:x:/@.signal/--/<-(!/datagrid!/id!/=)
 
   /*
    * Concatenating currently iterated SQL parameter, into [.pars],

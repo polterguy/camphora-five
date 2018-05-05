@@ -1,4 +1,3 @@
-
 /*
  * This file will recursively load all Hyperlambda files from the
  * specified [folder], and replace all occurrencies of '{app-name}'
@@ -21,6 +20,69 @@ micro.lambda.contract.min:x:/..
 
 
 /*
+ * Active Events that needs to have their names changed.
+ */
+eval-x:x:/+/*/*
+.events
+  camphora.create-new-item
+    :camphora.{0}.create-new-item
+      :x:/../*/app-name?value
+  camphora.download-items
+    :camphora.{0}.download-items
+      :x:/../*/app-name?value
+  camphora.datagrid.sort
+    :camphora.{0}.datagrid.sort
+      :x:/../*/app-name?value
+  camphora.datagrid.search
+    :camphora.{0}.datagrid.search
+      :x:/../*/app-name?value
+  camphora.datagrid.page.previous
+    :camphora.{0}.datagrid.page.previous
+      :x:/../*/app-name?value
+  camphora.datagrid.databind.next
+    :camphora.{0}.datagrid.databind.next
+      :x:/../*/app-name?value
+  camphora.datagrid.databind
+    :camphora.{0}.datagrid.databind
+      :x:/../*/app-name?value
+  camphora.database.import-csv-file
+    :camphora.{0}.database.import-csv-file
+      :x:/../*/app-name?value
+  camphora.database.delete-all-items
+    :camphora.{0}.database.delete-all-items
+      :x:/../*/app-name?value
+  camphora.database.update
+    :camphora.{0}.database.update
+      :x:/../*/app-name?value
+  camphora.database.insert
+    :camphora.{0}.database.insert
+      :x:/../*/app-name?value
+  camphora.datagrid.page
+    :camphora.{0}.datagrid.page
+      :x:/../*/app-name?value
+  camphora.datagrid.order-by
+    :camphora.{0}.datagrid.order-by
+      :x:/../*/app-name?value
+  camphora.datagrid.order-dir
+    :camphora.{0}.datagrid.order-dir
+      :x:/../*/app-name?value
+  camphora.datagrid.filter
+    :camphora.{0}.datagrid.filter
+      :x:/../*/app-name?value
+  camphora.count-changed
+    :camphora.{0}.count-changed
+      :x:/../*/app-name?value
+  camphora.filter-changed
+    :camphora.{0}.filter-changed
+      :x:/../*/app-name?value
+  camphora.datagrid.databound
+    :camphora.{0}.datagrid.databound
+      :x:/../*/app-name?value
+
+
+
+
+/*
  * Loading all Hyperlambda files from specified [folder].
  */
 list-files:x:/../*/folder?value
@@ -28,10 +90,45 @@ list-files:x:/../*/folder?value
 load-file:x:/-/*?name
   convert:false
 for-each:x:/-/*
+
+  /*
+   * Loading currently iterated file.
+   */
   hyper2lambda:x:/@_dp/#?value
     keep-comments:true
+
+  /*
+   * Replacing {app-name} with [app-name].
+   */
   set:x:/@hyper2lambda/**/={app-name}?value
     src:x:/../*/app-name?value
+
+  /*
+   * Iterating through each event in our above [.events] lambda,
+   * and making sure all values and names from all nodes in currently
+   * iterated file that contains the value/name of the currently iterated
+   * event name is exchanged with its actual value.
+   */
+  for-each:x:/../*/.events/*
+
+    /*
+     * First changing node names.
+     */
+    set:x:/@hyper2lambda/**/{0}?name
+      :x:/@_dp/#?name
+      src:x:/@_dp/#/*?value
+
+    /*
+     * then exchanging node values.
+     */
+    set:x:/@hyper2lambda/**/={0}?name
+      :x:/@_dp/#?name
+      src:x:/@_dp/#/*?value
+
+  /*
+   * Converting file to Hyperlambda, making sure we keep its comments,
+   * and saves it again.
+   */
   lambda2hyper:x:/@hyper2lambda/*
     comments:unroll
   save-file:x:/@_dp/#?name

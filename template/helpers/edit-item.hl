@@ -19,6 +19,7 @@
 micro.lambda.contract.min:x:/..
   row-widget-id:string
   id:long
+  datagrid:string
 
 
 
@@ -58,7 +59,8 @@ micro.css.toggle:x:/../*/row-widget-id?value
 /*
  * Checking if item is already being edited.
  */
-p5.web.widgets.find-first:camphora-datagrid
+p5.web.widgets.get-parent:x:/../*/row-widget-id?value
+p5.web.widgets.find-first:x:/@p5.web.widgets.get-parent/*/*?value
   .edit:x:/../*/id?value
 if:x:/-/*/*?value
 
@@ -123,7 +125,7 @@ p5.web.include-javascript:@"function p5_camphora_edit_item_onkeydown(e) {
 /*
  * Creating editing widget for record.
  */
-eval-x:x:/+/**/.editor-row
+eval-x:x:/+/**(/.editor-row|/.datagrid)
 create-widget
   after:x:/../*/row-widget-id?value
   element:tr
@@ -162,11 +164,6 @@ create-widget
                   onclick
 
                     /*
-                     * Contains the name of our app.
-                     */
-                    .app-name:{app-name}
-
-                    /*
                      * Contains the ID of our editor row.
                      */
                     .editor-row:x:/../*/row-widget-id?value
@@ -184,11 +181,12 @@ create-widget
                     /*
                      * Updating item in database.
                      */
+                    .datagrid:x:/../*/datagrid?value
                     add:x:/+
                       src:x:/@micro.form.serialize/*
-                    camphora.database.update
+                    camphora.database.update:x:/@.datagrid?value
 
                     /*
                      * Re-databinding datagrid.
                      */
-                    camphora.datagrid.databind
+                    camphora.datagrid.databind:x:/@.datagrid?value

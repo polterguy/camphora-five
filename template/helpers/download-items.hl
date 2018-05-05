@@ -1,6 +1,17 @@
 /*
- * File responsible for exporting items to the client as a CSV file.
+ * File responsible for exporting items to the client as a CSV file
+ * for the specified __[datagrid]__ datagrid.
  */
+
+
+
+
+
+/*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.min:x:/..
+  datagrid:string
 
 
 

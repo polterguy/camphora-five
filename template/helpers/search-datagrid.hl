@@ -1,6 +1,6 @@
 /*
- * This file will filter your Camphora app's datagrid according
- * to the specified __[query]__ argument.
+ * This file will filter the specified __[datagrid]__ datagrid according
+ * to the specified __[filter]__ argument.
  */
 
 
@@ -11,7 +11,8 @@
  * Sanity checking invocation.
  */
 micro.lambda.contract.min:x:/..
-  query:string
+  datagrid:string
+  filter:string
 micro.lambda.contract.optional:x:/..
   page:long
 
@@ -41,7 +42,7 @@ micro.page.set-focus:camphora-search-query
 /*
  * Resets the CSS classes of all "sort header linkbuttons".
  */
-p5.web.widgets.find-like:camphora-datagrid
+p5.web.widgets.find-like:x:/../*/datagrid?value
   class:camphora-sort-column
 delete-widget-property:x:/@p5.web.widgets.find-like/*/*?value
   class
@@ -53,7 +54,7 @@ delete-widget-property:x:/@p5.web.widgets.find-like/*/*?value
 /*
  * Checking if there actually is a [filter] condition.
  */
-if:x:/../*/query?value
+if:x:/../*/filter?value
   !=:
 
   /*
@@ -99,7 +100,7 @@ if:x:/../*/query?value
     add:x:/@.filter
       src
         @like:%{0}%
-          :x:/../*/query?value
+          :x:/../*/filter?value
 
   /*
    * Adding 'equal' fields, if there are any such fields.
@@ -136,14 +137,14 @@ if:x:/../*/query?value
     eval-x:x:/+/*/*
     add:x:/@.filter
       src
-        @equals:x:/../*/query?value
+        @equals:x:/../*/filter?value
 
   /*
-   * Adding 'checkbox' fields, if there are any such fields, and the given query
+   * Adding 'checkbox' fields, if there are any such fields, and the given filter
    * matches the name of the checkbox field.
    */
   if:x:/@.fields/*/field/*/type/=checkbox/./*/name/={0}
-    :x:/../*/query?value
+    :x:/../*/filter?value
 
     /*
      * Checking if this is the first filter condition, and if not,
@@ -161,7 +162,7 @@ if:x:/../*/query?value
     set:x:/@.filter?value
       src:{0}`{1}` = 1
         :x:/@.filter?value
-        :x:/../*/query?value
+        :x:/../*/filter?value
 
   /*
    * Adding entire [.filter] argument to databind invocation,
@@ -171,7 +172,8 @@ if:x:/../*/query?value
   eval-x:x:/+2/*/*
   add:x:/+/*/*
     src:x:/@.filter/*
-  add:x:/../*/camphora.datagrid.databind
+  add:x:/../*/camphora.{0}.datagrid.databind
+    :{app-name}
     src
       filter:x:/@.filter?value
 
@@ -180,7 +182,8 @@ else
   /*
    * No filter condition, making sure we reset it in databind invocation.
    */
-  add:x:/../*/camphora.datagrid.databind
+  add:x:/../*/camphora.{0}.datagrid.databind
+    :{app-name}
     src:filter
 
 
@@ -195,7 +198,8 @@ if:x:/../*/page?value
   /*
    * Initial [page] argument supplied.
    */
-  add:x:/../*/camphora.datagrid.databind
+  add:x:/../*/camphora.{0}.datagrid.databind
+    :{app-name}
     src:x:/../*/page
 
 else
@@ -204,7 +208,8 @@ else
    * No initial [page] argument supplied,making sure we set it to 0
    * during invocation to databind.
    */
-  add:x:/../*/camphora.datagrid.databind
+  add:x:/../*/camphora.{0}.datagrid.databind
+    :{app-name}
     src:page
 
 
@@ -215,7 +220,7 @@ else
  * Re-databinding datagrid, and making sure we reset all arguments,
  * except possibly the [filter] argument.
  */
-camphora.datagrid.databind
+camphora.datagrid.databind:x:/../*/datagrid?value
   order-by
   order-dir
 
@@ -227,4 +232,6 @@ camphora.datagrid.databind
  * Making sure we signal that the current filter has been
  * set to nothing.
  */
-camphora.filter-changed:x:/../*/query?value
+eval-x:x:/+/*
+camphora.filter-changed:x:/../*/datagrid?value
+  filter:x:/../*/filter?value

@@ -17,12 +17,22 @@
 
 
 /*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.min:x:/..
+  datagrid:string
+
+
+
+
+
+/*
  * Parametrizing SQL insert statement with column names, and SQL parameters.
  */
 .cols
 .pars
 .no:int:0
-for-each:x:/@.signal/--/<-(!/=)
+for-each:x:/@.signal/--/<-(!/datagrid!/=)
 
   /*
    * Concatenating currently iterated item into [.cols], which
@@ -109,4 +119,6 @@ p5.mysql.connect:[camphora]
   /*
    * Updates count.
    */
-  camphora.count-changed:x:/@p5.mysql.scalar?value
+  eval-x:x:/+/*
+  camphora.count-changed:x:/../*/datagrid?value
+    count:x:/@p5.mysql.scalar?value

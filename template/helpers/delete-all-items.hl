@@ -1,5 +1,6 @@
 /*
- * Asks the user to confirm deletion of all records in our Camphora Five app.
+ * Asks the user to confirm deletion of all records for the specified __[datagrid]__ datagrid's
+ * database table.
  */
 
 
@@ -7,9 +8,10 @@
 
 
 /*
- * Contains app name.
+ * Sanity checking invocation.
  */
-.app-name:{app-name}
+micro.lambda.contract.min:x:/..
+  datagrid:string
 
 
 
@@ -18,11 +20,11 @@
 /*
  * Asking user to confirm action.
  */
-eval-x:x:/+/*/body
+eval-x:x:/+/*/body|/+/**/.datagrid
 micro.windows.confirm
   header:Please confirm action
   body:This will delete all records in your database of type '{0}', are you sure you wish to continue?
-    :x:/../*/.app-name?value
+    :{app-name}
   onok
 
     /*
@@ -35,15 +37,17 @@ micro.windows.confirm
     /*
      * Re-databinding datagrid, and updating count.
      */
-    camphora.datagrid.databind
+    .datagrid:x:/../*/datagrid?value
+    camphora.datagrid.databind:x:/@.datagrid?value
       filter
       page
       order-by
       order-dir
-    camphora.count-changed:long:0
+    camphora.count-changed:x:/@.datagrid?value
+      count:long:0
 
     /*
      * Making sure we signal that the current filter has been
      * set to nothing.
      */
-    camphora.filter-changed
+    camphora.filter-changed:x:/@.datagrid?value

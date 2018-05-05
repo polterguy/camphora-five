@@ -1,5 +1,5 @@
 /*
- * This file will sort your Camphora app's datagrid according
+ * This file will sort the specified __[datagrid]__ datagrid according
  * to the specified __[column]__ argument.
  */
 
@@ -11,6 +11,7 @@
  * Sanity checking invocation.
  */
 micro.lambda.contract.min:x:/..
+  datagrid:string
   column:string
 
 
@@ -21,10 +22,10 @@ micro.lambda.contract.min:x:/..
  * Removing sort order CSS classed on all header buttons, except
  * the currently clicked one.
  */
-p5.web.widgets.find-like:camphora-datagrid
+p5.web.widgets.find-like:x:/../*/datagrid?value
   class:camphora-sort-column
   .column
-p5.web.widgets.find-first:camphora-datagrid
+p5.web.widgets.find-first:x:/../*/datagrid?value
   .column:x:/../*/column?value
 delete-widget-property:x:/@p5.web.widgets.find-like/*/*(!/={0})?value
   :x:/@p5.web.widgets.find-first/*/*?value
@@ -48,7 +49,8 @@ if:x:/@get-widget-property/*/*?value
    */
   set-widget-property:x:/@p5.web.widgets.find-first/*/*?value
     class:camphora-sort-column-desc
-  add:x:/../*/camphora.datagrid.databind
+  add:x:/../*/camphora.{0}.datagrid.databind
+    :{app-name}
     src
       order-dir:desc
 
@@ -59,7 +61,8 @@ else
    */
   set-widget-property:x:/@p5.web.widgets.find-first/*/*?value
     class:camphora-sort-column-asc
-  add:x:/../*/camphora.datagrid.databind
+  add:x:/../*/camphora.{0}.datagrid.databind
+    :{app-name}
     src
       order-dir:asc
 
@@ -74,7 +77,7 @@ else
  * Notice, we keep our [filter] here.
  */
 eval-x:x:/+/*
-camphora.datagrid.databind
+camphora.datagrid.databind:x:/../*/datagrid?value
   order-by:x:/../*/column?value
   page
 
@@ -85,4 +88,4 @@ camphora.datagrid.databind
 /*
  * Making sure we signal to any listeners that the sort has changed.
  */
-camphora.sort-changed
+camphora.sort-changed:x:/../*/datagrid?value

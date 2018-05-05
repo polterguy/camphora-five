@@ -1,5 +1,5 @@
 /*
- * This file creates the __[camphora.widgets.toolbar.xxx]__ extension widget.
+ * This file creates the __[camphora.xxx.widgets.toolbar]__ extension widget.
  */
 
 /*
@@ -7,6 +7,8 @@
  * CRUD app as a widget, injecting the entire app, anywhere on your
  * page. The extension widget takes the following arguments.
  *
+ * - __[datagrid]__ - The widget id of the __[camphora.xxx.widgets.datagrid]__ instance this toolbar co-exists with.
+ * This argument must be the ID of a datagrid on your page.
  * - __[main-toolbar]__ - Whether or not the main toolbar should be created or not. The default value of this argument is _"false"_.
  *
  * The above __[main-toolbar]__ argument can optionally be given the following sub arguments, which is only applied
@@ -19,8 +21,13 @@
  * exact name varies from app to app, since the `{0}` parts of it is replaced with your
  * app's name.
  */
-create-event:camphora.widgets.{0}.toolbar
-  :{app-name}
+create-event:camphora.widgets.toolbar
+
+  /*
+   * Sanity checking invocation.
+   */
+  micro.lambda.contract.min:x:/..
+    datagrid:string
 
   /*
    * Defaults.
@@ -72,6 +79,7 @@ create-event:camphora.widgets.{0}.toolbar
   /*
    * Returning our toolbar widget to caller.
    */
+  eval-x:x:/+/**/.datagrid
   return
     div
       widgets
@@ -93,7 +101,8 @@ create-event:camphora.widgets.{0}.toolbar
                  * Invoking widget lambda event that is responsible for
                  * downloading the database as a CSV file.
                  */
-                camphora.download-items
+                .datagrid:x:/../*/datagrid?value
+                camphora.download-items:x:/-?value
 
 
             /*
@@ -109,7 +118,11 @@ create-event:camphora.widgets.{0}.toolbar
                  * Invoking widget lambda event that is responsible for
                  * importing a CSV file into our database.
                  */
-                camphora.database.import-csv-file:x:/../*/files/*/physical-file?value
+                .datagrid:x:/../*/datagrid?value
+                eval-x:x:/+/*
+                camphora.database.import-csv-file:x:/-2?value
+                  datagrid:x:/@.datagrid?value
+                  file:x:/../*/files/*/physical-file?value
 
 
             /*
@@ -125,7 +138,8 @@ create-event:camphora.widgets.{0}.toolbar
                  * Invoking widget lambda event that is responsible for
                  * deleting all items from our database.
                  */
-                camphora.database.delete-all-items
+                .datagrid:x:/../*/datagrid?value
+                camphora.database.delete-all-items:x:/-?value
 
 
             a
@@ -158,7 +172,8 @@ create-event:camphora.widgets.{0}.toolbar
                  * Invoking widget lambda event that is responsible for
                  * creating a new item.
                  */
-                camphora.create-new-item
+                .datagrid:x:/../*/datagrid?value
+                camphora.create-new-item:x:/-?value
 
 
             /*
@@ -173,8 +188,8 @@ create-event:camphora.widgets.{0}.toolbar
 
                 /*
                  * Invoked when for some reasons the number of items have been
-                 * changed in the database. The new item count will be passed
-                 * in as [_arg].
+                 * changed in the database for the given [_arg] datagrid. The
+                 * new item count will be passed in as [count].
                  *
                  * In this widget lambda event, we simply set the placeholder's
                  * value of the filter textbox such that it displays the total
@@ -183,25 +198,41 @@ create-event:camphora.widgets.{0}.toolbar
                 camphora.count-changed
 
                   /*
+                   * Notice, since this event should be handled regardless of
+                   * what actual datagrid that the event has been invoked for, since
+                   * the count in the database arguably is a "shared property",
+                   * we don't care to check what [_arg] caller supplied.
+                   */
+
+                  /*
                    * Modifying placeholder to contain record count.
                    */
                   set-widget-property:x:/../*/_event?value
                     placeholder:Search amongst {0} {1} records ...
-                      :x:/../*/_arg?value
+                      :x:/../*/count?value
                       :{app-name}
 
 
                 /*
                  * Invoked when for some reasons the currently active filter
-                 * has been changed. The new search query will be given as [_arg].
+                 * has been changed for the [_arg] datagrid. The new search
+                 * query will be given as [filter].
                  */
                 camphora.filter-changed
 
                   /*
-                   * Setting widget's [value] to the given [_arg].
+                   * Verifying that this invocation is for the current datagrid.
+                   */
+                  .datagrid:x:/../*/datagrid?value
+                  if:x:/-?value
+                    !=:x:/../*/_arg?value
+                    return
+
+                  /*
+                   * Setting widget's [value] to the given [filter].
                    */
                   set-widget-property:x:/../*/_event?value
-                    value:x:/../*/_arg?value
+                    value:x:/../*/filter?value
 
 
               oninit
@@ -209,10 +240,13 @@ create-event:camphora.widgets.{0}.toolbar
                 /*
                  * Making sure we set initial count of records.
                  */
+                .datagrid:x:/../*/datagrid?value
                 p5.mysql.connect:[camphora]
                   p5.mysql.scalar:select count(*) from `{0}`
                     :{app-name}
-                  camphora.count-changed:x:/@p5.mysql.scalar?value
+                  eval-x:x:/+/*
+                  camphora.count-changed:x:/@.datagrid?value
+                    count:x:/@p5.mysql.scalar?value
 
                 /*
                  * Setting initial focus to search textbox.
@@ -237,7 +271,10 @@ create-event:camphora.widgets.{0}.toolbar
                 /*
                  * Re-databinding datagrid, now with a search filter condition.
                  */
-                camphora.datagrid.search:x:/@get-widget-property/*/*?value
+                .datagrid:x:/../*/datagrid?value
+                eval-x:x:/+/*
+                camphora.datagrid.search:x:/@.datagrid?value
+                  filter:x:/@get-widget-property/*/*?value
 
                 /*
                  * Setting focus to search button.
@@ -255,13 +292,21 @@ create-event:camphora.widgets.{0}.toolbar
 
 
                 /*
-                 * Invoked when the datagrid has been databound.
+                 * Invoked when the [_arg] datagrid has been databound.
                  *
                  * Will be given [page] and [more-pages], indicating the current page,
                  * and whether or not there are more pages in the dataset currently
                  * active in the datagrid.
                  */
                 camphora.datagrid.databound
+
+                  /*
+                   * Verifying that this invocation is for the current datagrid.
+                   */
+                  .datagrid:x:/../*/datagrid?value
+                  if:x:/-?value
+                    !=:x:/../*/_arg?value
+                    return
 
                   /*
                    * Setting button's disabled property according to [_arg]
@@ -290,7 +335,8 @@ create-event:camphora.widgets.{0}.toolbar
                 /*
                  * Paging to previous page.
                  */
-                camphora.datagrid.page.previous
+                .datagrid:x:/../*/datagrid?value
+                camphora.datagrid.page.previous:x:/-?value
 
 
             /*
@@ -310,6 +356,14 @@ create-event:camphora.widgets.{0}.toolbar
                  * active in the datagrid.
                  */
                 camphora.datagrid.databound
+
+                  /*
+                   * Verifying that this invocation is for the current datagrid.
+                   */
+                  .datagrid:x:/../*/datagrid?value
+                  if:x:/-?value
+                    !=:x:/../*/_arg?value
+                    return
 
                   /*
                    * Setting button's disabled property according to [_arg]
@@ -338,4 +392,5 @@ create-event:camphora.widgets.{0}.toolbar
                 /*
                  * Paging to next page.
                  */
-                camphora.datagrid.databind.next
+                .datagrid:x:/../*/datagrid?value
+                camphora.datagrid.databind.next:x:/-?value

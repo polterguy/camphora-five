@@ -1,6 +1,12 @@
 /*
- * This file will insert a database item,
- * with all given arguments, which should be database columns.
+ * This file will databind the specified __[datagrid]__ camphora datagrid.
+ *
+ * Optionally pass in the following arguments.
+ *
+ * - __[filter]__ - Filter to use for databind operation.
+ * - __[page]__ - Page to view.
+ * - __[order-by]__ - Column to sort according to.
+ * - __[order-dir]__ - Sorting direction, which might be _"asc"_ or _"desc"_.
  */
 
 
@@ -11,6 +17,16 @@
  * Separating arguments from the rest of our lambda.
  */
 .signal
+
+
+
+
+
+/*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.min:x:/..
+  datagrid:string
 
 
 
@@ -38,7 +54,8 @@ for-each:x:/@.signal/--(/filter|/page|/order-by|/order-dir)
    * Changing name of [foo] node below to property event name.
    */
   set:x:/..for-each/*/foo?name
-    src:camphora.datagrid.{0}
+    src:camphora.{0}.datagrid.{1}
+      :{app-name}
       :x:/@_dp/#?name
 
   /*
@@ -50,7 +67,7 @@ for-each:x:/@.signal/--(/filter|/page|/order-by|/order-dir)
   add:x:/+2/*
     src:x:/@_dp/#/*
   eval-x:x:/+/*
-  foo
+  foo:x:/../*/datagrid?value
     value:x:/@_dp/#?value
 
 
@@ -73,7 +90,7 @@ for-each:x:/@.properties/*?name
    */
   set:x:/..for-each/*/foo?name
     src:x:/@_dp?value
-  foo
+  foo:x:/../*/datagrid?value
   add:x:/../*/micro.widgets.mysql.datagrid.databind
     src:x:/./-/*
 
@@ -84,7 +101,7 @@ for-each:x:/@.properties/*?name
 /*
  * Databinding MySQL datagrid.
  */
-micro.widgets.mysql.datagrid.databind:camphora-datagrid
+micro.widgets.mysql.datagrid.databind:x:/../*/datagrid?value
 
 
 
@@ -93,8 +110,9 @@ micro.widgets.mysql.datagrid.databind:camphora-datagrid
 /*
  * Making sure we signal to any listeners that datagrid has been databound.
  */
-camphora.datagrid.page
+camphora.datagrid.page:x:/../*/datagrid?value
 eval-x:x:/+/*
-camphora.datagrid.databound
-  page:x:/@camphora.datagrid.page/*?value.long
+camphora.datagrid.databound:x:/../*/datagrid?value
+  page:x:/@camphora.{0}.datagrid.page/*?value.long
+    :{app-name}
   more-pages:x:/@micro.widgets.mysql.datagrid.databind/*/more-pages?value

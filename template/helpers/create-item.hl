@@ -1,9 +1,19 @@
 /*
- * File responsible for creating a new item.
+ * File responsible for creating a new item for the specified __[datagrid]__ datagrid.
  *
  * Displays a modal widget with an input field for all fields in app
  * that user can supply.
  */
+
+
+
+
+
+/*
+ * Sanity checking invocation
+ */
+micro.lambda.contract.min:x:/..
+  datagrid:string
 
 
 
@@ -21,6 +31,7 @@ micro.path.get-folder:x:/..?name
 /*
  * Creating a modal widget, asking user to supply his data for his new record.
  */
+eval-x:x:/+/**/.datagrid
 create-widgets
   micro.widgets.modal:camphora-new-item-modal
     widgets
@@ -55,10 +66,11 @@ create-widgets
               /*
                * Serializing form's data.
                */
+              .datagrid:x:/../*/datagrid?value
               micro.form.serialize:camphora-new-item-modal
               add:x:/+
                 src:x:/@micro.form.serialize/*
-              camphora.database.insert
+              camphora.database.insert:x:/@.datagrid?value
 
               /*
                * Deleting modal widget.
@@ -69,7 +81,7 @@ create-widgets
                * Re-databinding datagrid, making sure we remove filter, page,
                * and order parameters.
                */
-              camphora.datagrid.databind
+              camphora.datagrid.databind:x:/@.datagrid?value
                 filter
                 page
                 order-by
@@ -79,7 +91,7 @@ create-widgets
                * Making sure we signal that the current filter has been
                * set to nothing.
                */
-              camphora.filter-changed
+              camphora.filter-changed:x:/@.datagrid?value
 
           button
             innerValue:Cancel

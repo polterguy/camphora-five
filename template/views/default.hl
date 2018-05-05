@@ -6,6 +6,14 @@
  * custom views, this is the actual implementation of the default
  * view, showing your datagrid, and its toolbar for paging and
  * filtering.
+ *
+ * This fill will include Micro's CSS files, create a Micro CSS
+ * column wire frame, and instantiate the __[camphora.xxx.widgets.datagrid]__
+ * and __[camphora.xxx.widgets.toolbar]__ extension widgets on your page.
+ *
+ * This particular file also supports the HTTP QUERY parameters of "q" and "p",
+ * that allows you to supply a URL that will query ("q") or page ("p") your
+ * current result set according to the given HTTP QUERY parameters.
  */
 
 
@@ -116,20 +124,18 @@ create-widget:camphora-main-container
             /*
              * Our actual toolbar.
              *
-             * Notice, the name of this node is dynamically replaced
-             * as your app is generated, to the correct name for the
-             * extension widget.
-             *
              * We instantiate our toolbar widget by default such that
              * it also displays the home button, delete all button, import
              * CSV file button, etc. If you don't want these buttons, or
              * this strip to be more accurate, you can set the [main-toolbar]
-             * value to "false".
+             * value to "false", or modify its sub-arguments to delete only
+             * specific parts of the toolbar.
              *
-             * In addition, we allow for editing items (delete all and upload CSV file),
-             * in addition to allowing the user to download his items as a CSV file.
+             * Notice, the [datagrid] argument must be the widget ID of
+             * your [camphora.xxx.widgets.datagrid] instance.
              */
             camphora.widgets.toolbar
+              datagrid:camphora-main-datagrid
               main-toolbar:bool:true
                 edit-items:bool:true
                 download-items:bool:true
@@ -148,18 +154,14 @@ create-widget:camphora-main-container
             /*
              * Our actual datagrid.
              *
-             * Notice, the name of this node is dynamically replaced
-             * as your app is generated, to the correct name for the
-             * extension widget.
-             *
              * We instantiate the widget such that it allows for editing
              * and deletion of items. If you don't want this feature, you
              * can change the [edit-items] value to "false".
              *
-             * In addition we make sure the datagrid displays 10 items at
-             * the same time. Feel free to change the [page-size] argument
+             * In addition we make sure the datagrid displays 10 items in
+             * each "page". Feel free to change the [page-size] argument
              * if you want to display more or less items at the same time.
              */
-            camphora.widgets.datagrid:camphora-datagrid
+            camphora.widgets.datagrid:camphora-main-datagrid
               edit-items:bool:true
               page-size:long:10

@@ -1,5 +1,5 @@
 /*
- * This file creates the __[camphora.widgets.crud.xxx]__ extension widget.
+ * This file creates the __[camphora.xxx.widgets.datagrid]__ extension widget.
  */
 
 /*
@@ -7,17 +7,16 @@
  * CRUD app as a widget, injecting the entire app, anywhere on your
  * page. The event optionally takes the following arguments.
  *
- * - __[edit-items]__ - Whether or not editing (and hence deletion) of items should be allowed. The default value for this argument is boolean _"false"_.
- * - __[page-size]__ - Number of items the datagrid should show at once. The default value is 25.
+ * - __[edit-items]__ - Whether or not editing (and hence deletion) of items should be allowed.
+ * The default value for this argument is boolean _"false"_.
+ * - __[page-size]__ - Number of items the datagrid should display. The default value for this argument is 25.
  * - __[query]__ - Optional initial search query to databind the datagrid towards.
  * - __[page]__ - Optional initial page to databind the datagrid towards.
  *
- * __Notice__, this event is dynamically created for each of your Camphora Five apps, and its
- * exact name varies from app to app, since the `{0}` parts of it is replaced with your
- * app's name.
+ * __Notice__, this extension widget is dynamically created for each of your Camphora Five apps,
+ * and its exact name varies from app to app, since its name is replaced when the app is generated.
  */
-create-event:camphora.widgets.{0}.datagrid
-  :{app-name}
+create-event:camphora.widgets.datagrid
 
   /*
    * Sanity checking invocation.
@@ -100,7 +99,9 @@ create-event:camphora.widgets.{0}.datagrid
                    * Re-databinding datagrid, making sure we keep our current
                    * [filter], [page], [order-by] and [order-dir] arguments.
                    */
-                  camphora.datagrid.databind
+                  p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                    .datagrid
+                  camphora.datagrid.databind:x:/-/*/*?value
 
   /*
    * Checking if we should provide a default query.
@@ -122,15 +123,19 @@ create-event:camphora.widgets.{0}.datagrid
   eval-x:x:/+/*/*(/page-size|/oninit/*/.page)
   return
     micro.widgets.mysql.datagrid
+      .datagrid
       .row
         onclick
 
           /*
            * Evaluating file responsible for allowing the user to edit some item.
            */
+          p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+            .datagrid
           eval-x:x:/+/*
           micro.evaluate.file:/modules/{0}/helpers/edit-item.hl
             :{app-name}
+            datagrid:x:/@p5.web.widgets.find-first-ancestor/*/*?value
             id:x:/../*/.row/*/id?value
             row-widget-id:x:/../*/_event?value
 
@@ -158,7 +163,8 @@ create-event:camphora.widgets.{0}.datagrid
            * Initial databind query was given.
            */
           eval-x:x:/+/*
-          camphora.datagrid.search:x:/@.query?value
+          camphora.datagrid.search:x:/../*/_event?value
+            filter:x:/@.query?value
             page:x:/@.page?value
 
         else
@@ -172,7 +178,7 @@ create-event:camphora.widgets.{0}.datagrid
            * the MySQL datagrid's databind invocation, and acts accordingly.
            */
           eval-x:x:/+/*
-          camphora.datagrid.databind
+          camphora.datagrid.databind:x:/../*/_event?value
             page:x:/@.page?value
 
 
@@ -199,26 +205,55 @@ create-event:camphora.widgets.{0}.datagrid
          * Creates a new item by displaying a modal widget to
          * user, and allowing him or her to fill in the values
          * for the new item.
+         *
+         * Pass in [_arg] as the datagrid you want to create a new
+         * item for.
          */
         camphora.create-new-item
 
           /*
+           * Checking that this is the grid caller is referencing.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+            return
+
+          /*
+           * Sanity checking invocation.
+           */
+          micro.lambda.contract.min:x:/..
+            _arg:string
+
+          /*
            * Evaluating file responsible for creating a new record.
            */
+          eval-x:x:/+/*
           micro.evaluate.file:/modules/{0}/helpers/create-item.hl
             :{app-name}
+            datagrid:x:/../*/_arg?value
 
 
         /*
          * Downloads entire database of your Camphora app as a CSV file.
+         *
+         * Pass in [_arg] as the datagrid you want to download items for.
          */
         camphora.download-items
 
           /*
+           * Checking that this is the grid caller is referencing.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+            return
+
+          /*
            * Evaluating file responsible for exporting items to client.
            */
+          eval-x:x:/+/*
           micro.evaluate.file:/modules/{0}/helpers/download-items.hl
             :{app-name}
+            datagrid:x:/../*/_arg?value
 
 
         /*
@@ -231,24 +266,33 @@ create-event:camphora.widgets.{0}.datagrid
         camphora.datagrid.sort
 
           /*
+           * Checking that this is the grid caller is referencing.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+            return
+
+          /*
            * Sanity checking invocation.
            */
           micro.lambda.contract.min:x:/..
             column:string
+            _arg:string
 
           /*
            * Evaluating file responsible for creating a new record.
            */
-          eval-x:x:/+/*/column
+          eval-x:x:/+/*(/column|/datagrid)
           micro.evaluate.file:/modules/{0}/helpers/sort-datagrid.hl
             :{app-name}
             column:x:/../*/column?value
+            datagrid:x:/../*/_arg?value
 
 
         /*
          * Convenience event to avoid having to manually construct your own filter.
          *
-         * Applies the given [_arg] as a [filter] condition to the datagrid,
+         * Applies the given [filter] as a [filter] condition to the [_arg] datagrid,
          * to allow for searching through the datagrid in an easier fashion
          * than to manually having to construct the [filter] condition and
          * invoke databind manually.
@@ -263,10 +307,18 @@ create-event:camphora.widgets.{0}.datagrid
         camphora.datagrid.search
 
           /*
+           * Checking that this is the grid caller is referencing.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+            return
+
+          /*
            * Sanity checking invocation.
            */
           micro.lambda.contract.min:x:/..
             _arg:string
+            filter:string
           micro.lambda.contract.optional:x:/..
             page:long
 
@@ -280,10 +332,11 @@ create-event:camphora.widgets.{0}.datagrid
           /*
            * Evaluating file responsible for creating a new record.
            */
-          eval-x:x:/+/*/query
+          eval-x:x:/+/*(/filter|/datagrid)
           micro.evaluate.file:/modules/{0}/helpers/search-datagrid.hl
             :{app-name}
-            query:x:/../*/_arg?value
+            datagrid:x:/../*/_arg?value
+            filter:x:/../*/filter?value
 
 
         /*
@@ -292,47 +345,73 @@ create-event:camphora.widgets.{0}.datagrid
         camphora.datagrid.page.previous
 
           /*
+           * Checking that this is the grid caller is referencing.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+            return
+
+          /*
+           * Sanity checking invocation.
+           */
+          micro.lambda.contract.min:x:/..
+            _arg:string
+
+          /*
            * Decrementing page property, making sure we never go beneath zero.
            */
-          camphora.datagrid.page
+          camphora.datagrid.page:x:/../*/_arg?value
           if:x:/-/*?value
             =:long:0
             return
-          -:x:/@camphora.datagrid.page/*?value
+          -:x:/-2/*?value
             _:1
           eval-x:x:/+/*
-          camphora.datagrid.page
+          camphora.datagrid.page:x:/../*/_arg?value
             value:x:/@-?value
 
           /*
            * Re-databinding datagrid.
            */
-          camphora.datagrid.databind
+          camphora.datagrid.databind:x:/../*/_event?value
 
 
         /*
-         * Pages datagrid to next page.
+         * Pages the specified [_arg] datagrid to next page.
          */
         camphora.datagrid.databind.next
 
           /*
+           * Checking that this is the grid caller is referencing.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+            return
+
+          /*
+           * Sanity checking invocation.
+           */
+          micro.lambda.contract.min:x:/..
+            _arg:string
+
+          /*
            * Decrementing page property.
            */
-          camphora.datagrid.page
+          camphora.datagrid.page:x:/../*/_arg?value
           +:x:/-/*?value
             _:1
           eval-x:x:/+/*
-          camphora.datagrid.page
+          camphora.datagrid.page:x:/../*/_arg?value
             value:x:/@+?value
 
           /*
            * Re-databinding datagrid.
            */
-          camphora.datagrid.databind
+          camphora.datagrid.databind:x:/../*/_arg?value
 
 
         /*
-         * Databinds our datagrid.
+         * Databinds the specified [_arg] datagrid.
          *
          * This is a more "low level" event than [camphora.datagrid.search],
          * and allows you to completely control every aspect of your filtering,
@@ -351,8 +430,17 @@ create-event:camphora.widgets.{0}.datagrid
           .signal
 
           /*
+           * Checking that this is the grid caller is referencing.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+            return
+
+          /*
            * Sanity checking invocation.
            */
+          micro.lambda.contract.min:x:/..
+            _arg:string
           micro.lambda.contract.optional:x:/..
             filter
             page
@@ -362,14 +450,17 @@ create-event:camphora.widgets.{0}.datagrid
           /*
            * Evaluating "databind grid" Hyperlambda file.
            */
+          eval-x:x:/+2/*/datagrid
           add:x:/+
-            src:x:/@.signal/--/<-(!/_event)
+            src:x:/@.signal/--/<-(!/_event!/_arg)
           micro.evaluate.file:/modules/{0}/helpers/databind-grid.hl
             :{app-name}
+            datagrid:x:/../*/_arg?value
 
 
         /*
-         * Imports the specified [_arg] file into your Camphora app.
+         * Imports the specified [file] file into the specified [_arg]
+         * datagrid's database.
          *
          * Notice, this event expects the file given to be a CSV file,
          * and that it matches your columns from your Camphora app.
@@ -382,24 +473,33 @@ create-event:camphora.widgets.{0}.datagrid
         camphora.database.import-csv-file
 
           /*
+           * Checking that this is the grid caller is referencing.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+            return
+
+          /*
            * Sanity checking invocation.
            */
           micro.lambda.contract.min:x:/..
             _arg:string
+            file:string
 
           /*
            * Evaluating "upload CSV file" Hyperlambda file.
            */
-          eval-x:x:/+/*/file
+          eval-x:x:/+/*(/file|/datagrid)
           micro.evaluate.file:/modules/{0}/helpers/import-csv-file.hl
             :{app-name}
-            file:x:/../*/_arg?value
+            file:x:/../*/file?value
+            datagrid:x:/../*/_arg?value
 
           /*
            * Re-databinding datagrid, making sure we reset all filter,
            * and other properties for our datagrid.
            */
-          camphora.datagrid.databind
+          camphora.datagrid.databind:x:/../*/_arg?value
             filter
             page
             order-by
@@ -407,7 +507,7 @@ create-event:camphora.widgets.{0}.datagrid
 
 
         /*
-         * Deletes all items from our database.
+         * Deletes all items from our database for the specified [_arg] datagrid.
          *
          * Will display a modal widget, asking the user to confirm deletion before
          * actually deleting any items.
@@ -415,14 +515,29 @@ create-event:camphora.widgets.{0}.datagrid
         camphora.database.delete-all-items
 
           /*
+           * Checking that this is the grid caller is referencing.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+            return
+
+          /*
+           * Sanity checking invocation.
+           */
+          micro.lambda.contract.min:x:/..
+            _arg:string
+
+          /*
            * Evaluates file responsible for actually deleting all items.
            */
+          eval-x:x:/+/*/datagrid
           micro.evaluate.file:/modules/{0}/helpers/delete-all-items.hl
             :{app-name}
+            datagrid:x:/../*/_arg?value
 
 
         /*
-         * Updates an existing item in the database.
+         * Updates an existing item in the database for the specified [_arg] datagrid.
          *
          * Expects a collection of column/values as arguments, and at the minimum
          * an [id] argument, declaring which record id we should update - In addition
@@ -437,22 +552,32 @@ create-event:camphora.widgets.{0}.datagrid
           .signal
 
           /*
+           * Checking that this is the grid caller is referencing.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+            return
+
+          /*
            * Sanity checking invocation.
            */
           micro.lambda.contract.min:x:/..
-            id:string
+            _arg:string
+            id:long
 
           /*
            * Evaluating "update item" Hyperlambda file.
            */
-          add:x:/+
-            src:x:/@.signal/--/<-(!/_event)
+          add:x:/+2
+            src:x:/@.signal/--/<-(!/_event!/_arg)
+          eval-x:x:/+/*/datagrid
           micro.evaluate.file:/modules/{0}/helpers/update-item.hl
             :{app-name}
+            datagrid:x:/../*/_arg?value
 
 
         /*
-         * Inserts a new item into the database.
+         * Inserts a new item into the database for the specified [_arg] datagrid.
          *
          * Expects a collection of column/values as arguments.
          * These arguments must be references to actual columns in your
@@ -466,12 +591,27 @@ create-event:camphora.widgets.{0}.datagrid
           .signal
 
           /*
+           * Checking that this is the grid caller is referencing.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+            return
+
+          /*
+           * Sanity checking invocation.
+           */
+          micro.lambda.contract.min:x:/..
+            _arg:string
+
+          /*
            * Evaluating "insert item" Hyperlambda file.
            */
-          add:x:/+
-            src:x:/@.signal/--/<-(!/_event)
+          add:x:/+2
+            src:x:/@.signal/--/<-(!/_event!/_arg)
+          eval-x:x:/+/*/datagrid
           micro.evaluate.file:/modules/{0}/helpers/insert-item.hl
             :{app-name}
+            datagrid:x:/../*/_arg?value
 
 
         /*
@@ -481,9 +621,25 @@ create-event:camphora.widgets.{0}.datagrid
 
 
         /*
-         * Sets or gets the current [page] property for datagrid.
+         * Sets or gets the current [page] property for the specified [_arg] datagrid
+         * to the specified [value], or zero if no value is given.
          */
         camphora.datagrid.page
+
+          /*
+           * Checking that this is the grid caller is referencing.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+            return
+
+          /*
+           * Sanity checking invocation.
+           */
+          micro.lambda.contract.min:x:/..
+            _arg:string
+          micro.lambda.contract.optional:x:/..
+            value
 
           /*
            * Checking if this is a "set" invocation or a "get" invocation.
@@ -498,7 +654,9 @@ create-event:camphora.widgets.{0}.datagrid
               /*
                * Some actual value for our property value.
                */
-              p5.web.viewstate.set:camphora.datagrid.page
+              p5.web.viewstate.set:camphora.{0}.datagrid.page.{1}
+                :{app-name}
+                :x:/../*/_arg?value
                 src:x:/../*/value?value
 
             else
@@ -506,14 +664,18 @@ create-event:camphora.widgets.{0}.datagrid
               /*
                * 'Set to null' invocation.
                */
-              p5.web.viewstate.set:camphora.datagrid.page
+              p5.web.viewstate.set:camphora.{0}.datagrid.page.{1}
+                :{app-name}
+                :x:/../*/_arg?value
 
           else
 
             /*
              * "get" invocation, returning current value to caller.
              */
-            p5.web.viewstate.get:camphora.datagrid.page
+            p5.web.viewstate.get:camphora.{0}.datagrid.page.{1}
+              :{app-name}
+              :x:/../*/_arg?value
             if:x:/-/*?value
 
               /*
@@ -533,9 +695,25 @@ create-event:camphora.widgets.{0}.datagrid
 
 
         /*
-         * Sets or gets the current [order-by] property for datagrid.
+         * Sets or gets the current [order-by] property for the specified [_arg] datagrid
+         * to the specified [value], or null if no value is given.
          */
         camphora.datagrid.order-by
+
+          /*
+           * Checking that this is the grid caller is referencing.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+            return
+
+          /*
+           * Sanity checking invocation.
+           */
+          micro.lambda.contract.min:x:/..
+            _arg:string
+          micro.lambda.contract.optional:x:/..
+            value
 
           /*
            * Checking if this is a "set" invocation or a "get" invocation.
@@ -550,7 +728,9 @@ create-event:camphora.widgets.{0}.datagrid
               /*
                * Some actual value for our property value.
                */
-              p5.web.viewstate.set:camphora.datagrid.order-by
+              p5.web.viewstate.set:camphora.{0}.datagrid.order-by.{1}
+                :{app-name}
+                :x:/../*/_arg?value
                 src:x:/../*/value?value
 
             else
@@ -558,7 +738,9 @@ create-event:camphora.widgets.{0}.datagrid
               /*
                * 'Set to null' invocation.
                */
-              p5.web.viewstate.set:camphora.datagrid.order-by
+              p5.web.viewstate.set:camphora.{0}.datagrid.order-by.{1}
+                :{app-name}
+                :x:/../*/_arg?value
 
           else
 
@@ -566,7 +748,9 @@ create-event:camphora.widgets.{0}.datagrid
              * "get" invocation, returning current value to caller, but
              * only if there actually is a value for property.
              */
-            p5.web.viewstate.get:camphora.datagrid.order-by
+            p5.web.viewstate.get:camphora.{0}.datagrid.order-by.{1}
+              :{app-name}
+              :x:/../*/_arg?value
             if:x:/-/*?value
               eval-x:x:/+/*
               return
@@ -574,9 +758,25 @@ create-event:camphora.widgets.{0}.datagrid
 
 
         /*
-         * Sets or gets the current [order-dir] property for datagrid.
+         * Sets or gets the current [order-dir] property for the specified [_arg] datagrid
+         * to the specified [value], or null if no value is given.
          */
         camphora.datagrid.order-dir
+
+          /*
+           * Checking that this is the grid caller is referencing.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+            return
+
+          /*
+           * Sanity checking invocation.
+           */
+          micro.lambda.contract.min:x:/..
+            _arg:string
+          micro.lambda.contract.optional:x:/..
+            value
 
           /*
            * Checking if this is a "set" invocation or a "get" invocation.
@@ -591,7 +791,9 @@ create-event:camphora.widgets.{0}.datagrid
               /*
                * Some actual value for our property value.
                */
-              p5.web.viewstate.set:camphora.datagrid.order-dir
+              p5.web.viewstate.set:camphora.{0}.datagrid.order-dir.{1}
+                :{app-name}
+                :x:/../*/_arg?value
                 src:x:/../*/value?value
 
             else
@@ -599,7 +801,9 @@ create-event:camphora.widgets.{0}.datagrid
               /*
                * 'Set to null' invocation.
                */
-              p5.web.viewstate.set:camphora.datagrid.order-dir
+              p5.web.viewstate.set:camphora.{0}.datagrid.order-dir.{1}
+                :{app-name}
+                :x:/../*/_arg?value
 
           else
 
@@ -607,7 +811,9 @@ create-event:camphora.widgets.{0}.datagrid
              * "get" invocation, returning current value to caller, but
              * only if there actually is a value for property.
              */
-            p5.web.viewstate.get:camphora.datagrid.order-dir
+            p5.web.viewstate.get:camphora.{0}.datagrid.order-dir.{1}
+              :{app-name}
+              :x:/../*/_arg?value
             if:x:/-/*?value
               eval-x:x:/+/*
               return
@@ -615,9 +821,25 @@ create-event:camphora.widgets.{0}.datagrid
 
 
         /*
-         * Sets or gets the current [filter] property for datagrid.
+         * Sets or gets the current [filter] property for the specified [_arg] datagrid
+         * to the specified [value], or null if no value is given.
          */
         camphora.datagrid.filter
+
+          /*
+           * Checking that this is the grid caller is referencing.
+           */
+          if:x:/../*/_arg?value
+            !=:x:/../*/_event?value
+            return
+
+          /*
+           * Sanity checking invocation.
+           */
+          micro.lambda.contract.min:x:/..
+            _arg:string
+          micro.lambda.contract.optional:x:/..
+            value
 
           /*
            * Checking if this is a "set" invocation or a "get" invocation.
@@ -635,7 +857,9 @@ create-event:camphora.widgets.{0}.datagrid
               add:x:/+2/*/*
                 src:x:/../*/value/*
               eval-x:x:/+/*/*
-              p5.web.viewstate.set:camphora.datagrid.filter
+              p5.web.viewstate.set:camphora.{0}.datagrid.filter.{1}
+                :{app-name}
+                :x:/../*/_arg?value
                 src
                   filter:x:/../*/value?value
 
@@ -644,7 +868,9 @@ create-event:camphora.widgets.{0}.datagrid
               /*
                * 'Set to null' invocation.
                */
-              p5.web.viewstate.set:camphora.datagrid.filter
+              p5.web.viewstate.set:camphora.{0}.datagrid.filter.{1}
+                :{app-name}
+                :x:/../*/_arg?value
 
           else
 
@@ -652,7 +878,9 @@ create-event:camphora.widgets.{0}.datagrid
              * "get" invocation, returning current value to caller, but
              * only if there actually is a value for property.
              */
-            p5.web.viewstate.get:camphora.datagrid.filter
+            p5.web.viewstate.get:camphora.{0}.datagrid.filter.{1}
+              :{app-name}
+              :x:/../*/_arg?value
             if:x:/-/*/*
               add:x:/+
                 src:x:/@p5.web.viewstate.get/*/*
