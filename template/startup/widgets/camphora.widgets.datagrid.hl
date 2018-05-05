@@ -4,8 +4,9 @@
 
 /*
  * This extension widget allows you to display your Camphora Five
- * CRUD app as a widget, injecting the entire app, anywhere on your
- * page. The event optionally takes the following arguments.
+ * CRUD app as a widget, injecting the entire app's datagrid,
+ * anywhere on your page. The event optionally takes the following
+ * arguments.
  *
  * - __[edit-items]__ - Whether or not editing (and hence deletion) of items should be allowed.
  * The default value for this argument is boolean _"false"_.
@@ -62,6 +63,26 @@ create-event:camphora.widgets.datagrid
     add:x:/../*/return/*/micro.widgets.mysql.datagrid/*/columns
       src
         Delete
+          .header
+            widgets
+              a
+                href:#
+                onclick
+
+                  /*
+                   * Evaluates file responsible for actually deleting filtered items.
+                   */
+                  p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                    .datagrid
+                  eval-x:x:/+/*/datagrid
+                  micro.evaluate.file:/modules/{0}/helpers/delete-all-filtered-items.hl
+                    :{app-name}
+                    datagrid:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
+                widgets
+                  literal
+                    element:span
+                    class:icon-bin
           .lambda
             eval-x:x:/+/*/*/onclick/*/.id
             return
@@ -74,6 +95,13 @@ create-event:camphora.widgets.datagrid
                    * Forward evaluated above.
                    */
                   .id:x:/../*/row/*/id?value
+
+                  /*
+                   * Figuring out ID of datagrid, which is needed later down
+                   * for our widget lambda event invocations.
+                   */
+                  p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                    .datagrid
 
                   /*
                    * Opening database connection.
@@ -93,14 +121,14 @@ create-event:camphora.widgets.datagrid
                      */
                     p5.mysql.scalar:@"select count(*) from `{0}`"
                       :{app-name}
-                    camphora.count-changed:x:/-?value
+                    eval-x:x:/+/*
+                    camphora.count-changed
+                      count:x:/@p5.mysql.scalar?value
 
                   /*
                    * Re-databinding datagrid, making sure we keep our current
                    * [filter], [page], [order-by] and [order-dir] arguments.
                    */
-                  p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                    .datagrid
                   camphora.datagrid.databind:x:/-/*/*?value
 
   /*

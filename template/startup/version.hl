@@ -1,0 +1,10 @@
+/*
+ * Creates our version Active Event for your Camphora Five app.
+ */
+
+/*
+ * This event returns the version number of your Camphora Five app.
+ */
+create-event:camphora.version
+
+  return:decimal:8.0

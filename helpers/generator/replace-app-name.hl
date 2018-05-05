@@ -24,6 +24,15 @@ micro.lambda.contract.min:x:/..
  */
 eval-x:x:/+/*/*
 .events
+  camphora.version
+    :camphora.{0}.version
+      :x:/../*/app-name?value
+  camphora.widgets.datagrid
+    :camphora.{0}.widgets.datagrid
+      :x:/../*/app-name?value
+  camphora.widgets.toolbar
+    :camphora.{0}.widgets.toolbar
+      :x:/../*/app-name?value
   camphora.create-new-item
     :camphora.{0}.create-new-item
       :x:/../*/app-name?value
@@ -98,7 +107,7 @@ for-each:x:/-/*
     keep-comments:true
 
   /*
-   * Replacing {app-name} with [app-name].
+   * Replacing {app-name} with [app-name]'s value.
    */
   set:x:/@hyper2lambda/**/={app-name}?value
     src:x:/../*/app-name?value
@@ -107,7 +116,7 @@ for-each:x:/-/*
    * Iterating through each event in our above [.events] lambda,
    * and making sure all values and names from all nodes in currently
    * iterated file that contains the value/name of the currently iterated
-   * event name is exchanged with its actual value.
+   * event name is exchanged with its actual name/value.
    */
   for-each:x:/../*/.events/*
 
@@ -119,9 +128,9 @@ for-each:x:/-/*
       src:x:/@_dp/#/*?value
 
     /*
-     * then exchanging node values.
+     * Then exchanging node values.
      */
-    set:x:/@hyper2lambda/**/={0}?name
+    set:x:/@hyper2lambda/**/={0}?value
       :x:/@_dp/#?name
       src:x:/@_dp/#/*?value
 

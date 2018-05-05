@@ -7,95 +7,82 @@
 
 
 /*
- * Figuring out name of app.
+ * Iterating through each [field] from app's manifest file, dynamically
+ * create our "CREATE SCHEMA" and MODIFY TABLE SQLs.
  */
-split:x:/..?name
-  =:/
-  =:.
-
-
-
-
-
-/*
- * Loading app's declaration file, to make sure we can get the columns of our
- * database correct.
- */
-_cols
-_cols-changed
-load-file:/{0}/{1}/helpers/app-manifest.hl
-  :x:/@split/0?name
-  :x:/@split/1?name
-for-each:x:/@load-file/*/*/field
+.fields
+.cols
+.cols-changed
+for-each:x:/@.fields/*
 
   /*
-   * Appending currently iterated column to [_cols] above, according to
+   * Appending currently iterated column to [.cols] above, according to
    * what [type] of [field] it is.
    */
   switch:x:/@_dp/#/*/type?value
     case:text
     case:radio
     case:select
-      set:x:/@_cols?value
+      set:x:/@.cols?value
         src:{0}{1}
-          :x:/@_cols?value
-          :@"`{0}` varchar(512) COLLATE utf8mb4_unicode_ci NULL,
+          :x:/@.cols?value
+          :@"`{0}` varchar(512) collate utf8mb4_unicode_ci null,
   "
             :x:/@_dp/#/*/name?value
-      set:x:/@_cols-changed?value
+      set:x:/@.cols-changed?value
         src:{0}{1}
-          :x:/@_cols-changed?value
+          :x:/@.cols-changed?value
           :@"
-  alter table `{0}` modify `{1}` varchar(512) COLLATE utf8mb4_unicode_ci NULL;
-  alter table `{0}` add `{1}` varchar(512) COLLATE utf8mb4_unicode_ci NULL;"
-            :x:/@split/1?name
+  alter table `{0}` modify `{1}` varchar(512) collate utf8mb4_unicode_ci null;
+  alter table `{0}` add `{1}` varchar(512) collate utf8mb4_unicode_ci null;"
+            :{app-name}
             :x:/@_dp/#/*/name?value
     case:checkbox
     case:number
-      set:x:/@_cols?value
+      set:x:/@.cols?value
         src:{0}{1}
-          :x:/@_cols?value
-          :@"`{0}` INT(10) NULL,
+          :x:/@.cols?value
+          :@"`{0}` int(10) null,
   "
             :x:/@_dp/#/*/name?value
-      set:x:/@_cols-changed?value
+      set:x:/@.cols-changed?value
         src:{0}{1}
-          :x:/@_cols-changed?value
+          :x:/@.cols-changed?value
           :@"
-  alter table `{0}` modify `{1}` INT(10) NULL;
-  alter table `{0}` add `{1}` INT(10) NULL;"
-            :x:/@split/1?name
+  alter table `{0}` modify `{1}` int(10) null;
+  alter table `{0}` add `{1}` int(10) null;"
+            :{app-name}
             :x:/@_dp/#/*/name?value
     case:created
-      set:x:/@_cols?value
+      set:x:/@.cols?value
         src:{0}{1}
-          :x:/@_cols?value
-          :@"`{0}` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+          :x:/@.cols?value
+          :@"`{0}` timestamp not null default current_timestamp,
   "
             :x:/@_dp/#/*/name?value
-      set:x:/@_cols-changed?value
+      set:x:/@.cols-changed?value
         src:{0}{1}
-          :x:/@_cols-changed?value
+          :x:/@.cols-changed?value
           :@"
-  alter table `{0}` modify `{1}` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
-  alter table `{0}` add `{1}` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;"
-            :x:/@split/1?name
+  alter table `{0}` modify `{1}` timestamp not null default current_timestamp;
+  alter table `{0}` add `{1}` timestamp not null default current_timestamp;"
+            :{app-name}
             :x:/@_dp/#/*/name?value
     case:textarea
     case:markdown
-      set:x:/@_cols?value
+      set:x:/@.cols?value
         src:{0}{1}
-          :x:/@_cols?value
-          :@"`{0}` longtext COLLATE utf8mb4_unicode_ci NULL,
+          :x:/@.cols?value
+          :@"`{0}` longtext collate utf8mb4_unicode_ci null,
   "
             :x:/@_dp/#/*/name?value
-      set:x:/@_cols-changed?value
+      set:x:/@.cols-changed?value
         src:{0}{1}
-          :x:/@_cols-changed?value
+          :x:/@.cols-changed?value
           :@"
-  alter table `{0}` modify `{1}` longtext COLLATE utf8mb4_unicode_ci NULL;
-  alter table `{0}` add `{1}` longtext COLLATE utf8mb4_unicode_ci NULL;"
-            :x:/@split/1?name
+  alter table `{0}` modify `{1}` longtext collate utf8mb4_unicode_ci null;
+  alter table `{0}` add `{1}` longtext collate utf8mb4_unicode_ci null;"
+            :{app-name}
             :x:/@_dp/#/*/name?value
 
 
@@ -123,23 +110,26 @@ try
      * Will create the table if it doesn't exist.
      */
     p5.mysql.execute:@"
-CREATE TABLE IF NOT EXISTS `{0}` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  {1}PRIMARY KEY (`id`),
-  UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;"
-      :x:/@split/1?name
-      :x:/@_cols?value
+create table if not exists `{0}` (
+  `id` int(10) unsigned not null auto_increment,
+  {1}primary key (`id`),
+  unique key `id_unique` (`id`)
+) engine=InnoDB auto_increment=0 default charset=utf8mb4 collate=utf8mb4_unicode_ci;"
+      :{app-name}
+      :x:/@.cols?value
 
     /*
      * Creates a procedure that will modify our table, to add any missing columns.
      *
      * Notice, this is a little bit of a MySQL trickery, where we inform MySQL
-     * that we simply want it to comtinue in case column already exists, instead of
-     * aborting, and raising an exception.
+     * that we simply want it to comtinue in case the column already exists, instead of
+     * aborting and raising an exception.
      *
      * This implies that all our "ALTER TABLE" queries, created above will execute,
      * even if one of our columns already exists from before.
+     *
+     * However, we'll have to actually create a stored procedure to make this logic work,
+     * and invoke our procedure instead of directly evaluating the SQL.
      */
     p5.mysql.execute:@"
 create procedure {0}camphora_foo ()
@@ -148,7 +138,7 @@ begin
   declare continue handler for 1054 begin end;{1}
 end"
       :x:/@p5.config.get/*?value
-      :x:/@_cols-changed?value
+      :x:/@.cols-changed?value
 
     /*
      * Making absolutely sure we're able to drop our procedure.
@@ -187,7 +177,7 @@ catch
      * Creating database schema.
      */
     p5.mysql.connect:[sys]
-      p5.mysql.execute:@"CREATE SCHEMA `{0}camphora`;"
+      p5.mysql.execute:@"create schema `{0}camphora`;"
         :x:/@p5.config.get/*?value
 
     /*

@@ -111,7 +111,23 @@ if:x:/../*/filter?value
      * There exists "equal" type of fields in app.
      * Iterating through them all and adding them to our [.filter].
      */
-    for-each:x:/@.fields/*/field/*/type(/=number|/=select|/=radio)/./*/name?value
+    for-each:x:/@.fields/*/field/*/type(/=number|/=select|/=radio)/./*/name
+
+      /*
+       * If this is a "number" type of field, and the actual query cannot be converted
+       * into a number, we simply ignore it.
+       */
+      if:x:/@_dp/#/./*/type/=number
+        and
+          p5.types.can-convert:x:/../*/filter?value
+            type:double
+          not
+
+        /*
+         * Value could not successfully be converted into a number, hence
+         * we simply ignore it for this number field.
+         */
+        continue
 
       /*
        * Checking if this is the first filter condition, and if not,
@@ -129,7 +145,7 @@ if:x:/../*/filter?value
       set:x:/@.filter?value
         src:{0}`{1}` = @equals
           :x:/@.filter?value
-          :x:/@_dp?value
+          :x:/@_dp/#?value
 
     /*
      * Adding [@value] argument to databind invocation.

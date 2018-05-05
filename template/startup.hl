@@ -3,9 +3,6 @@
  *
  * Evaluates all startup files inside of our _"/startup/"_ folder for our generated app.
  */
-split:x:/..?name
-  =:/
-  =:.
 micro.evaluate.folder:/modules/{0}/startup/
-  :x:/@split/1?name
+  :{app-name}
 

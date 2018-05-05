@@ -1,0 +1,91 @@
+/*
+ * Asks the user to confirm deletion of all currently filtered items
+ * for the specified __[datagrid]__ datagrid's database table.
+ */
+
+
+
+
+
+/*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.min:x:/..
+  datagrid:string
+
+
+
+
+
+/*
+ * Asking user to confirm action.
+ */
+eval-x:x:/+/*/body|/+/**/.datagrid
+micro.windows.confirm
+  header:Please confirm action
+  body:This will delete all items matching your current filter in your database of type '{0}', are you sure you wish to continue?
+    :{app-name}
+  onok
+
+    /*
+     * Forward declare above.
+     */
+    .datagrid:x:/../*/datagrid?value
+
+    /*
+     * Checking if we have a filter condition.
+     */
+    .filter
+    camphora.datagrid.filter:x:/@.datagrid?value
+    if:x:/-/*?value
+
+      /*
+       * We have a filter, making sure our [p5.mysql.delete] actually uses it.
+       *
+       * First we set the [.filter] value.
+       */
+      set:x:/@.filter?value
+        src:" where {0}"
+          :x:/@camphora.{0}.datagrid.filter/*?value
+            :{app-name}
+
+      /*
+       * Then we add all parameters to it.
+       */
+      add:x:/@.filter
+        src:x:/@camphora.{0}.datagrid.filter/*/*
+          :{app-name}
+
+    /*
+     * Deleting all records from database.
+     */
+    p5.mysql.connect:[camphora]
+
+      /*
+       * Applying filter's arguments to [p5.mysql.delete]
+       */
+      add:x:/+
+        src:x:/@.filter/*
+      p5.mysql.delete:delete from `{0}`{1}
+        :{app-name}
+        :x:/@.filter?value
+      p5.mysql.scalar:select count(*) from `{0}`
+        :{app-name}
+
+    /*
+     * Re-databinding datagrid, and updating count.
+     */
+    camphora.datagrid.databind:x:/@.datagrid?value
+      filter
+      page
+      order-by
+      order-dir
+    eval-x:x:/+/*
+    camphora.count-changed:x:/@.datagrid?value
+      count:x:/@p5.mysql.connect/*/p5.mysql.scalar?value
+
+    /*
+     * Making sure we signal that the current filter has been
+     * set to nothing.
+     */
+    camphora.filter-changed:x:/@.datagrid?value

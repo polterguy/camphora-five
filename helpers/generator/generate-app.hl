@@ -65,19 +65,6 @@ copy-folder:@CAMPHORA/template/
 
 
 /*
- * Making sure app manifest file is copied to 'helpers'
- * folder for app.
- * TODO: Remove this logic, it's only need when creating the database now.
- */
-copy-file:x:/../*/filename?value
-  dest:/modules/{0}/helpers/app-manifest.hl
-    :x:/@split/0/-2?name
-
-
-
-
-
-/*
  * Loading manifest file.
  */
 load-file:x:/../*/filename?value
@@ -150,6 +137,8 @@ if:x:/../*/delete-data?value
  * We do this by loading the "camphora.widgets.datagrid.hl" file and
  * modify the datagrid inside of it, according to the [field] definitions
  * found in our app manifest file.
+ *
+ * Notice, we make sure we only add visible fields into the actual datagrid.
  */
 load-file:/modules/{0}/startup/widgets/camphora.widgets.datagrid.hl
   :x:/@split/0/-2?name
@@ -365,13 +354,29 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
 
 
 /*
- * Saving file again, now with [columns] declarations.
+ * Saving file again, now with [columns] declarations, making sure we
+ * get its filename correctly, while deleting the old (outdated) file.
  */
 lambda2hyper:x:/@hyper2lambda/*
   comments:unroll
-save-file:/modules/{0}/startup/widgets/camphora.widgets.datagrid.hl
+save-file:/modules/{0}/startup/widgets/camphora.{0}.widgets.datagrid.hl
   :x:/@split/0/-2?name
   src:x:/@lambda2hyper?value
+delete-file:/modules/{0}/startup/widgets/camphora.widgets.datagrid.hl
+  :x:/@split/0/-2?name
+
+
+
+
+
+/*
+ * Renaming name of "camphora.widgets.toolbar.hl" file, to make sure its
+ * filename correctly declares what widget it actually creates.
+ */
+move-file:/modules/{0}/startup/widgets/camphora.widgets.toolbar.hl
+  :x:/@split/0/-2?name
+  dest:/modules/{0}/startup/widgets/camphora.{0}.widgets.toolbar.hl
+    :x:/@split/0/-2?name
 
 
 
@@ -380,7 +385,7 @@ save-file:/modules/{0}/startup/widgets/camphora.widgets.datagrid.hl
 /*
  * Creating our "insert new item" file, according to app manifest file.
  *
- * We do this by loading the "create-item.hl" file and modify the wizard
+ * We do this by loading the "create-item.hl" file and modify the
  * form collection inside of it according to what fields our app has.
  */
 load-file:/modules/{0}/helpers/create-item.hl
@@ -404,7 +409,8 @@ save-file:/modules/{0}/helpers/create-item.hl
 
 /*
  * Making sure that our "edit-item.hl" file knows how many visible columns
- * there are in the datagrid in total in its [.column-count] node.
+ * there are in the datagrid in total in its [.column-count] node - In addition
+ * to creating its form collection for editing an item.
  */
 load-file:/modules/{0}/helpers/edit-item.hl
   :x:/@split/0/-2?name
@@ -436,7 +442,7 @@ load-file:/modules/{0}/helpers/download-items.hl
 hyper2lambda:x:/@load-file/*?value
   keep-comments:true
 add:x:/@hyper2lambda/**/.fields
-  src:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
+  src:x:/../*/load-file/[0,1]/*/*/field
 lambda2hyper:x:/@hyper2lambda/*
   comments:unroll
 save-file:/modules/{0}/helpers/download-items.hl
@@ -449,7 +455,7 @@ save-file:/modules/{0}/helpers/download-items.hl
 
 /*
  * Making sure our "search-datagrid.hl" file knows which columns we can apply filtering
- * to, and how
+ * to, and how.
  */
 load-file:/modules/{0}/helpers/search-datagrid.hl
   :x:/@split/0/-2?name
@@ -457,10 +463,33 @@ load-file:/modules/{0}/helpers/search-datagrid.hl
 hyper2lambda:x:/@load-file/*?value
   keep-comments:true
 add:x:/@hyper2lambda/*/.fields
-  src:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
+  src:x:/../*/load-file/[0,1]/*/*/field
 lambda2hyper:x:/@hyper2lambda/*
   comments:unroll
 save-file:/modules/{0}/helpers/search-datagrid.hl
+  :x:/@split/0/-2?name
+  src:x:/@lambda2hyper?value
+
+
+
+
+
+/*
+ * Creating our "create database" file, according to app manifest file.
+ *
+ * We do this by loading the "create-database.hl" file and add up the field
+ * declarations from our manifest file.
+ */
+load-file:/modules/{0}/startup/create-database.hl
+  :x:/@split/0/-2?name
+  convert:false
+hyper2lambda:x:/@load-file/*?value
+  keep-comments:true
+add:x:/@hyper2lambda/**/.fields
+  src:x:/../*/load-file/[0,1]/*/*/field
+lambda2hyper:x:/@hyper2lambda/*
+  comments:unroll
+save-file:/modules/{0}/startup/create-database.hl
   :x:/@split/0/-2?name
   src:x:/@lambda2hyper?value
 

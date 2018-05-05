@@ -7,6 +7,19 @@
 
 
 /*
+ * This is your app's default view.
+ * Exchange this if you'd like for your app to use another
+ * view as its "default view".
+ *
+ * The default view is the view that is evaluated at your app's root URL.
+ */
+.default-view:default.hl
+
+
+
+
+
+/*
  * Retrieves URL entities to see if client is requesting a custom "view".
  */
 .view
@@ -18,6 +31,14 @@ micro.url.get-entities
 
 /*
  * Checking if this is a request for a "custom view".
+ *
+ * Notice, this is true if the current request's URL is
+ * either consisting of two or more entities (folders), or the
+ * URL is consisting of one entity, and that single entity
+ * does not point to the name of the app. The latter implies
+ * that this Camphora Five app is configured as the default
+ * app in web.config, and the user is requesting a URL within
+ * it.
  */
 if:x:/@micro.url.get-entities/*?count
   >:int:1
@@ -78,10 +99,8 @@ if:x:/@.view?value
 else
 
   /*
-   * A normal request, evaluating file responsible for handling the request.
-   *
-   * Notice, if you'd like to change the _"default view"_ of your app, you
-   * can evaluate another file here.
+   * A normal request, evaluating default view.
    */
-  micro.evaluate.file:/modules/{0}/views/default.hl
+  micro.evaluate.file:/modules/{0}/views/{1}
     :{app-name}
+    :x:/../*/.default-view?value

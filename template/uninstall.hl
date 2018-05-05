@@ -9,6 +9,9 @@
 
 /*
  * Deleting all relevant Active Events, and that's it.
+ *
+ * Notice, these event names are changed as your app is generated.
  */
 delete-event:camphora.widgets.datagrid
 delete-event:camphora.widgets.toolbar
+delete-event:camphora.version

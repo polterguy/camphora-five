@@ -105,7 +105,7 @@ create-widget:camphora-main-container
        * Setting the title of our page, to reflect the number of items.
        */
       p5.web.page.set-title:{0} records of type {1}
-        :x:/../*/_arg?value
+        :x:/../*/count?value
         :{app-name}
 
 
@@ -131,7 +131,7 @@ create-widget:camphora-main-container
              * value to "false", or modify its sub-arguments to delete only
              * specific parts of the toolbar.
              *
-             * Notice, the [datagrid] argument must be the widget ID of
+             * Notice, the [datagrid] argument is the widget ID of
              * your [camphora.xxx.widgets.datagrid] instance.
              */
             camphora.widgets.toolbar
