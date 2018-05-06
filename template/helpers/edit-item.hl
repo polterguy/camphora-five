@@ -20,6 +20,7 @@ micro.lambda.contract.min:x:/..
   row-widget-id:string
   id:long
   datagrid:string
+  delete:bool
 
 
 
@@ -35,12 +36,19 @@ micro.lambda.contract.min:x:/..
 
 
 /*
- * We need to increment the [.column-count] by 1, to accommodate
- * for the "delete item" row.
+ * Checking if deletion of items is allowed, at which point we'll have to modify the
+ * colspan of our edit row widget.
  */
-set:x:/@.column-count?value
-  +:x:/@.column-count?value
-    _:1
+if:x:/../*/delete?value
+  =:bool:true
+
+  /*
+   * We need to increment the [.column-count] by 1, to accommodate
+   * for the "delete item" row.
+   */
+  set:x:/@.column-count?value
+    +:x:/@.column-count?value
+      _:1
 
 
 

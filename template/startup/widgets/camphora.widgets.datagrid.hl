@@ -8,21 +8,23 @@
  * anywhere on your page. The event optionally takes the following
  * arguments.
  *
- * - __[edit-items]__ - Whether or not editing (and hence deletion) of items should be allowed.
- * The default value for this argument is boolean _"false"_.
- * - __[delete-items]__ - Whether or not deletion of individual items, and all filtered items should be allowed.
- * The default value for this argument is boolean _"false"_.
- * - __[page-size]__ - Number of items the datagrid should display. The default value for this argument is 25.
+ * - __[edit]__ - Optional boolean indication whether or not editing of items should be allowed.
+ * The default value for this argument is _"false"_.
+ * - __[delete]__ - Optional boolean indicating whether or not deletion of items should be allowed.
+ * The default value for this argument is _"false"_.
+ * - __[page-size]__ - Number of items the datagrid should display. The default value for this argument is 10.
  * - __[query]__ - Optional initial search query to databind the datagrid towards.
  * - __[page]__ - Optional initial page to databind the datagrid towards.
  * - __[.row]__ - Optional argument allowing you to completely replace your entire datagrid's _".row"_ argument.
  *
  * __Notice__, this extension widget is dynamically created for each of your Camphora Five apps,
  * and its exact name varies from app to app, since its name is replaced when the app is generated.
+ * If your app is named for instance _"address-book"_, the widget's fully qualified name becomes
+ * __[camphora.address-book.widgets.datagrid]__.
  *
- * The __[.row]__ argument allows you to completely control the rendering of the datagrid's _"tr"_ elements
- * for each row in your datagrid, allowing you (to among other things) override editing of items if you wish.
- * Or change the style/class properties of your rows, etc. If you supply your own __[.row]__ argument, all
+ * The __[.row]__ argument allows you to partially override the rendering of the datagrid's _"tr"_ elements
+ * for each row in your datagrid, allowing you (to among other things) override editing of items if you wish -
+ * And/or change the style/class properties of your rows, etc. If you supply your own __[.row]__ argument, all
  * event handlers inside of it (such as __[onclick]__ for instance) will automatically get the entire
  * database row passed in as an argument named __[.row]__. This allows you to determine what item the
  * user clicked by checking [.row]/[id] in your onclick event handlers.
@@ -31,6 +33,9 @@
  * widget lambda event to allow for the default editing to occur. Just remember to pass in __[database-id]__,
  * __[row-widget-id]__ (widget ID of your "tr" element) and __[\_arg]__ being the widget id for your actual datagrid.
  * See the main documentation for Camphora Five to understand how to accomplish this.
+ *
+ * If you supply your own __[.row]__ argument, the __[edit-items]__ argument is completely ignored, and editing
+ * and deletion  of items will have to be manually implemented somehow.
  */
 create-event:camphora.widgets.datagrid
 
@@ -38,8 +43,8 @@ create-event:camphora.widgets.datagrid
    * Sanity checking invocation.
    */
   micro.lambda.contract.optional:x:/..
-    edit-items:bool
-    delete-items:bool
+    edit:bool
+    delete:bool
     page-size:long
     query:string
     page:long
@@ -49,155 +54,11 @@ create-event:camphora.widgets.datagrid
    * Defaults.
    */
   .defaults
-    edit-items:bool:false
-    delete-items:bool:false
+    edit:bool:false
+    delete:bool:false
     page-size:long:10
     page:long:0
     class:hover camphora-datagrid
-
-  /*
-   * Checking if we should prevent editing (and deletion) of items.
-   */
-  if:x:(/../*/edit-items|/@.defaults/*/edit-items)/$?value.bool
-    =:bool:false
-
-    /*
-     * Removing [.row]'s [onclick] event handler.
-     */
-    set:x:/../*/return/*/micro.widgets.mysql.datagrid/*/.row/*/onclick
-
-  else
-
-    /*
-     * Making sure we create rows such that the user gets a visual clue that
-     * he can click the rows in his grid.
-     */
-    add:x:/../*/return/*/micro.widgets.mysql.datagrid/*/.row
-      src
-        class:camphora-grid-editable
-
-    /*
-     * Checking if we should allow for deleting items.
-     */
-    if:x:(/../*/delete-items|/@.defaults/*/delete-items)/$?value.bool
-      =:bool:true
-
-      /*
-       * Adding "delete item" row.
-       */
-      add:x:/../*/return/*/micro.widgets.mysql.datagrid/*/columns
-        src
-          Delete
-            class:camphora-delete-cell
-            .header
-              widgets
-                button
-                  events
-
-
-                    /*
-                     * Handled to make sure we enable/disable button if there
-                     * are no items in current filter.
-                     */
-                    camphora.datagrid.databound
-
-                      /*
-                       * Verifying that this is our guy.
-                       */
-                      p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                        .datagrid
-                      if:x:/../*/_arg?value
-                        !=:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                        return
-
-                      /*
-                       * Checking if there actually are any items in datagrid,
-                       * and acting accordingly.
-                       */
-                      if:x:/../*/count?value.long
-                        =:long:0
-
-                        /*
-                         * No items, disabling button.
-                         */
-                        set-widget-property:x:/../*/_event?value
-                          disabled
-
-                      else
-
-                        /*
-                         * 1 or more items, enabling button.
-                         */
-                        delete-widget-property:x:/../*/_event?value
-                          disabled
-
-                  onclick
-
-                    /*
-                     * Evaluates file responsible for actually deleting filtered items.
-                     */
-                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                      .datagrid
-                    eval-x:x:/+/*/datagrid
-                    micro.evaluate.file:/modules/{0}/helpers/delete-all-filtered-items.hl
-                      :{app-name}
-                      datagrid:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-
-                  widgets
-                    literal
-                      element:span
-                      class:icon-bin
-            .lambda
-              eval-x:x:/+/*/*/onclick/*/.id
-              return
-                a
-                  href:#
-                  class:button
-                  innerValue:@"<span class=""icon-bin""></span>"
-                  onclick
-
-                    /*
-                     * Forward evaluated above.
-                     */
-                    .id:x:/../*/row/*/id?value
-
-                    /*
-                     * Figuring out ID of datagrid, which is needed later down
-                     * for our widget lambda event invocations.
-                     */
-                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                      .datagrid
-
-                    /*
-                     * Opening database connection.
-                     */
-                    p5.mysql.connect:[camphora]
-
-                      /*
-                       * Deleting item from database.
-                       */
-                      p5.mysql.delete:delete from `{0}` where id = @id
-                        :{app-name}
-                        @id:x:/@.id?value
-
-                    /*
-                     * Re-databinding datagrid, making sure we keep our current
-                     * [filter], [page], [order-by] and [order-dir] arguments.
-                     */
-                    camphora.datagrid.databind:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-
-  /*
-   * Checking if we should provide a default query.
-   */
-  if:x:/../*/query?value
-    and:x:/../*/query?value
-    !=:
-
-    /*
-     * Making sure our initial databind invocation contains our query.
-     */
-    set:x:/../*/return/*/*/oninit/*/.query?value
-      src:x:/../*/query?value
 
   /*
    * Checking if caller supplied his own [.row] argument, at which point we
@@ -206,8 +67,17 @@ create-event:camphora.widgets.datagrid
    * This will completely bypass the default [onclick] (among other things) on
    * the datagrid, effectively preventing editing of items, unless caller
    * implements his own editing during [onclick] or something.
+   *
+   * In addition, if you supply a [.row] the datagrid will be rendered without
+   * its "delete item" column.
    */
   if:x:/../*/.row
+
+    /*
+     * Sanity checking invocation.
+     */
+    if:x:/../*/edit
+      throw:Either supply a [.row] or an [edit] argument, and not both.
 
     /*
      * Removing default [.row].
@@ -220,11 +90,149 @@ create-event:camphora.widgets.datagrid
     add:x:/../*/return/*/micro.widgets.mysql.datagrid
       src:x:/../*/.row
 
+  else
+
+    /*
+     * Caller did not supply his own custom [.row].
+     * Hence, we check to see if he wants to allow editing of items, and
+     * deletion of items.
+     *
+     * First checking if we should prevent editing (and hence deletion) of items.
+     */
+    if:x:(/../*/edit|/@.defaults/*/edit)/$?value.bool
+      =:bool:false
+
+      /*
+       * Removing [.row]'s [onclick] event handler.
+       */
+      set:x:/../*/return/*/micro.widgets.mysql.datagrid/*/.row/*/onclick
+
+    else
+
+      /*
+       * Making sure we create rows such that the user gets a visual clue that
+       * he can click the rows in his grid. We do this by making sure each row gets
+       * the "camphora-grid-editable" CSS class.
+       */
+      add:x:/../*/return/*/micro.widgets.mysql.datagrid/*/.row
+        src
+          class:camphora-grid-editable
+
+  /*
+   * Checking if caller wants to allow deletion of items.
+   */
+  if:x:(/../*/delete|/@.defaults/*/delete)/$?value.bool
+    =:bool:true
+
+    /*
+     * Adding "delete item" column.
+     */
+    add:x:/../*/return/*/micro.widgets.mysql.datagrid/*/columns
+      src
+        Delete
+          class:camphora-delete-cell
+          .header
+            class:camphora-delete-header
+            widgets
+              button
+                events
+
+
+                  /*
+                   * Handled to make sure we enable/disable button if there
+                   * are no items matching the current filter.
+                   */
+                  camphora.datagrid.databound
+
+                    /*
+                     * Verifying that this is our guy.
+                     */
+                    p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                      .datagrid
+                    if:x:/../*/_arg?value
+                      !=:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                      return
+
+                    /*
+                     * Checking if there actually are any items in datagrid,
+                     * and acting accordingly.
+                     */
+                    if:x:/../*/count?value.long
+                      =:long:0
+
+                      /*
+                       * No items, hence disabling button.
+                       */
+                      set-widget-property:x:/../*/_event?value
+                        disabled
+
+                    else
+
+                      /*
+                       * At least 1 item, hence enabling button.
+                       */
+                      delete-widget-property:x:/../*/_event?value
+                        disabled
+
+                onclick
+
+                  /*
+                   * Evaluates file responsible for actually deleting filtered items.
+                   */
+                  p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                    .datagrid
+                  eval-x:x:/+/*/datagrid
+                  micro.evaluate.file:/modules/{0}/helpers/delete-all-filtered-items.hl
+                    :{app-name}
+                    datagrid:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
+                widgets
+                  literal
+                    element:span
+                    class:icon-bin
+          .lambda
+            eval-x:x:/+/*/*/onclick/*/.id
+            return
+              button
+                innerValue:@"<span class=""icon-bin""></span>"
+                onclick
+
+                  /*
+                   * Forward evaluated above.
+                   */
+                  .id:x:/../*/row/*/id?value
+
+                  /*
+                   * Figuring out ID of datagrid, which is needed later down
+                   * for our widget lambda event invocations.
+                   */
+                  p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                    .datagrid
+
+                  /*
+                   * Opening database connection.
+                   */
+                  p5.mysql.connect:[camphora]
+
+                    /*
+                     * Deleting item from database.
+                     */
+                    p5.mysql.delete:delete from `{0}` where id = @id
+                      :{app-name}
+                      @id:x:/@.id?value
+
+                  /*
+                   * Re-databinding datagrid, making sure we keep our current
+                   * [filter], [page], [order-by] and [order-dir] arguments.
+                   */
+                  camphora.datagrid.databind:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
   /*
    * Returning actual widget to caller, making sure we forward
    * evaluate any arguments.
    */
-  eval-x:x:/+/*/*(/page-size|/oninit/*/.page|/class)
+  eval-x:x:/+/*/*(/page-size|/oninit/*(/.page|/.query)|/class|/events/*/camphora.{0}.datagrid.row-clicked/*/.delete)
+    :{app-name}
   return
     micro.widgets.mysql.datagrid
       .datagrid
@@ -249,9 +257,9 @@ create-event:camphora.widgets.datagrid
       oninit
 
         /*
-         * Added before instantiation.
+         * Forward evaluated above.
          */
-        .query
+        .query:x:/../*/query?value
         .page:x:(/../*/page|/@.defaults/*/page)/$?value
 
         /*
@@ -315,6 +323,11 @@ create-event:camphora.widgets.datagrid
         camphora.datagrid.row-clicked
 
           /*
+           * Forward evaluated above.
+           */
+          .delete:x:(/../*/delete|/@.defaults/*/delete)/$?value.bool
+
+          /*
            * Checking that this is the grid caller is referencing.
            */
           if:x:/../*/_arg?value
@@ -339,6 +352,7 @@ create-event:camphora.widgets.datagrid
             datagrid:x:/../*/_arg?value
             id:x:/../*/database-id?value
             row-widget-id:x:/../*/row-widget-id?value
+            delete:x:/@.delete?value
 
 
         /*

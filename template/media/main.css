@@ -11,17 +11,32 @@
     text-transform: capitalize;
     padding: 0;
 }
-.camphora-datagrid tr th:last-child {
-    width: 4rem;
-}
-.camphora-datagrid tr th a {
+.camphora-datagrid tr th button {
     display: block;
     margin-right: .5rem;
     text-overflow: ellipsis;
     overflow: hidden;
+    height: 2.5rem;
+    line-height: 1.5rem;
+    width: calc(100% - .5rem);
 }
-.camphora-datagrid tr th:last-child a {
-    margin-right: 0;
+.camphora-datagrid tr th.camphora-checkbox-column {
+    width: 120px;
+}
+.camphora-datagrid tr th button.camphora-sort-column-asc>span:after {
+    padding-right: .5rem;
+    font-family: 'icomoon' !important;
+    content: '\ea48';
+    line-height: 1rem;
+}
+.camphora-datagrid tr th button.camphora-sort-column-desc>span:after {
+    padding-right: .5rem;
+    font-family: 'icomoon' !important;
+    content: '\ea49';
+    line-height: 1rem;
+}
+.camphora-datagrid tr th.camphora-delete-header {
+    width: calc(var(--form-el-pad) * 2 + 4rem);
 }
 .camphora-datagrid tr td {
     vertical-align: text-top;
@@ -30,29 +45,24 @@
     text-overflow: ellipsis;
     overflow: hidden;
 }
+.camphora-datagrid tr.camphora-grid-editable td {
+    cursor: pointer;
+}
+.camphora-datagrid tr td.camphora-checkbox-column {
+    text-align: right;
+    font-size: 1.2rem;
+}
 .camphora-datagrid tr td.camphora-delete-cell {
     padding-top: 0;
     padding-bottom: 0;
 }
-.camphora-datagrid tr td.camphora-delete-cell a.button {
+.camphora-datagrid tr td.camphora-delete-cell button {
     margin-top: -.5rem;
     margin-bottom: .5rem;
-}
-.camphora-datagrid tr.camphora-grid-editable td {
-    cursor: pointer;
+    width: calc(100% - .5rem);
 }
 .camphora-datagrid tr.camphora-grid-editable td div.camphora-no-pointer-cursor {
     cursor: default;
-}
-.camphora-sort-column-asc>span:after {
-    padding-left:.5rem;
-    font-family:'icomoon' !important;
-    content: '\ea48';
-}
-.camphora-sort-column-desc>span:after {
-    padding-left:.5rem;
-    font-family:'icomoon' !important;
-    content: '\ea49';
 }
 .camphora-datagrid tr td.camphora-pre-cell {
     white-space: pre;

@@ -64,7 +64,8 @@ if:x:/@p5.web.query.get/*?value
    * databind the widget towards the specified QUERY parameter.
    */
   eval-x:x:/+/*/*
-  add:x:/../*/create-widget/**/widgets/=crud-widget/0
+  add:x:/../*/create-widget/**(/camphora.{0}.widgets.datagrid|/camphora.{0}.widgets.toolbar)
+    :{app-name}
     src
       query:x:/@p5.web.query.get/*?value
 
@@ -83,10 +84,13 @@ if:x:/@p5.web.query.get/*?value
    * Adding query to widget instantiation, to make sure we initially
    * databind the widget towards the specified QUERY parameter.
    */
+  -:x:/@p5.web.query.get/*?value.long
+    _:1
   eval-x:x:/+/*/*
-  add:x:/../*/create-widget/**/widgets/=crud-widget/0
+  add:x:/../*/create-widget/**/camphora.{0}.widgets.datagrid
+    :{app-name}
     src
-      page:x:/@p5.web.query.get/*?value
+      page:x:/@-?value
 
 
 
@@ -122,7 +126,7 @@ create-widget:camphora-main-container
       widgets
         div
           class:col-100
-          widgets:toolbar-widget
+          widgets
 
             /*
              * Our actual toolbar.
@@ -149,84 +153,17 @@ create-widget:camphora-main-container
             div
               class:left
               widgets
-                literal
-                  element:h3
+
+                /*
+                 * This is just a simple header, displaying some information
+                 * to the user, according to how many items and such there exists
+                 * in the current dataset (according to filter criteria).
+                 *
+                 * It is modified in the Active Event sinks further down in page.
+                 */
+                literal:camphora-app-header
+                  element:h4
                   class:camphora-header
-                  events
-
-
-                    /*
-                     * Invoked when for some reasons the datagrid has been databound.
-                     * The datagrid ID will be given as [_arg], the current page as
-                     * [page], whether nor not the datagrid has more pages as a boolean
-                     * [more-pages], and the total number of items matching the current
-                     * filter as [count].
-                     *
-                     * In this widget lambda event, we simply set the label's [innerValue]
-                     * to the total number of items matching the [filter].
-                     */
-                    camphora.datagrid.databound
-
-                      /*
-                       * Checking if this is "our" datagrid.
-                       */
-                      if:x:/../*/_arg?value
-                        !=:camphora-main-datagrid
-                        return
-
-                      /*
-                       * Checking if the current filter contains more items
-                       * than we have room for in one page.
-                       */
-                      .page-size:x:/../*/.page-size?value
-                      if:x:/../*/count?value
-                        <=:x:/@.page-size?value
-
-                        /*
-                         * Current page shows all items in filter.
-                         *
-                         * Checking number of items.
-                         */
-                        if:x:/../*/count?value.long
-                          =:long:1
-
-                          /*
-                           * Only 1 record matching current filter.
-                           */
-                          set-widget-property:x:/../*/_event?value
-                            innerValue:1 record
-
-                        else-if:x:/../*/count?value.long
-                          =:long:0
-
-                          /*
-                           * No matching records.
-                           */
-                          set-widget-property:x:/../*/_event?value
-                            innerValue:No records
-
-                        else
-
-                          /*
-                           * More than 1 matching record matching current filter.
-                           */
-                          set-widget-property:x:/../*/_event?value
-                            innerValue:{0} records
-                              :x:/../*/count?value
-
-                      else
-
-                        /*
-                         * We don't have room for all filtered items in one page.
-                         * Modifying placeholder to contain record count in addition
-                         * to the current page number.
-                         */
-                        +:x:/../*/page?value
-                          _:1
-                        set-widget-property:x:/../*/_event?value
-                          innerValue:Page {0} of {1} records
-                            :x:/@+?value
-                            :x:/../*/count?value
 
 
     /*
@@ -237,7 +174,7 @@ create-widget:camphora-main-container
       widgets
         div
           class:col-100
-          widgets:crud-widget
+          widgets
 
             /*
              * Our actual datagrid.
@@ -251,6 +188,90 @@ create-widget:camphora-main-container
              * if you want to display more or less items at the same time.
              */
             camphora.widgets.datagrid:camphora-main-datagrid
-              edit-items:true
-              delete-items:true
+              edit:true
+              delete:true
               page-size:x:/../*/.page-size?value
+
+          /*
+           * Supporting widget lambda events, that are subscribers
+           * to events raise by the Camphora widgets internally.
+           */
+          events
+
+
+            /*
+             * Invoked when for some reasons the datagrid has been databound.
+             * The datagrid ID will be given as [_arg], the current page as
+             * [page], whether nor not the datagrid has more pages as a boolean
+             * [more-pages], and the total number of items matching the current
+             * filter as [count].
+             *
+             * In this widget lambda event, we simply set the label's [innerValue]
+             * to the total number of items matching the [filter].
+             */
+            camphora.datagrid.databound
+
+              /*
+               * Checking if this is "our" datagrid.
+               */
+              if:x:/../*/_arg?value
+                !=:camphora-main-datagrid
+                return
+
+              /*
+               * Checking if the current filter contains more items
+               * than we have room for in one page.
+               */
+              .page-size:x:/../*/.page-size?value
+              if:x:/../*/count?value
+                <=:x:/@.page-size?value
+
+                /*
+                 * Current page shows all items in filter.
+                 *
+                 * Checking number of items, and modifying the header accordingly.
+                 */
+                if:x:/../*/count?value.long
+                  =:long:1
+
+                  /*
+                   * Only 1 record matching current filter.
+                   */
+                  set-widget-property:camphora-app-header
+                    innerValue:1 record of type '{0}'
+                      :{app-name}
+
+                else-if:x:/../*/count?value.long
+                  =:long:0
+
+                  /*
+                   * No matching records.
+                   */
+                  set-widget-property:camphora-app-header
+                    innerValue:No records of type '{0}'
+                      :{app-name}
+
+                else
+
+                  /*
+                   * More than 1 matching record matching our current filter.
+                   */
+                  set-widget-property:camphora-app-header
+                    innerValue:{0} records of type '{1}'
+                      :x:/../*/count?value
+                      :{app-name}
+
+              else
+
+                /*
+                 * We don't have room for all filtered records in one page.
+                 * Modifying [innerValue] to contain record count in addition
+                 * to the current page number.
+                 */
+                +:x:/../*/page?value
+                  _:1
+                set-widget-property:camphora-app-header
+                  innerValue:Page {0} of {1} records of type '{2}'
+                    :x:/@+?value
+                    :x:/../*/count?value
+                    :{app-name}

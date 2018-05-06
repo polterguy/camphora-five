@@ -154,13 +154,11 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
     foo
       .header
         widgets
-          a
-            href:#
+          button
             title:x:/@_dp/#/*/name?value
             innerValue:@"<span></span> {0}"
               :x:/@_dp/#/*/name?value
             .column:x:/@_dp/#/*/name?value
-            class:button
             onclick
 
               /*
@@ -248,8 +246,16 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
 
     /*
      * Checkbox type of column, making sure we display its value
-     * as a checkmark, by making it become a [.lambda] type of column.
+     * as a checkmark, by making it become a [.lambda] type of column, and
+     * making sure it becomes fixed width, to avoid having column take up
+     * so much space in datagrid.
      */
+    add:x:/@.column/*/*/.header
+      src
+        class:camphora-checkbox-column
+    add:x:/@.column/*
+      src
+        class:camphora-checkbox-column
     eval-x:x:/+/*/*/*/.field-name
     add:x:/@.column/*
       src

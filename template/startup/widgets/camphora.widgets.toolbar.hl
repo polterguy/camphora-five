@@ -9,6 +9,7 @@
  *
  * - __[datagrid]__ - The widget id of the __[camphora.xxx.widgets.datagrid]__ instance this toolbar co-exists with.
  * This argument must be the ID of a datagrid on your page.
+ * - __[query]__ - Optional initial query for filter textbox.
  * - __[main-toolbar]__ - Whether or not the main toolbar should be created or not. The default value of this argument is _"false"_.
  *
  * The above __[main-toolbar]__ argument can optionally be given the following sub arguments, which is only applied
@@ -28,6 +29,9 @@ create-event:camphora.widgets.toolbar
    */
   micro.lambda.contract.min:x:/..
     datagrid:string
+  micro.lambda.contract.optional:x:/..
+    query:string
+    main-toolbar:bool
 
   /*
    * Defaults.
@@ -79,7 +83,7 @@ create-event:camphora.widgets.toolbar
   /*
    * Returning our toolbar widget to caller.
    */
-  eval-x:x:/+/**/.datagrid
+  eval-x:x:/+/**(/.datagrid|/.query)
   return
     div
       .toolbar
@@ -233,6 +237,18 @@ create-event:camphora.widgets.toolbar
                   micro.page.set-focus:x:/../*/_event?value
 
               oninit
+
+                /*
+                 * Forward evaluated above.
+                 */
+                .query:x:/../*/query?value
+
+                /*
+                 * Sets the initial filter of our filter textbox, if any.
+                 */
+                if:x:/@.query?value
+                  set-widget-property:x:/../*/_event?value
+                    value:x:/@.query?value
 
                 /*
                  * Setting initial focus to search textbox.
