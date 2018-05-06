@@ -32,6 +32,8 @@
     padding-bottom: 0;
 }
 .camphora-datagrid tr td.camphora-delete-cell a.button {
+    margin-top: -.5rem;
+    margin-bottom: .5rem;
 }
 .camphora-datagrid tr.camphora-grid-editable td {
     cursor: pointer;

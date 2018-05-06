@@ -188,8 +188,7 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
                 class:camphora-sort-column-asc camphora-sort-column-desc
 
               /*
-               * Checking if we're already sorting by this column, at which point
-               * we reverse the current sort order.
+               * Checking if we're already sorting by this column.
                */
               if:x:/@get-widget-property/*/*/class?value
                 ~:camphora-sort-column-asc
@@ -201,31 +200,35 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
                   class:camphora-sort-column-desc
                 micro.css.delete:x:/../*/_event?value
                   class:camphora-sort-column-asc
-                add:x:/../*/camphora.{0}.datagrid.sort
-                  :{app-name}
-                  src
-                    order-dir:desc
+                eval-x:x:/+/*
+                camphora.datagrid.sort:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  column:x:/@get-widget-property/*/*/.column?value
+                  order-dir:desc
+
+              else-if:x:/@get-widget-property/*/*/class?value
+                ~:camphora-sort-column-desc
+
+                /*
+                 * We're alread sorting descending, removing sorting entirely
+                 */
+                micro.css.delete:x:/../*/_event?value
+                  class:camphora-sort-column-desc
+                eval-x:x:/+/*
+                camphora.datagrid.databind:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  order-by
+                  order-dir
 
               else
 
                 /*
-                 * Sorting ascending by default.
+                 * Sorting ascending if no existing sort order extsts.
                  */
                 micro.css.add:x:/../*/_event?value
                   class:camphora-sort-column-asc
-                micro.css.delete:x:/../*/_event?value
-                  class:camphora-sort-column-desc
-                add:x:/../*/camphora.{0}.datagrid.sort
-                  :{app-name}
-                  src
-                    order-dir:asc
-
-              /*
-               * Doing our actual sorting.
-               */
-              eval-x:x:/+/*
-              camphora.datagrid.sort:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                column:x:/@get-widget-property/*/*/.column?value
+                eval-x:x:/+/*
+                camphora.datagrid.sort:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                  column:x:/@get-widget-property/*/*/.column?value
+                  order-dir:asc
 
   /*
    * Setting the column's name, forward declaring its [innerValue],
