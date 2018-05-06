@@ -2,7 +2,7 @@
  * This file will create a form collection to an insert
  * widget for a camphora app.
  *
- * Expects one [field] for each field that exists in app.
+ * Expects one __[field]__ for each field that exists in app.
  */
 
 

@@ -1,7 +1,7 @@
 /*
  * This file will recursively load all Hyperlambda files from the
- * specified [folder], and replace all occurrencies of '{app-name}'
- * with the given [app-name] value.
+ * specified __[folder]__, and replace all occurrencies of '{app-name}'
+ * with the given __[app-name]__ value.
  */
 
 

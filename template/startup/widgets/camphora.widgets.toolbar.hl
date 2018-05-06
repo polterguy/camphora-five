@@ -1,4 +1,8 @@
 /*
+ * This is a _"template file"_, implying this file will be copied into
+ * your Camphora Five generated app's folder when your app is generated,
+ * and possibly modified to reflect your app's name/structure.
+ *
  * This file creates the __[camphora.xxx.widgets.toolbar]__ extension widget.
  */
 
@@ -26,9 +30,9 @@
  * - __[pager]__ - Whether or not user is allowed to page back and forth. The default value for this argument is boolean _"true"_.
  * - __[create]__ - Whether or not user is allowed to create items. The default value for this argument is boolean _"false"_.
  *
- * __Notice__, this event is dynamically created for each of your Camphora Five apps, and its
- * exact name varies from app to app, since the `{0}` parts of it is replaced with your
- * app's name.
+ * __Notice__, this event is dynamically created for each of your Camphora Five apps, doesn't exist
+ * in its exact name. If your app's name is for instance _"address-book"_, you will have a widget named
+ * __[camphora.address-book.widgets.toolbar]__ instead.
  */
 create-event:camphora.widgets.toolbar
 

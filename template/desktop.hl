@@ -1,4 +1,8 @@
 /*
+ * This is a _"template file"_, implying this file will be copied into
+ * your Camphora Five generated app's folder when your app is generated,
+ * and possibly modified to reflect your app's name/structure.
+ *
  * Desktop widget file for Camphora generated apps.
  */
 container

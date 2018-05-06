@@ -1,4 +1,8 @@
 /*
+ * This is a _"template file"_, implying this file will be copied into
+ * your Camphora Five generated app's folder when your app is generated,
+ * and possibly modified to reflect your app's name/structure.
+ *
  * This file creates the __[camphora.xxx.widgets.datagrid]__ extension widget.
  */
 
@@ -38,6 +42,10 @@
  *
  * If you supply your own __[.row]__ argument, the __[edit-items]__ argument is completely ignored, and editing
  * and deletion  of items will have to be manually implemented somehow.
+ *
+ * __Notice__, this event is dynamically created for each of your Camphora Five apps, doesn't exist
+ * in its exact name. If your app's name is for instance _"address-book"_, you will have a widget named
+ * __[camphora.address-book.widgets.datagrid]__ instead.
  */
 create-event:camphora.widgets.datagrid
 
