@@ -91,9 +91,46 @@ create-event:camphora.widgets.datagrid
             class:camphora-delete-cell
             .header
               widgets
-                a
-                  href:#
-                  class:button
+                button
+                  events
+
+
+                    /*
+                     * Handled to make sure we enable/disable button if there
+                     * are no items in current filter.
+                     */
+                    camphora.datagrid.databound
+
+                      /*
+                       * Verifying that this is our guy.
+                       */
+                      p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                        .datagrid
+                      if:x:/../*/_arg?value
+                        !=:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+                        return
+
+                      /*
+                       * Checking if there actually are any items in datagrid,
+                       * and acting accordingly.
+                       */
+                      if:x:/../*/count?value.long
+                        =:long:0
+
+                        /*
+                         * No items, disabling button.
+                         */
+                        set-widget-property:x:/../*/_event?value
+                          disabled
+
+                      else
+
+                        /*
+                         * 1 or more items, enabling button.
+                         */
+                        delete-widget-property:x:/../*/_event?value
+                          disabled
+
                   onclick
 
                     /*

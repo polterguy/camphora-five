@@ -76,7 +76,14 @@ micro.windows.confirm
      * Re-databinding datagrid, and updating count.
      */
     camphora.datagrid.databind:x:/@.datagrid?value
-      filter
       page
-      order-by
-      order-dir
+
+    /*
+     * We don't remove or change the current filter condition when user
+     * deletes all items, since this gives him a visual clue about that
+     * the operation was successful. But we do set the focus to any
+     * toolbar's filter textbox, to make it easier to immediately delete
+     * the current filter condition, and re-databind the datagrid, since
+     * the datagrid now is (obviously) empty.
+     */
+    camphora.toolbar._set-focus-to-filter-textbox:x:/@.datagrid?value

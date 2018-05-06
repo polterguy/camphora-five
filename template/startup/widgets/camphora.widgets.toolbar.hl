@@ -82,6 +82,7 @@ create-event:camphora.widgets.toolbar
   eval-x:x:/+/**/.datagrid
   return
     div
+      .toolbar
       widgets
         div
           class:strip right toolbar
@@ -95,6 +96,36 @@ create-event:camphora.widgets.toolbar
               innerValue:@"<span class=""icon-download2""></span>"
               title:Download items as CSV file
               .download-items
+              events
+
+
+                /*
+                 * Handled to make sure we enable/disable button if there
+                 * are no items in current filter.
+                 */
+                camphora.datagrid.databound
+
+                  /*
+                   * Checking if there actually are any items in datagrid,
+                   * and acting accordingly.
+                   */
+                  if:x:/../*/count?value.long
+                    =:long:0
+
+                    /*
+                     * No items, disabling button.
+                     */
+                    set-widget-property:x:/../*/_event?value
+                      disabled
+
+                  else
+
+                    /*
+                     * 1 or more items, enabling button.
+                     */
+                    delete-widget-property:x:/../*/_event?value
+                      disabled
+
               onclick
 
                 /*
@@ -124,22 +155,21 @@ create-event:camphora.widgets.toolbar
                   datagrid:x:/@.datagrid?value
                   file:x:/../*/files/*/physical-file?value
 
-
-            /*
-             * Delete all items from database button.
-             */
-            button
-              innerValue:@"<span class=""icon-bin""></span>"
-              title:Deletes all items in your database
-              .edit-items
-              onclick
+                /*
+                 * Finding filter textbox and setting its [innerValue] to empty string.
+                 */
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  .toolbar
+                p5.web.widgets.find-first:x:/-/*/*?value
+                  .filter
+                set-widget-property:x:/-/*/*?value
+                  value:
 
                 /*
-                 * Invoking widget lambda event that is responsible for
-                 * deleting all items from our database.
+                 * Setting focus to search textbox, to make it simpler to start
+                 * filtering records, immediately after import.
                  */
-                .datagrid:x:/../*/datagrid?value
-                camphora.database.delete-all-items:x:/-?value
+                micro.page.set-focus:x:/@p5.web.widgets.find-first/*/*?value
 
 
             a
@@ -182,7 +212,26 @@ create-event:camphora.widgets.toolbar
             input:camphora-search-query
               type:text
               placeholder:Search ...
+              .filter
               onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-search-button').raise('onclick');return false;}"
+              events
+
+
+                /*
+                 * Active Event sink invoked when for some reasons the filter textbox
+                 * should get focus.
+                 */
+                camphora.toolbar._set-focus-to-filter-textbox
+
+                  /*
+                   * Checking that this is our guy.
+                   */
+                  .datagrid:x:/../*/datagrid?value
+                  if:x:/../*/_arg?value
+                    !=:x:/@.datagrid?value
+                    return
+                  micro.page.set-focus:x:/../*/_event?value
+
               oninit
 
                 /*
