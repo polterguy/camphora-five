@@ -43,11 +43,3 @@ micro.windows.confirm
       page
       order-by
       order-dir
-    camphora.count-changed:x:/@.datagrid?value
-      count:long:0
-
-    /*
-     * Making sure we signal that the current filter has been
-     * set to nothing.
-     */
-    camphora.filter-changed:x:/@.datagrid?value

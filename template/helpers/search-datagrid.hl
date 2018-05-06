@@ -239,15 +239,3 @@ else
 camphora.datagrid.databind:x:/../*/datagrid?value
   order-by
   order-dir
-
-
-
-
-
-/*
- * Making sure we signal that the current filter has been
- * set to nothing.
- */
-eval-x:x:/+/*
-camphora.filter-changed:x:/../*/datagrid?value
-  filter:x:/../*/filter?value

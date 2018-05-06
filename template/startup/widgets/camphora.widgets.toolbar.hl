@@ -183,70 +183,7 @@ create-event:camphora.widgets.toolbar
               type:text
               placeholder:Search ...
               onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-search-button').raise('onclick');return false;}"
-              events
-
-
-                /*
-                 * Invoked when for some reasons the number of items have been
-                 * changed in the database for the given [_arg] datagrid. The
-                 * new item count will be passed in as [count].
-                 *
-                 * In this widget lambda event, we simply set the placeholder's
-                 * value of the filter textbox such that it displays the total
-                 * number of items.
-                 */
-                camphora.count-changed
-
-                  /*
-                   * Notice, since this event should be handled regardless of
-                   * what actual datagrid that the event has been invoked for, since
-                   * the count in the database arguably is a "shared property",
-                   * we don't care to check what [_arg] caller supplied.
-                   */
-
-                  /*
-                   * Modifying placeholder to contain record count.
-                   */
-                  set-widget-property:x:/../*/_event?value
-                    placeholder:Search amongst {0} {1} records ...
-                      :x:/../*/count?value
-                      :{app-name}
-
-
-                /*
-                 * Invoked when for some reasons the currently active filter
-                 * has been changed for the [_arg] datagrid. The new search
-                 * query will be given as [filter].
-                 */
-                camphora.filter-changed
-
-                  /*
-                   * Verifying that this invocation is for the current datagrid.
-                   */
-                  .datagrid:x:/../*/datagrid?value
-                  if:x:/-?value
-                    !=:x:/../*/_arg?value
-                    return
-
-                  /*
-                   * Setting widget's [value] to the given [filter].
-                   */
-                  set-widget-property:x:/../*/_event?value
-                    value:x:/../*/filter?value
-
-
               oninit
-
-                /*
-                 * Making sure we set initial count of records.
-                 */
-                .datagrid:x:/../*/datagrid?value
-                p5.mysql.connect:[camphora]
-                  p5.mysql.scalar:select count(*) from `{0}`
-                    :{app-name}
-                  eval-x:x:/+/*
-                  camphora.count-changed:x:/@.datagrid?value
-                    count:x:/@p5.mysql.scalar?value
 
                 /*
                  * Setting initial focus to search textbox.

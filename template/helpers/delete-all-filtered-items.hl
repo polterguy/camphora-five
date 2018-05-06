@@ -80,12 +80,3 @@ micro.windows.confirm
       page
       order-by
       order-dir
-    eval-x:x:/+/*
-    camphora.count-changed:x:/@.datagrid?value
-      count:x:/@p5.mysql.connect/*/p5.mysql.scalar?value
-
-    /*
-     * Making sure we signal that the current filter has been
-     * set to nothing.
-     */
-    camphora.filter-changed:x:/@.datagrid?value

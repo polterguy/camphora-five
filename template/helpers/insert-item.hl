@@ -109,16 +109,3 @@ p5.mysql.connect:[camphora]
     :{app-name}
     :x:/@.cols?value
     :x:/@.pars?value
-
-  /*
-   * Figuring out new count of items.
-   */
-  p5.mysql.scalar:@"select count(*) from `{0}`"
-    :{app-name}
-
-  /*
-   * Updates count.
-   */
-  eval-x:x:/+/*
-  camphora.count-changed:x:/../*/datagrid?value
-    count:x:/@p5.mysql.scalar?value

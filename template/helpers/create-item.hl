@@ -87,12 +87,6 @@ create-widgets
                 order-by
                 order-dir
 
-              /*
-               * Making sure we signal that the current filter has been
-               * set to nothing.
-               */
-              camphora.filter-changed:x:/@.datagrid?value
-
           button
             innerValue:Cancel
             onclick

@@ -116,3 +116,4 @@ camphora.datagrid.databound:x:/../*/datagrid?value
   page:x:/@camphora.{0}.datagrid.page/*?value.long
     :{app-name}
   more-pages:x:/@micro.widgets.mysql.datagrid.databind/*/more-pages?value
+  count:x:/@micro.widgets.mysql.datagrid.databind/*/count?value

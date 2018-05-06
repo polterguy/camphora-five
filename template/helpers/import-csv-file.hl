@@ -194,26 +194,3 @@ p5.mysql.connect:[camphora]
      * Committing transaction.
      */
     p5.mysql.transaction.commit
-
-  /*
-   * Figuring out new count of items.
-   */
-  p5.mysql.scalar:@"select count(*) from `{0}`"
-    :{app-name}
-
-  /*
-   * Updating count of items.
-   */
-  eval-x:x:/+/*
-  camphora.count-changed:x:/../*/datagrid?value
-    count:x:/@p5.mysql.scalar?value
-
-
-
-
-
-/*
- * Making sure we signal that the current filter and sort has been
- * set to nothing.
- */
-camphora.filter-changed:x:/../*/datagrid?value

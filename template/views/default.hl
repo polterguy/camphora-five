@@ -30,6 +30,17 @@ p5.web.page.set-title:{app-name}
 
 
 /*
+ * This is how many items should be displayed at once in our datagrid.
+ *
+ * Feel free to change this one as you see fit.
+ */
+.page-size:long:10
+
+
+
+
+
+/*
  * Including Micro's CSS files, in addition to our main CSS
  * file for currently evaluated Camphora app.
  */
@@ -84,6 +95,7 @@ if:x:/@p5.web.query.get/*?value
 /*
  * Creating main wire frame for app, containing toolbar and datagrid.
  */
+eval-x:x:/+/*/widgets/**(/page-size|/.page-size)
 create-widget:camphora-main-container
   class:container
   events
@@ -131,6 +143,91 @@ create-widget:camphora-main-container
                 edit-items:bool:true
                 download-items:bool:true
 
+            /*
+             * Column wrapping the header of application.
+             */
+            div
+              class:left
+              widgets
+                literal
+                  element:h3
+                  class:camphora-header
+                  events
+
+
+                    /*
+                     * Invoked when for some reasons the datagrid has been databound.
+                     * The datagrid ID will be given as [_arg], the current page as
+                     * [page], whether nor not the datagrid has more pages as a boolean
+                     * [more-pages], and the total number of items matching the current
+                     * filter as [count].
+                     *
+                     * In this widget lambda event, we simply set the label's [innerValue]
+                     * to the total number of items matching the [filter].
+                     */
+                    camphora.datagrid.databound
+
+                      /*
+                       * Checking if this is "our" datagrid.
+                       */
+                      if:x:/../*/_arg?value
+                        !=:camphora-main-datagrid
+                        return
+
+                      /*
+                       * Checking if the current filter contains more items
+                       * than we have room for in one page.
+                       */
+                      .page-size:x:/../*/.page-size?value
+                      if:x:/../*/count?value
+                        <=:x:/@.page-size?value
+
+                        /*
+                         * Current page shows all items in filter.
+                         *
+                         * Checking number of items.
+                         */
+                        if:x:/../*/count?value.long
+                          =:long:1
+
+                          /*
+                           * Only 1 record matching current filter.
+                           */
+                          set-widget-property:x:/../*/_event?value
+                            innerValue:1 record
+
+                        else-if:x:/../*/count?value.long
+                          =:long:0
+
+                          /*
+                           * No matching records.
+                           */
+                          set-widget-property:x:/../*/_event?value
+                            innerValue:No records
+
+                        else
+
+                          /*
+                           * More than 1 matching record matching current filter.
+                           */
+                          set-widget-property:x:/../*/_event?value
+                            innerValue:{0} records
+                              :x:/../*/count?value
+
+                      else
+
+                        /*
+                         * We don't have room for all filtered items in one page.
+                         * Modifying placeholder to contain record count in addition
+                         * to the current page number.
+                         */
+                        +:x:/../*/page?value
+                          _:1
+                        set-widget-property:x:/../*/_event?value
+                          innerValue:Page {0} of {1} records
+                            :x:/@+?value
+                            :x:/../*/count?value
+
 
     /*
      * Main row wrapping our MySQL datagrid.
@@ -156,4 +253,4 @@ create-widget:camphora-main-container
             camphora.widgets.datagrid:camphora-main-datagrid
               edit-items:true
               delete-items:true
-              page-size:long:10
+              page-size:x:/../*/.page-size?value

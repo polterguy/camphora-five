@@ -1,6 +1,9 @@
 /*
  * Main CSS file for Camphora Five CRUD app.
  */
+.camphora-header {
+    margin-top: .5rem;
+}
 .camphora-datagrid {
     table-layout: fixed;
 }

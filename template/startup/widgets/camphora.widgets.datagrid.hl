@@ -143,16 +143,6 @@ create-event:camphora.widgets.datagrid
                         :{app-name}
                         @id:x:/@.id?value
 
-                      /*
-                       * Figuring out new count of items,and making sure we
-                       * signal that the count has changed.
-                       */
-                      p5.mysql.scalar:@"select count(*) from `{0}`"
-                        :{app-name}
-                      eval-x:x:/+/*
-                      camphora.count-changed:x:/@p5.web.widgets.find-first-ancestor/*/*?value
-                        count:x:/@p5.mysql.scalar?value
-
                     /*
                      * Re-databinding datagrid, making sure we keep our current
                      * [filter], [page], [order-by] and [order-dir] arguments.
