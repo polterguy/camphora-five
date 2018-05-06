@@ -144,8 +144,8 @@ create-widget:camphora-main-container
             camphora.widgets.toolbar
               datagrid:camphora-main-datagrid
               main-toolbar:bool:true
-                edit-items:bool:true
-                download-items:bool:true
+                import:bool:true
+                export:bool:true
 
             /*
              * Column wrapping the header of application.

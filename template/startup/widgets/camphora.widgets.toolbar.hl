@@ -15,8 +15,8 @@
  * The above __[main-toolbar]__ argument can optionally be given the following sub arguments, which is only applied
  * if the toolbar is actually displayed.
  *
- * - __[edit-items]__ - Whether or not editing (and hence deletion) of items should be allowed. The default value for this argument is boolean _"false"_.
- * - __[download-items]__ - Whether or not downloading of items to CSV file should be allowed. The default value for this argument is boolean _"false"_.
+ * - __[import]__ - Whether or not user is allowed to import items (to CSV file). The default value for this argument is boolean _"false"_.
+ * - __[export]__ - Whether or not user is allowed to export items (to CSV file). The default value for this argument is boolean _"false"_.
  *
  * __Notice__, this event is dynamically created for each of your Camphora Five apps, and its
  * exact name varies from app to app, since the `{0}` parts of it is replaced with your
@@ -38,8 +38,8 @@ create-event:camphora.widgets.toolbar
    */
   .defaults
     main-toolbar:bool:false
-      edit-items:bool:false
-      download-items:bool:false
+      import:bool:false
+      export:bool:false
 
   /*
    * Checking if caller does not want a main toolbar, at which
@@ -60,25 +60,25 @@ create-event:camphora.widgets.toolbar
      * which point we remove the "upload CSV file" button, and the
      * "delete all items" button.
      */
-    if:x:(/../*/main-toolbar/*/edit-items|/@.defaults/*/main-toolbar/*/edit-items)/$?value.bool
+    if:x:(/../*/main-toolbar/*/import|/@.defaults/*/main-toolbar/*/import)/$?value.bool
       =:bool:false
 
       /*
        * Removing main toolbar.
        */
-      set:x:/../*/return/*/div/*/widgets/0/*/widgets/*/*(/.edit-items)/.
+      set:x:/../*/return/*/div/*/widgets/0/*/widgets/*/*(/.import)/.
 
     /*
      * Checking if caller does not want to allow downloading of items, at
      * which point we remove the "download CSV file" button.
      */
-    if:x:(/../*/main-toolbar/*/download-items|/@.defaults/*/main-toolbar/*/download-items)/$?value.bool
+    if:x:(/../*/main-toolbar/*/export|/@.defaults/*/main-toolbar/*/export)/$?value.bool
       =:bool:false
 
       /*
        * Removing main toolbar.
        */
-      set:x:/../*/return/*/div/*/widgets/0/*/widgets/*/*(/.download-items)/.
+      set:x:/../*/return/*/div/*/widgets/0/*/widgets/*/*(/.export)/.
 
   /*
    * Returning our toolbar widget to caller.
@@ -99,7 +99,7 @@ create-event:camphora.widgets.toolbar
             button
               innerValue:@"<span class=""icon-download2""></span>"
               title:Download items as CSV file
-              .download-items
+              .export
               events
 
 
@@ -146,7 +146,7 @@ create-event:camphora.widgets.toolbar
             micro.widgets.upload-button
               title:Import a CSV file from your local disc
               accept:.csv
-              .edit-items
+              .import
               .onupload
 
                 /*
