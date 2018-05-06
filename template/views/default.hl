@@ -144,8 +144,8 @@ create-widget:camphora-main-container
             camphora.widgets.toolbar
               datagrid:camphora-main-datagrid
               main-toolbar:true
-                import:false
-                export:false
+                import:true
+                export:true
               filter-toolbar:true
                 filter:true
                 pager:true

@@ -281,12 +281,12 @@ create-event:camphora.widgets.toolbar
             /*
              * Search textbox.
              */
-            input:camphora-search-query
+            input
               type:text
               placeholder:Search ...
               .filter
               .filtering
-              onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-search-button').raise('onclick');return false;}"
+              onkeydown:@"if (event.keyCode == 13) {p5.$(event.target.parentNode.querySelector('.search-button')).raise('onclick');return false;}"
               events
 
 
@@ -328,16 +328,21 @@ create-event:camphora.widgets.toolbar
             /*
              * Search button.
              */
-            button:camphora-search-button
+            button
               innerValue:@"<span class=""icon-search""></span>"
               title:Search for items
               .filtering
+              class:search-button
               onclick
 
                 /*
                  * Retrieving search query.
                  */
-                get-widget-property:camphora-search-query
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  .toolbar
+                p5.web.widgets.find-first:x:/-/*/*?value
+                  .filter
+                get-widget-property:x:/-/*/*?value
                   value
 
                 /*
@@ -351,7 +356,7 @@ create-event:camphora.widgets.toolbar
                 /*
                  * Setting focus to search button.
                  */
-                micro.page.set-focus:camphora-search-query
+                micro.page.set-focus:x:/@p5.web.widgets.find-first/*/*?value
 
 
             /*
@@ -415,7 +420,7 @@ create-event:camphora.widgets.toolbar
             /*
              * Page to next page button.
              */
-            button:camphora-next-button
+            button
               innerValue:@"<span class=""icon-arrow-right""></span>"
               title:Next page
               .pager

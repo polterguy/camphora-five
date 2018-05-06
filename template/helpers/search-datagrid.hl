@@ -25,15 +25,6 @@ micro.lambda.contract.optional:x:/..
 
 
 /*
- * Setting focus to search button.
- */
-micro.page.set-focus:camphora-search-query
-
-
-
-
-
-/*
  * Contains all of our field definitions, which we can
  * apply to our [filter] condition to.
  */
