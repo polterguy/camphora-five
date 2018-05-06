@@ -19,6 +19,7 @@
     height: 2.5rem;
     line-height: 1.5rem;
     width: calc(100% - .5rem);
+    margin-bottom: 0;
 }
 .camphora-datagrid tr th.camphora-checkbox-column {
     width: 120px;
@@ -51,10 +52,12 @@
 .camphora-datagrid tr td.camphora-checkbox-column {
     text-align: right;
     font-size: 1.2rem;
+    width: 50px;
 }
 .camphora-datagrid tr td.camphora-delete-cell {
     padding-top: 0;
     padding-bottom: 0;
+    width: calc(var(--form-el-pad) * 2 + 4rem);
 }
 .camphora-datagrid tr td.camphora-delete-cell button {
     margin-top: -.5rem;

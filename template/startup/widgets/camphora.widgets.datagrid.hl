@@ -12,6 +12,8 @@
  * The default value for this argument is _"false"_.
  * - __[delete]__ - Optional boolean indicating whether or not deletion of items should be allowed.
  * The default value for this argument is _"false"_.
+ * - __[headers]__ - Optional boolean indicating whether or not the datagrid should have headers or not.
+ * The default value for this argument is _"true"_.
  * - __[page-size]__ - Number of items the datagrid should display. The default value for this argument is 10.
  * - __[query]__ - Optional initial search query to databind the datagrid towards.
  * - __[page]__ - Optional initial page to databind the datagrid towards.
@@ -45,6 +47,7 @@ create-event:camphora.widgets.datagrid
   micro.lambda.contract.optional:x:/..
     edit:bool
     delete:bool
+    headers
     page-size:long
     query:string
     page:long
@@ -56,6 +59,7 @@ create-event:camphora.widgets.datagrid
   .defaults
     edit:bool:false
     delete:bool:false
+    headers:bool:true
     page-size:long:10
     page:long:0
     class:hover camphora-datagrid
@@ -226,6 +230,21 @@ create-event:camphora.widgets.datagrid
                    * [filter], [page], [order-by] and [order-dir] arguments.
                    */
                   camphora.datagrid.databind:x:/@p5.web.widgets.find-first-ancestor/*/*?value
+
+  /*
+   * Checking if caller wants to have headers for his datagrid.
+   */
+  if:x:(/../*/headers|/@.defaults/*/headers)/$?value.bool
+    =:bool:false
+
+    /*
+     * No headers for datagrid at all, hance deleting all [.header] inside
+     * of datagrid.
+     */
+    set:x:/../*/return/*/micro.widgets.mysql.datagrid/*/columns/*/*/.header
+    add:x:/../*/return/*/micro.widgets.mysql.datagrid
+      src
+        headers:bool:false
 
   /*
    * Returning actual widget to caller, making sure we forward

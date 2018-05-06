@@ -143,9 +143,13 @@ create-widget:camphora-main-container
              */
             camphora.widgets.toolbar
               datagrid:camphora-main-datagrid
-              main-toolbar:bool:true
-                import:bool:true
-                export:bool:true
+              main-toolbar:true
+                import:false
+                export:false
+              filter-toolbar:true
+                filter:true
+                pager:true
+                create:true
 
             /*
              * Column wrapping the header of application.
@@ -188,9 +192,10 @@ create-widget:camphora-main-container
              * if you want to display more or less items at the same time.
              */
             camphora.widgets.datagrid:camphora-main-datagrid
+              page-size:x:/../*/.page-size?value
               edit:true
               delete:true
-              page-size:x:/../*/.page-size?value
+              headers:true
 
           /*
            * Supporting widget lambda events, that are subscribers

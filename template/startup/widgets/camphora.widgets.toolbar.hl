@@ -11,12 +11,20 @@
  * This argument must be the ID of a datagrid on your page.
  * - __[query]__ - Optional initial query for filter textbox.
  * - __[main-toolbar]__ - Whether or not the main toolbar should be created or not. The default value of this argument is _"false"_.
+ * - __[filter-toolbar]__ - Whether or not the filter toolbar should be created or not. The default value of this argument is _"true"_.
  *
  * The above __[main-toolbar]__ argument can optionally be given the following sub arguments, which is only applied
  * if the toolbar is actually displayed.
  *
  * - __[import]__ - Whether or not user is allowed to import items (to CSV file). The default value for this argument is boolean _"false"_.
  * - __[export]__ - Whether or not user is allowed to export items (to CSV file). The default value for this argument is boolean _"false"_.
+ *
+ * The above __[filter-toolbar]__ argument can optionally be given the following sub arguments, which is only applied
+ * if the toolbar is actually displayed.
+ *
+ * - __[filter]__ - Whether or not user is allowed to filter his items. The default value for this argument is boolean _"true"_.
+ * - __[pager]__ - Whether or not user is allowed to page back and forth. The default value for this argument is boolean _"true"_.
+ * - __[create]__ - Whether or not user is allowed to create items. The default value for this argument is boolean _"false"_.
  *
  * __Notice__, this event is dynamically created for each of your Camphora Five apps, and its
  * exact name varies from app to app, since the `{0}` parts of it is replaced with your
@@ -32,6 +40,7 @@ create-event:camphora.widgets.toolbar
   micro.lambda.contract.optional:x:/..
     query:string
     main-toolbar:bool
+    filter-toolbar:bool
 
   /*
    * Defaults.
@@ -40,6 +49,10 @@ create-event:camphora.widgets.toolbar
     main-toolbar:bool:false
       import:bool:false
       export:bool:false
+    filter-toolbar:bool:true
+      filter:bool:true
+      pager:bool:true
+      create:bool:false
 
   /*
    * Checking if caller does not want a main toolbar, at which
@@ -64,7 +77,7 @@ create-event:camphora.widgets.toolbar
       =:bool:false
 
       /*
-       * Removing main toolbar.
+       * Removing import button.
        */
       set:x:/../*/return/*/div/*/widgets/0/*/widgets/*/*(/.import)/.
 
@@ -76,9 +89,59 @@ create-event:camphora.widgets.toolbar
       =:bool:false
 
       /*
-       * Removing main toolbar.
+       * Removing export button.
        */
       set:x:/../*/return/*/div/*/widgets/0/*/widgets/*/*(/.export)/.
+
+  /*
+   * Checking if caller does not want a main toolbar, at which
+   * point we delete the main toolbar entirely from the return widget.
+   */
+  if:x:(/../*/filter-toolbar|/@.defaults/*/filter-toolbar)/$?value.bool
+    =:bool:false
+
+    /*
+     * Removing filter toolbar.
+     */
+    set:x:/../*/return/*/div/*/widgets/0/-
+
+  else
+
+    /*
+     * Checking if caller does not want to allow filter items, at
+     * which point we remove the filtering parts of the toolbar.
+     */
+    if:x:(/../*/filter-toolbar/*/filter|/@.defaults/*/filter-toolbar/*/filter)/$?value.bool
+      =:bool:false
+
+      /*
+       * Removing export button.
+       */
+      set:x:/../*/return/*/div/*/widgets/0/-/*/widgets/*/*(/.filtering)/.
+
+    /*
+     * Checking if caller does not want to allow paging, at
+     * which point we remove the paging parts of the toolbar.
+     */
+    if:x:(/../*/filter-toolbar/*/pager|/@.defaults/*/filter-toolbar/*/pager)/$?value.bool
+      =:bool:false
+
+      /*
+       * Removing pager button.
+       */
+      set:x:/../*/return/*/div/*/widgets/0/-/*/widgets/*/*(/.pager)/.
+
+    /*
+     * Checking if caller does not want to allow paging, at
+     * which point we remove the paging parts of the toolbar.
+     */
+    if:x:(/../*/filter-toolbar/*/create|/@.defaults/*/filter-toolbar/*/create)/$?value.bool
+      =:bool:false
+
+      /*
+       * Removing pager button.
+       */
+      set:x:/../*/return/*/div/*/widgets/0/-/*/widgets/*/*(/.create)/.
 
   /*
    * Returning our toolbar widget to caller.
@@ -200,6 +263,7 @@ create-event:camphora.widgets.toolbar
               innerValue:@"<span class=""icon-plus""></span>"
               class:large
               title:Create new record
+              .create
               onclick
 
                 /*
@@ -217,6 +281,7 @@ create-event:camphora.widgets.toolbar
               type:text
               placeholder:Search ...
               .filter
+              .filtering
               onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-search-button').raise('onclick');return false;}"
               events
 
@@ -262,6 +327,7 @@ create-event:camphora.widgets.toolbar
             button:camphora-search-button
               innerValue:@"<span class=""icon-search""></span>"
               title:Search for items
+              .filtering
               onclick
 
                 /*
@@ -290,6 +356,7 @@ create-event:camphora.widgets.toolbar
             button
               innerValue:@"<span class=""icon-arrow-left""></span>"
               title:Previous page
+              .pager
               events
 
 
@@ -347,6 +414,7 @@ create-event:camphora.widgets.toolbar
             button:camphora-next-button
               innerValue:@"<span class=""icon-arrow-right""></span>"
               title:Next page
+              .pager
               events
 
 
