@@ -88,3 +88,9 @@
 .camphora-navbar .item.leaf>a>span.icon:before {
     content: '\e9ce';
 }
+.camphora-view-toolbar {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+    z-index: 1;
+}

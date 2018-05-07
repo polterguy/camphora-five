@@ -77,11 +77,36 @@ p5.web.widgets.find-first:x:/@p5.web.widgets.get-parent/*/*?value
 if:x:/-/*/*?value
 
   /*
-   * Editor for item is already open hence we close it,
-   * to allow for "toggling" functionality on editors
+   * Editor for item is already open, hence we close it,
+   * to allow for "toggling" functionality on editors.
    */
   delete-widget:x:/@p5.web.widgets.find-first/*/*?value
   return
+
+
+
+
+
+/*
+ * Checking if another item is already being edited, at which point
+ * we delete its editor.
+ */
+p5.web.widgets.find-first:x:/@p5.web.widgets.get-parent/*/*?value
+  .edit
+if:x:/-/*/*?value
+
+  /*
+   * Editor for another item is already open, hence we close it,
+   * before we initiate editing of the current item.
+   *
+   * But first we must find its datagrid row, and delete the
+   * "camphora-row-is-edited" CSS class on it.
+   */
+  p5.web.widgets.get-children:x:/@p5.web.widgets.get-parent/*/*?value
+  micro.css.delete:x:/-/*/*/={0}/-?value
+    :x:/@p5.web.widgets.find-first/*/*?value
+    class:camphora-row-is-edited
+  delete-widget:x:/@p5.web.widgets.find-first/*/*?value
 
 
 
@@ -137,12 +162,51 @@ p5.web.include-javascript:@"function p5_camphora_edit_item_onkeydown(e) {
 /*
  * Creating editing widget for record.
  */
-eval-x:x:/+/**(/.editor-row|/.datagrid)
+eval-x:x:/+/**(/.editor-row|/.datagrid|/.id)
 create-widget
   after:x:/../*/row-widget-id?value
   element:tr
   .edit:x:/../*/id?value
   class:camphora-edit-row
+  events
+
+
+    /*
+     * Returns the database ID of the currently edited item.
+     *
+     * Expects [_arg] being the widget id of the datagrid you want to
+     * retrieve the currently edited item's ID from.
+     */
+    camphora.datagrid.edited-item-id
+
+      /*
+       * Forward evaluated above.
+       */
+      .id:x:/../*/id?value
+      .datagrid:x:/../*/datagrid?value
+
+      /*
+       * Checking that this is the grid caller is referencing.
+       */
+      if:x:/../*/_arg?value
+        !=:x:/@.datagrid?value
+        return
+
+      /*
+       * Sanity checking invocation.
+       */
+      micro.lambda.contract.min:x:/..
+        _arg:string
+
+      /*
+       * Retrieving database ID of edited item, and returning it to caller.
+       */
+      get-widget-property:x:/../*/_event?value
+        .edit
+      eval-x:x:/+/*
+      return
+        id:x:/@get-widget-property/*/*?value.long
+
   .onclose
 
     /*
@@ -202,3 +266,9 @@ create-widget
                      * Re-databinding datagrid.
                      */
                     camphora.datagrid.databind:x:/@.datagrid?value
+
+                    /*
+                     * Giving some info to user.
+                     */
+                    micro.windows.info:Record was successfully saved
+                      class:micro-windows-info success

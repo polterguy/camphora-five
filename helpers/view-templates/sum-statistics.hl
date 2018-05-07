@@ -1,0 +1,100 @@
+/*
+ * A "view sum" type of view template for Camphora Five.
+ *
+ * Will sum all [field]'s for your database by the value of another
+ * [field].
+ */
+
+
+
+
+
+/*
+ * Contains the parts of this view that needs to be configured.
+ */
+.configure
+  field:Group by
+  field:Sum field
+
+
+
+
+
+/*
+ * Contains the field name to group your SQL by.
+ */
+.group-by-field-name:{Group by}
+
+
+
+
+
+/*
+ * Contains the field to aggregate the sum by.
+ */
+.sum-field-name:{Sum field}
+
+
+
+
+
+/*
+ * Includes Micro's CSS files.
+ */
+micro.css.include
+
+
+
+
+
+/*
+ * Then we connect to our database, and select our sum aggregate values.
+ */
+p5.mysql.connect:[camphora]
+
+  /*
+   * Selecting Markdown field from database.
+   */
+  p5.mysql.select:select `{2}`, sum(`{0}`) from `{1}` group by `{2}`
+    :x:/@.sum-field-name?value
+    :{app-name}
+    :x:/@.group-by-field-name?value
+
+  /*
+   * Adding our data to our bar chart below.
+   */
+  for-each:x:/@p5.mysql.select/*
+    set:x:/+2/*/*?name
+      src:x:/@_dp/#/0?value
+    eval-x:x:/+/*/*
+    add:x:/../*/create-widget/**/micro.widgets.chart.column/*/data
+      src
+        foo:x:/@_dp/#/1?value
+
+
+
+
+
+/*
+ * Creating our main wire frame widget.
+ */
+create-widget
+  class:container
+  widgets
+    div
+      class:row
+      widgets
+        div
+          class:col
+          widgets
+            h3
+              class:center
+              innerValue:Sales by person
+    div
+      class:row
+      widgets
+        div
+          class:col-50 offset-25
+          widgets
+            micro.widgets.chart.column
+              data

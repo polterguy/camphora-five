@@ -367,21 +367,193 @@ create-widget
                   onclick
 
                     /*
-                     * Finds our "view wrapper", and adds another CodeMirror wrapper, and a wrapper
-                     * for the view's name.
-                     *
-                     * Notice, we use the contents of 'default-view-content.hl' as the default content
-                     * of our newly created view.
+                     * Figuring out what "template views" user can select from.
                      */
-                    p5.web.widgets.find
-                      .views
-                    load-file:@CAMPHORA/helpers/default-view-content.hl
-                      convert:false
+                    list-files:@CAMPHORA/helpers/view-templates/
+                      filter:.hl
+                    for-each:x:/-/*?name
+                      split:x:/@_dp?value
+                        =:/
+                        =:.
+                      eval-x:x:/+/*/*/*
+                      add:x:/../*/create-widgets/**/widgets/*/select/[0,1]/*/widgets
+                        src
+                          option
+                            innerValue:x:/@split/0/-2?name
+
+                    /*
+                     * Displays a modal widget, asking user what "template view"
+                     * he wants to start out from.
+                     */
                     create-widgets
-                      camphora.widgets._internals.view-definition
-                        parent:x:/@p5.web.widgets.find/*/*?value
-                        name:view-name
-                        value:x:/@load-file/*?value
+                      micro.widgets.modal:camphora-select-template-view
+                        widgets
+                          h3
+                            innerValue:Select template view
+
+                          div
+                            class:strip fill
+                            widgets
+                              label
+                                class:description-9
+                                innerValue:Template
+                              select:camphora-select-view
+                                widgets
+                                oninit
+
+                                  /*
+                                   * Invoking event responsible for parsing the [.configure]
+                                   * section for the view, and creating one widget for each
+                                   * section, allowing user to configure his view.
+                                   */
+                                  get-widget-property:x:/../*/_event?value
+                                    value
+                                  camphora._populate-properties-for-view-selector:x:/@get-widget-property/*/*?value
+
+                                onchange
+
+                                  /*
+                                   * Invoking event responsible for parsing the [.configure]
+                                   * section for the view, and creating one widget for each
+                                   * section, allowing user to configure his view.
+                                   */
+                                  get-widget-property:x:/../*/_event?value
+                                    value
+                                  camphora._populate-properties-for-view-selector:x:/@get-widget-property/*/*?value
+
+                          container:camphora-view-properties
+                            events
+
+                              /*
+                               * Figures out the view's [.configure] section, and creates
+                               * a widget for each property in it.
+                               */
+                              camphora._populate-properties-for-view-selector
+
+                                /*
+                                 * Clearing old widgets out of property section.
+                                 */
+                                clear-widget:camphora-view-properties
+
+                                /*
+                                 * Loading up view and parsing its [.configure] section.
+                                 */
+                                load-file:@CAMPHORA/helpers/view-templates/{0}.hl
+                                  :x:/../*/_arg?value
+
+                                /*
+                                 * Checking if view has a [.configure] section.
+                                 */
+                                if:x:/@load-file/*/*/.configure
+
+                                  /*
+                                   * View needs to be configured somehow.
+                                   *
+                                   * First checking if view is associated with one
+                                   * or more fields somehow.
+                                   */
+                                  if:x:/@load-file/*/*/.configure/*/field
+
+                                    /*
+                                     * View has at least one [field] type of configuration.
+                                     *
+                                     * Figuring out available fields.
+                                     */
+                                    p5.web.widgets.find-first
+                                      .fields
+                                    micro.form.serialize:x:/-/*/*?value
+
+                                    /*
+                                     * Iterating through each [field] type of configuration.
+                                     */
+                                    for-each:x:/@load-file/*/*/.configure/*/field
+
+                                      /*
+                                       * Creating a select list, to allow user to select a field
+                                       * to associate the view with.
+                                       */
+                                      for-each:x:/@micro.form.serialize/*/field-name?value
+                                        eval-x:x:/+/*/*/*
+                                        add:x:/..for-each/..for-each/*/create-widget/*/widgets/*/select/*/widgets
+                                          src
+                                            option
+                                              innerValue:x:/@_dp?value
+
+                                      /*
+                                       * Creating select widget to associate with variable
+                                       */
+                                      create-widget
+                                        class:strip fill
+                                        parent:camphora-view-properties
+                                        widgets
+                                          label
+                                            class:description-9
+                                            innerValue:x:/@_dp/#?value
+                                          select
+                                            .data-field:x:/@_dp/#?value
+                                            widgets
+
+                          div
+                            class:strip right
+                            widgets
+                              button
+                                innerValue:Select
+                                onclick
+
+                                  /*
+                                   * Finds our "view wrapper", and adds another CodeMirror wrapper, and a wrapper
+                                   * for the view's name.
+                                   */
+                                  get-widget-property:camphora-select-view
+                                    value
+                                  p5.web.widgets.find-first
+                                    .views
+
+                                  /*
+                                   * Notice, we remove the [.configure] lambda, and its associated
+                                   * comment, if any.
+                                   */
+                                  load-file:@CAMPHORA/helpers/view-templates/{0}.hl
+                                    :x:/@get-widget-property/*/*?value
+                                    convert:false
+                                  hyper2lambda:x:/@load-file/*?value
+                                    keep-comments:true
+                                  set:x:/@hyper2lambda/*/.configure/-/\..comment
+                                  set:x:/@hyper2lambda/*/.configure
+
+                                  /*
+                                   * Checking if we have any [.configure] sections that user
+                                   * has supplied for us.
+                                   */
+                                  micro.form.serialize:camphora-view-properties
+                                  for-each:x:/@micro.form.serialize/*
+
+                                    /*
+                                     * View should be associated with a [field], making the
+                                     * substitution before we transform our lambda back to
+                                     * Hyperlambda and create our view wrapper.
+                                     */
+                                    set:x:/@hyper2lambda/**/={{0}}?value
+                                      :x:/@_dp/#?name
+                                      src:x:/@_dp/#?value
+
+                                  lambda2hyper:x:/@hyper2lambda/*
+                                    comments:unroll
+
+                                  /*
+                                   * Invoking event responsible for creating our view wrapper.
+                                   */
+                                  create-widgets
+                                    camphora.widgets._internals.view-definition
+                                      parent:x:/@p5.web.widgets.find-first/*/*?value
+                                      name:x:/@get-widget-property/*/*?value
+                                      value:x:/@lambda2hyper?value
+
+                                  /*
+                                   * Deleting modal widget.
+                                   */
+                                  delete-widget:camphora-select-template-view
+
             h3
               innerValue:Views
             br

@@ -90,6 +90,9 @@ eval-x:x:/+/*/*
   camphora.datagrid.row-clicked
     :camphora.{0}.datagrid.row-clicked
       :x:/../*/app-name?value
+  camphora.datagrid.edited-item-id
+    :camphora.{0}.datagrid.edited-item-id
+      :x:/../*/app-name?value
 
 
 

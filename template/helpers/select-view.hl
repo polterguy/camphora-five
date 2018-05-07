@@ -1,15 +1,27 @@
-
 /*
- * This file is invoked when the user selects a "view" in his navbar.
+ * This file is invoked when the user selects a view in his navbar
+ * in the _"default.hl"_ view for his app. This file will attempt
+ * to dynamically load the view, and _"inject"_ it into a view container
+ * dynamically.
  *
- * It expects a __[view]__ argument, being the path to the view the user
- * selected. This file will try to _"inject"_ the view into a _"view container"_,
- * if possible, if not it will simply evaluate the view Hyperlambda as is.
- * If the view doesn't seem to create widgets at all, it will redirect to
- * the view's URL.
+ * This file expects a __[view]__ argument, being the path to the view the
+ * user selected - In addition to optionally an __[id]__ argument, being the
+ * database ID of the item the user is currently editing.
  *
- * The _"view container"_ will be created as a wrapper widget, which wraps the
- * selected view.
+ * __Notice__, not all views can be dynamically loaded up like this, and
+ * whether or not this is possible, depends upon how the view is wired
+ * together. This file will only attempt to dynamically load the view if
+ * it contains a __[create-widget]__ invocation, or a
+ * __[create-container-widget]__ invocation at the root level of the
+ * lambda object in the Hyperlambda file for the view.
+ *
+ * Also notice that some views are dependent upon the database __[id]__
+ * to function adequately.
+ *
+ * If the view cannot be dynamically loaded according to the above description,
+ * this file will fallback to redirecting the user to the views URL, passing
+ * in the __[id]__ as the last entity of the URL, if any __[id]__ argument is
+ * passed in by caller.
  */
 
 
@@ -21,20 +33,8 @@
  */
 micro.lambda.contract.min:x:/..
   view:string
-
-
-
-
-
-/*
- * Checking if this is a folder, at which point we
- * return early, since there is nothing to do here.
- */
-if
-  ends-with:x:/../*/view?value
-    src:.hl
-  =:bool:false
-  return
+micro.lambda.contract.optional:x:/..
+  id:long
 
 
 
@@ -50,27 +50,60 @@ load-file:x:/../*/view?value
 
 
 /*
+ * This view is not creating widgets, hence we redirect the client
+ * to its URL, passing in any [id] argument if it is given.
+ */
+split:x:/../*/view?value
+  =:/
+  =:.
+
+/*
+ * Removing "/modules/", "/views/" and ".hl" parts of
+ * [view], leaving us with "/app-name/view-name/" parts,
+ * becoming the view's main URL.
+ */
+set:x:/@split(/0/-|/0|/2)
+
+/*
+ * Checking if we have an [id].
+ */
+if:x:/../*/id?value
+
+  /*
+   * Passing in [id] of currently edited view as the last URL entity.
+   */
+  add:x:/@split
+    src:x:/../*/id?value
+
+/*
+ * Joining all URL entities now, ending up with something like
+ * the following "/app-name/view-name/xxx/" where xxx is the database
+ * id.
+ */
+join:x:/@split/*?name
+  sep:/
+
+
+
+
+
+/*
  * Verifying that this actually is a visual view, which we
  * determine by figuring out whether or not view is creating
  * widgets or not.
  */
-if:x:/@load-file/*/*(/create-widget|/create-widgets|/create-container-widget)
+if:x:/@load-file/*/*(/create-widget|/create-container-widget)
   not
 
   /*
-   * This view is not creating widgets, hence we redirect the client
-   * to its URL.
+   * Redirecting client to location of view.
    */
-  split:x:/../*/view?value
-    =:/
-    =:.
-  set:x:/@split/0
-  set:x:/@split/0/-
-  set:x:/@split/0/-
-  join:x:/@split/*?name
-    sep:/
   p5.web.set-location:/{0}/
     :x:/@join?value
+
+  /*
+   * Returning warly to avoid evaluation of the rest of our lambda.
+   */
   return
 
 
@@ -85,6 +118,10 @@ if
   fetch:x:/0/0?value
     widget-exists:camphora-view-container
   =:bool:true
+
+  /*
+   * Deleting previously shown view.
+   */
   delete-widget:camphora-view-container
 
 
@@ -92,15 +129,17 @@ if
 
 
 /*
- * Checking if this view is a [create-widget] type of view, at which point
- * we make sure we "inject" the view into a custom "view container".
+ * Checking if this view is a [create-widget] or [create-container-widget]
+ * type of view, at which point we make sure we "inject" the view into our
+ * custom "view container".
  */
-if:x:/@load-file/*/*/create-widget
+if:x:/@load-file/*/*(/create-widget|/create-container-widget)
 
   /*
    * Making sure we create our "view container", for then to
    * modify our view, such that it is injected into this container.
    */
+  eval-x:x:/+/**/.view-url
   create-container-widget:camphora-view-container
     after:camphora-navbar
     class:row
@@ -112,10 +151,24 @@ if:x:/@load-file/*/*/create-widget
             class:air-inner rounded shaded
             widgets
               div
-                class:right
+                class:strip right camphora-view-toolbar
                 widgets
                   button
+                    innerValue:@"<span class=""icon-share""></span>"
+                    title:Open view in another window
+                    onclick
+
+                      /*
+                       * Forward evaluated above.
+                       */
+                      .view-url:/{0}/
+                        :x:/@join?value
+                      p5.web.send-javascript:@"window.open('{0}', '_new');"
+                        :x:/@.view-url?value
+
+                  button
                     innerValue:@"<span class=""icon-cross""></span>"
+                    title:Close view viewer
                     onclick
 
                       /*
@@ -129,10 +182,11 @@ if:x:/@load-file/*/*/create-widget
               container:camphora-view-wrapper
 
   /*
-   * Adding [parent] argument to our [create-widget] invocation,
-   * such that we can inject it into our view container.
+   * Adding [parent] argument to our first [create-widget] or
+   * [create-container-widget] invocation, such that we can inject it
+   * into our view container.
    */
-  add:x:/@load-file/*/*/create-widget
+  add:x:/@load-file/*/*(/create-widget|/create-container-widget)/[0,1]
     src
       parent:camphora-view-wrapper
 
@@ -143,6 +197,27 @@ if:x:/@load-file/*/*/create-widget
 /*
  * Evaluating view, now possibly modified such that it is loaded
  * up into our "view container".
+ *
+ * Making sure we do this in an exception handler, in case loading
+ * of view is not successful for some reasons.
+ *
+ * If an exception occurs, we delete the view container created above,
+ * and displays an information "bubble window" to the user.
  */
-eval:x:/@load-file/*
+try
 
+  /*
+   * Passing in [id] specified by caller.
+   */
+  add:x:/+
+    src:x:/../*/id
+  eval:x:/@load-file/*
+
+catch
+
+  /*
+   * Oops, somethign went wrong.
+   */
+  micro.windows.info:x:/@message?value
+    class:micro-windows-info warning
+  delete-widget:camphora-view-container

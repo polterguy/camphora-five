@@ -1,0 +1,166 @@
+/*
+ * A "view markdown" type of view template for Camphora Five.
+ *
+ * Optionally pass in [id] as the database id of the item you
+ * are currently editing. If you don't pass in [id], the database
+ * ID will be assumed to be the last URL entity.
+ *
+ * If no ID can be determined according to above logic, this
+ * file will throw an exception.
+ */
+
+
+
+
+
+/*
+ * Contains the parts of this view that needs to be configured.
+ */
+.configure
+  field:Markdown field
+
+
+
+
+
+/*
+ * Contains the field name of your Markdown column.
+ */
+.markdown-field-name:{Markdown field}
+
+
+
+
+
+/*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.optional:x:/..
+  id:long
+
+
+
+
+
+/*
+ * Includes Micro's CSS files.
+ */
+micro.css.include
+
+
+
+
+
+/*
+ * Figuring our item database ID.
+ *
+ * Notice, first we check to see if there is a current item being edited.
+ * If it is, we use the edited item's ID.
+ * Otherwise, we assume the database ID to the specified item is the last
+ * part of the URL.
+ */
+.id
+if:x:/../*/id?value
+
+  /*
+   * We have some sort of "editor" open for current item.
+   */
+  set:x:/@.id?value
+    src:x:/../*/id?value
+
+else
+
+  /*
+   * Assumes the last part of our URL is our database ID.
+   */
+  micro.url.get-entities
+  set:x:/@.id?value
+    src:x:/@micro.url.get-entities/0/-?name
+
+
+
+
+
+/*
+ * Verifying that we somehow have a valid ID to a database item.
+ */
+if
+  p5.types.can-convert:x:/@.id?value
+    type:long
+  =:bool:false
+
+  /*
+   * We don't have a valid database ID to an existing item.
+   */
+  throw:No database record selected
+
+
+
+
+
+/*
+ * Then we connect to our database, select all records from our table,
+ * and create one paragraph for each second column, injecting it into
+ * our Micro CSS column created above.
+ */
+.markdown
+p5.mysql.connect:[camphora]
+
+  /*
+   * Selecting Markdown field from database.
+   */
+  p5.mysql.scalar:select `{0}` from `{1}` where id=@id
+    :x:/@.markdown-field-name?value
+    :{app-name}
+    @id:x:/@.id?value
+
+  /*
+   * If above SQL returned nothing, we default it to some generic
+   * piece of text, simply informing user that it was empty.
+   */
+  if:x:/@p5.mysql.scalar?value
+    =
+    or:x:/@p5.mysql.scalar?value
+      =:
+
+    /*
+     * Above invocation returned nothing.
+     */
+    set:x:/@.markdown?value
+      src:@"This item doesn't contain any Markdown content!"
+
+  else
+
+    /*
+     * Above invocation returned nothing.
+     */
+    set:x:/@.markdown?value
+      src:x:/@p5.mysql.scalar?value
+
+
+
+
+
+/*
+ * Transforming Markdown to HTML.
+ */
+markdown2html:x:/@.markdown?value
+
+
+
+
+
+/*
+ * Creating our main wire frame widget.
+ */
+create-widget
+  class:container
+  widgets
+    div
+      class:row
+      widgets
+        div
+          class:col
+          widgets
+            div
+              innerValue:x:/@markdown2html?value

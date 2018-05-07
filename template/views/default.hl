@@ -118,6 +118,7 @@ create-widget:camphora-main-container
 
   widgets
 
+
     /*
      * Row wrapping all toolbars for app.
      */
@@ -127,6 +128,7 @@ create-widget:camphora-main-container
         div
           class:col-100
           widgets
+
 
             /*
              * Our actual toolbar.
@@ -168,78 +170,6 @@ create-widget:camphora-main-container
                 literal:camphora-app-header
                   element:h4
                   class:camphora-header
-
-
-    /*
-     * Main row wrapping view TreeView "navbar".
-     */
-    div:camphora-navbar
-      class:row
-      widgets
-        div
-          class:col-100
-          widgets
-
-            /*
-             * This serves as a "navbar" allowing the user to.
-             * navigate all views for the app.
-             *
-             * Notice, you can create multiple folders inside of your "/views/"
-             * folder, and also an entire folder structure as you see fit, to
-             * create a hierarchical navbar, grouping similar concepts together.
-             *
-             * Notice, even though each view is arguably created as a "page", with
-             * its own unique URL - This navbar will attempt to "inject" the view
-             * into a view container, if possible, with a "close view" button, which
-             * will delete the view once clicked. This gives you a single page app
-             * feeling, with a highly responsive Ajax interface.
-             *
-             * Whether or not the view is possible to "inject" into a view container
-             * or not, is determined according to whether or not the view has a
-             * [create-widget] or a [create-container-widget] invocation at its root.
-             *
-             * If the view does not contain one of the above Active Event invocations,
-             * the view will simply be evaluated "as is".
-             *
-             * Notice, if the view does not create widgets at all at root, we redirect
-             * the client to the view's main URL.
-             *
-             * The above logic can be found in the "/helpers/select-view.hl" file.
-             */
-            micro.widgets.tree
-              class:micro-widgets-tree micro-widgets-tree-navbar camphora-navbar
-              items
-                Views:/modules/{0}/views/
-                  :{app-name}
-
-              /*
-               * Invoked when user expands an item in the navbar.
-               */
-              .onexpand
-
-                /*
-                 * Evaluating file responsible for retrieving views as a
-                 * tree view [items] collection.
-                 */
-                eval-x:x:/+/*/folder
-                micro.evaluate.file:/modules/{0}/helpers/expand-navbar.hl
-                  :{app-name}
-                  folder:x:/../*/_item-id?value
-                return:x:/@micro.evaluate.file/*
-
-              /*
-               * Invoked when user selects an item in the navbar.
-               */
-              .onselect
-
-                /*
-                 * Evaluating file responsible for loading up the currently
-                 * selected view.
-                 */
-                eval-x:x:/+/*/view
-                micro.evaluate.file:/modules/{0}/helpers/select-view.hl
-                  :{app-name}
-                  view:x:/../*/items/0?name
 
 
     /*
@@ -352,3 +282,99 @@ create-widget:camphora-main-container
                     :x:/@+?value
                     :x:/../*/count?value
                     :{app-name}
+
+
+    /*
+     * Row wrapping view TreeView "navbar".
+     */
+    div:camphora-navbar
+      class:row
+      widgets
+        div
+          class:col-100
+          widgets
+
+
+            /*
+             * This serves as a "navbar" allowing the user to.
+             * navigate all views for the app.
+             *
+             * Notice, you can create multiple folders inside of your "/views/"
+             * folder, and also an entire folder structure as you see fit, to
+             * create a hierarchical navbar, grouping similar concepts together.
+             *
+             * Notice, even though each view is arguably created as a "page", with
+             * its own unique URL - This navbar will attempt to "inject" the view
+             * into a view container, if possible, with a "close view" button, which
+             * will delete the view once clicked. This gives you a single page app
+             * feeling, with a highly responsive Ajax interface.
+             *
+             * Whether or not the view is possible to "inject" into a view container
+             * or not, is determined according to whether or not the view has a
+             * [create-widget] or a [create-container-widget] invocation at its root.
+             *
+             * If the view does not contain one of the above Active Event invocations,
+             * the view will simply be evaluated "as is".
+             *
+             * Notice, if the view does not create widgets at all at root, we redirect
+             * the client to the view's main URL.
+             *
+             * Regardless of how the view is viewed, the database ID of any currently
+             * edited item from your datagrid will be passed in as an argument when
+             * the view is evaluated or viewed.
+             *
+             * The above logic can be found in the "/helpers/select-view.hl" file.
+             */
+            micro.widgets.tree
+              class:micro-widgets-tree micro-widgets-tree-navbar camphora-navbar
+              items
+                Views:/modules/{0}/views/
+                  :{app-name}
+
+              /*
+               * Invoked when user expands an item in the navbar.
+               */
+              .onexpand
+
+                /*
+                 * Evaluating file responsible for retrieving views as a
+                 * tree view [items] collection.
+                 */
+                eval-x:x:/+/*/folder
+                micro.evaluate.file:/modules/{0}/helpers/expand-navbar.hl
+                  :{app-name}
+                  folder:x:/../*/_item-id?value
+                  datagrid:camphora-main-datagrid
+                return:x:/@micro.evaluate.file/*
+
+              /*
+               * Invoked when user selects an item in the navbar.
+               */
+              .onselect
+
+                /*
+                 * Checking if this is a folder, at which point we return early.
+                 */
+                if
+                  ends-with:x:/../*/items/0?name
+                    src:.hl
+                  =:bool:false
+                  return
+
+                /*
+                 * Retrieving the currently selected item's database ID,
+                 * in case the view needs it.
+                 */
+                camphora.datagrid.edited-item-id:camphora-main-datagrid
+
+                /*
+                 * Evaluating file responsible for loading up the currently
+                 * selected view, forward evaluating arguments, and passing in
+                 * [id] of currently selected record, if any.
+                 */
+                add:x:/+2
+                  src:x:/./-/*
+                eval-x:x:/+/*/view
+                micro.evaluate.file:/modules/{0}/helpers/select-view.hl
+                  :{app-name}
+                  view:x:/../*/items/0?name

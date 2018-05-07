@@ -54,5 +54,3 @@ create-event:camphora.widgets._internals.view-definition
                 p5.web.widgets.find-first-ancestor:x:/../*/_event?value
                   .view
                 delete-widget:x:/-/*/*?value
-                micro.windows.info:View was deleted
-                  class:micro-windows-info success
