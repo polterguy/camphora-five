@@ -155,7 +155,8 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
       .header
         widgets
           button
-            title:x:/@_dp/#/*/name?value
+            title:Sort by {0}
+              :x:/@_dp/#/*/name?value
             innerValue:@"<span></span> {0}"
               :x:/@_dp/#/*/name?value
             .column:x:/@_dp/#/*/name?value
@@ -462,6 +463,36 @@ lambda2hyper:x:/@hyper2lambda/*
 save-file:/modules/{0}/helpers/create-item.hl
   :x:/@split/0/-2?name
   src:x:/@lambda2hyper?value
+
+
+
+
+
+/*
+ * Making sure our "default.hl" file does not have a navbar if
+ * there are no views in our app.
+ *
+ * We do this by checking if there are no views in the app, and if
+ * not, we load the "default.hl" file, and entirely remove the wrapper
+ * that wraps our "view navbar".
+ */
+if:x:/../*/load-file/[0,1]/*/*/views/*
+  not
+
+  /*
+   * Removing navbar from "default.hl" file.
+   */
+  load-file:/modules/{0}/views/default.hl
+    :x:/@split/0/-2?name
+    convert:false
+  hyper2lambda:x:/@load-file/*?value
+    keep-comments:true
+  set:x:/@hyper2lambda/*/create-widget/**/widgets/*/micro.widgets.tree/./././.
+  lambda2hyper:x:/@hyper2lambda/*
+    comments:unroll
+  save-file:/modules/{0}/views/default.hl
+    :x:/@split/0/-2?name
+    src:x:/@lambda2hyper?value
 
 
 

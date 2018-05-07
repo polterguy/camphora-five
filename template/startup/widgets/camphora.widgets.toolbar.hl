@@ -283,7 +283,7 @@ create-event:camphora.widgets.toolbar
              */
             input
               type:text
-              placeholder:Search ...
+              placeholder:Filter ...
               .filter
               .filtering
               onkeydown:@"if (event.keyCode == 13) {p5.$(event.target.parentNode.querySelector('.search-button')).raise('onclick');return false;}"

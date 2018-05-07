@@ -91,6 +91,14 @@ create-widgets
                 order-by
                 order-dir
 
+              /*
+               * Resets the CSS classes of all "sort header linkbuttons".
+               */
+              p5.web.widgets.find-like:x:/@.datagrid?value
+                class:camphora-sort-column
+              micro.css.delete:x:/@p5.web.widgets.find-like/*/*?value
+                class:camphora-sort-column-asc camphora-sort-column-desc
+
           button
             innerValue:Cancel
             onclick

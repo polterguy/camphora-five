@@ -147,6 +147,7 @@ create-event:camphora.widgets.datagrid
             class:camphora-delete-header
             widgets
               button
+                title:Delete all filtered items
                 events
 
 
@@ -207,6 +208,7 @@ create-event:camphora.widgets.datagrid
             return
               button
                 innerValue:@"<span class=""icon-bin""></span>"
+                title:Delete item
                 onclick
 
                   /*

@@ -8,10 +8,10 @@
     table-layout: fixed;
 }
 .camphora-datagrid tr th {
-    text-transform: capitalize;
     padding: 0;
 }
 .camphora-datagrid tr th button {
+    text-transform: capitalize;
     display: block;
     margin-right: .5rem;
     text-overflow: ellipsis;
@@ -22,7 +22,7 @@
     margin-bottom: 0;
 }
 .camphora-datagrid tr th.camphora-checkbox-column {
-    width: 120px;
+    width: 150px;
 }
 .camphora-datagrid tr th button.camphora-sort-column-asc>span:after {
     padding-right: .5rem;
@@ -38,6 +38,10 @@
 }
 .camphora-datagrid tr th.camphora-delete-header {
     width: calc(var(--form-el-pad) * 2 + 4rem);
+}
+.camphora-datagrid tr th.camphora-delete-header button span {
+    display: block;
+    transform: rotate(22.5deg);
 }
 .camphora-datagrid tr td {
     vertical-align: text-top;
@@ -80,4 +84,7 @@
 .camphora-datagrid tr.camphora-edit-row td {
     background: transparent !important;
     border-top: none;
+}
+.camphora-navbar .item.leaf>a>span.icon:before {
+    content: '\e9ce';
 }

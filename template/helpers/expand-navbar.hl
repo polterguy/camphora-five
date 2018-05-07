@@ -1,0 +1,79 @@
+
+/*
+ * This file is invoked when the navbar for the views in your Camphora application
+ * is expanded. It will return a __[micro.widgets.tree]__ items collection, and is
+ * intended for being invoked when the __[.onexpand]__ lambda event for your tree
+ * is evaluated.
+ *
+ * It expects a __[folder]__ argument, being the sub-folder from your _"/views/"_
+ * folder that it should retrieve items from.
+ */
+
+
+
+
+
+/*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.min:x:/..
+  folder:string
+
+
+
+
+
+/*
+ * Checking if this is a file, at which point
+ * we don't feed the tree with any items.
+ */
+if
+  ends-with:x:/../*/folder?value
+    src:.hl
+  =:bool:true
+  return
+
+
+
+
+
+/*
+ * Listing all folders inside of specified folder,
+ * and returning one item for each.
+ */
+list-folders:x:/../*/folder?value
+for-each:x:/@list-folders/*?name
+  split:x:/@_dp?value
+    =:/
+  add:x:/../*/return/*
+    src:@"{0}:{1}"
+      :x:/@split/0/-?name
+      :x:/@_dp?value
+
+
+
+
+
+/*
+ * Listing all files inside of specified folder,
+ * and returning one item for each, making sure we
+ * do not return "default.hl" view.
+ */
+list-files:x:/../*/folder?value
+  filter:.hl
+set:x:@"/@list-files/*/""{0}"""
+  :/modules/{0}/views/default.hl
+    :{app-name}
+for-each:x:/@list-files/*?name
+  split:x:/@_dp?value
+    =:/
+    =:.
+  add:x:/../*/return/*
+    src:@"{0}:{1}"
+      :x:/@split/0/-2?name
+      :x:/@_dp?value
+  add:x:/../*/return/0/0/-
+    src
+      class:leaf
+return
+  items

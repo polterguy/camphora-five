@@ -1,0 +1,148 @@
+
+/*
+ * This file is invoked when the user selects a "view" in his navbar.
+ *
+ * It expects a __[view]__ argument, being the path to the view the user
+ * selected. This file will try to _"inject"_ the view into a _"view container"_,
+ * if possible, if not it will simply evaluate the view Hyperlambda as is.
+ * If the view doesn't seem to create widgets at all, it will redirect to
+ * the view's URL.
+ *
+ * The _"view container"_ will be created as a wrapper widget, which wraps the
+ * selected view.
+ */
+
+
+
+
+
+/*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.min:x:/..
+  view:string
+
+
+
+
+
+/*
+ * Checking if this is a folder, at which point we
+ * return early, since there is nothing to do here.
+ */
+if
+  ends-with:x:/../*/view?value
+    src:.hl
+  =:bool:false
+  return
+
+
+
+
+
+/*
+ * Loading view.
+ */
+load-file:x:/../*/view?value
+
+
+
+
+
+/*
+ * Verifying that this actually is a visual view, which we
+ * determine by figuring out whether or not view is creating
+ * widgets or not.
+ */
+if:x:/@load-file/*/*(/create-widget|/create-widgets|/create-container-widget)
+  not
+
+  /*
+   * This view is not creating widgets, hence we redirect the client
+   * to its URL.
+   */
+  split:x:/../*/view?value
+    =:/
+    =:.
+  set:x:/@split/0
+  set:x:/@split/0/-
+  set:x:/@split/0/-
+  join:x:/@split/*?name
+    sep:/
+  p5.web.set-location:/{0}/
+    :x:/@join?value
+  return
+
+
+
+
+
+/*
+ * Checking if there exists a view container already, at which
+ * point we delete it.
+ */
+if
+  fetch:x:/0/0?value
+    widget-exists:camphora-view-container
+  =:bool:true
+  delete-widget:camphora-view-container
+
+
+
+
+
+/*
+ * Checking if this view is a [create-widget] type of view, at which point
+ * we make sure we "inject" the view into a custom "view container".
+ */
+if:x:/@load-file/*/*/create-widget
+
+  /*
+   * Making sure we create our "view container", for then to
+   * modify our view, such that it is injected into this container.
+   */
+  create-container-widget:camphora-view-container
+    after:camphora-navbar
+    class:row
+    widgets
+      div
+        class:col-100
+        widgets
+          div
+            class:air-inner rounded shaded
+            widgets
+              div
+                class:right
+                widgets
+                  button
+                    innerValue:@"<span class=""icon-cross""></span>"
+                    onclick
+
+                      /*
+                       * Deleting view.
+                       */
+                      delete-widget:camphora-view-container
+
+              /*
+               * This is the widget where we actually inject our view.
+               */
+              container:camphora-view-wrapper
+
+  /*
+   * Adding [parent] argument to our [create-widget] invocation,
+   * such that we can inject it into our view container.
+   */
+  add:x:/@load-file/*/*/create-widget
+    src
+      parent:camphora-view-wrapper
+
+
+
+
+
+/*
+ * Evaluating view, now possibly modified such that it is loaded
+ * up into our "view container".
+ */
+eval:x:/@load-file/*
+

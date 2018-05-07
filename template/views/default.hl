@@ -99,7 +99,7 @@ if:x:/@p5.web.query.get/*?value
 /*
  * Creating main wire frame for app, containing toolbar and datagrid.
  */
-eval-x:x:/+/*/widgets/**(/page-size|/.page-size)
+eval-x:x:/+/*/widgets/**(/page-size|/.page-size|/micro.widgets.tree/*/items/*)
 create-widget:camphora-main-container
   class:container
   events
@@ -171,10 +171,82 @@ create-widget:camphora-main-container
 
 
     /*
+     * Main row wrapping view TreeView "navbar".
+     */
+    div:camphora-navbar
+      class:row
+      widgets
+        div
+          class:col-100
+          widgets
+
+            /*
+             * This serves as a "navbar" allowing the user to.
+             * navigate all views for the app.
+             *
+             * Notice, you can create multiple folders inside of your "/views/"
+             * folder, and also an entire folder structure as you see fit, to
+             * create a hierarchical navbar, grouping similar concepts together.
+             *
+             * Notice, even though each view is arguably created as a "page", with
+             * its own unique URL - This navbar will attempt to "inject" the view
+             * into a view container, if possible, with a "close view" button, which
+             * will delete the view once clicked. This gives you a single page app
+             * feeling, with a highly responsive Ajax interface.
+             *
+             * Whether or not the view is possible to "inject" into a view container
+             * or not, is determined according to whether or not the view has a
+             * [create-widget] or a [create-container-widget] invocation at its root.
+             *
+             * If the view does not contain one of the above Active Event invocations,
+             * the view will simply be evaluated "as is".
+             *
+             * Notice, if the view does not create widgets at all at root, we redirect
+             * the client to the view's main URL.
+             *
+             * The above logic can be found in the "/helpers/select-view.hl" file.
+             */
+            micro.widgets.tree
+              class:micro-widgets-tree micro-widgets-tree-navbar camphora-navbar
+              items
+                Views:/modules/{0}/views/
+                  :{app-name}
+
+              /*
+               * Invoked when user expands an item in the navbar.
+               */
+              .onexpand
+
+                /*
+                 * Evaluating file responsible for retrieving views as a
+                 * tree view [items] collection.
+                 */
+                eval-x:x:/+/*/folder
+                micro.evaluate.file:/modules/{0}/helpers/expand-navbar.hl
+                  :{app-name}
+                  folder:x:/../*/_item-id?value
+                return:x:/@micro.evaluate.file/*
+
+              /*
+               * Invoked when user selects an item in the navbar.
+               */
+              .onselect
+
+                /*
+                 * Evaluating file responsible for loading up the currently
+                 * selected view.
+                 */
+                eval-x:x:/+/*/view
+                micro.evaluate.file:/modules/{0}/helpers/select-view.hl
+                  :{app-name}
+                  view:x:/../*/items/0?name
+
+
+    /*
      * Main row wrapping our MySQL datagrid.
      */
     div
-      class:row air-top
+      class:row
       widgets
         div
           class:col-100
