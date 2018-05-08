@@ -3,22 +3,24 @@
 There are several different types of columns you can choose from when creating your fields. Below is a complete
 list, and their most important traits explained.
 
-* __Singleline text__ - A single line text type of field
-* __Multiline text__ - Multiple lines of text field
-* __Markdown content__ - A Markdown field, that you can edit using a web based Markdown editor, and that will be formatted as HTML or _"rich text"_ when displayed
-* __Checkbox__ - A yes/no type of field
-* __Number__ - A number type of input
-* __Select dropdown__ - Allows the user to select from a pre-defined set of different options
-* __Radiobuttons__ - Similar to select dropdown, but will display the different options as radiobuttons
-* __Date/time created__ - Not per se an input field, but an automatically created field, that allows you to track when the item was actually created
+* __Singleline text__ - A single line text type of field.
+* __Multiline text__ - Multiple lines of text field.
+* __Markdown content__ - A Markdown field, that you can edit using a web based Markdown editor, and that will be formatted as HTML or _"rich text"_ when displayed.
+* __Checkbox__ - A yes/no type of field.
+* __Number__ - A number type of input.
+* __Select dropdown__ - Allows the user to select from a pre-defined set of different options.
+* __Radiobuttons__ - Similar to select dropdown, but will display the different options as radiobuttons.
+* __Date/time created__ - Not per se an input field, but an automatically created field, that allows you to track when the item was actually created.
+* __Created by__ - Also not an actual input field, but tracks what user created the record automatically.
 
-The _"Date/time created"_ field type, is not really an input field, and cannot be changed - But rather serves
-to track at what exact date and time your item was created.
+The _"Date/time created"_ and _"Created by"_ field types, are not really input fields, and cannot be
+changed - But rather serves to track at what exact date and time your item was created, and what user created
+the item. Neither of these fields can be changed after the record has been created.
 
 ### Markdown content fields
 
 These types of fields allows the user to apply rich formatting to text, using the Markdown syntax. The field
-will be edited with a Markdown type of editor, and when displayed it will be transformed into its rich text (HTML)
+will be edited with a Markdown type of editor, and when displayed, it will be transformed into its rich text (HTML)
 counterpart. This field does not allow for malicious HTML injection, since every time its value is displayed, by
 default the value will be semantically checked for malicious HTML tags - Unless you create your own views, at which
 point you'll have to explicitly _"white wash"_ your own HTML.
@@ -45,3 +47,7 @@ This field, will simply track when the item was created, and cannot be edited af
 This can be useful to track the date and time of creation, and will be displayed as the exact date and time
 of creation as you read your item later.
 
+### Created by fields
+
+This field automatically tracks what username created the record, and is in such a regard similar to the
+Date/time created field.

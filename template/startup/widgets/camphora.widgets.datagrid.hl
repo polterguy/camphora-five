@@ -700,7 +700,7 @@ create-event:camphora.widgets.datagrid
          * Will display a modal widget, asking the user to confirm deletion before
          * actually deleting any items.
          */
-        camphora.database.delete-all-items
+        camphora.database.delete-all-filtered-items
 
           /*
            * Checking that this is the grid caller is referencing.
@@ -719,7 +719,7 @@ create-event:camphora.widgets.datagrid
            * Evaluates file responsible for actually deleting all items.
            */
           eval-x:x:/+/*/datagrid
-          micro.evaluate.file:/modules/{0}/helpers/delete-all-items.hl
+          micro.evaluate.file:/modules/{0}/helpers/delete-all-filtered-items.hl
             :{app-name}
             datagrid:x:/../*/_arg?value
 

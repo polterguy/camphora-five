@@ -23,7 +23,7 @@ __Notice__, this view expects you to at least have one field in your app to grou
 * __[Group by]__ - What field to group your data by.
 * __[Chart header]__ - Descriptive header for your chart.
 * __[Chart type]__ - What type of chart to use. You can use a pie chart or a bar chart."
-  image:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-count-view.png"
+  image:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-pie-chart-sales-2.png"
   .condition
 
     /*
@@ -43,18 +43,18 @@ __Notice__, this view expects you to at least have one field in your app to grou
     user
   text:Chart header
   radio:Chart type
-    option:Bar chart
-      onchange
-        get-widget-property:x:/../*/_event?value
-          checked
-        if:x:/-/*/*
-          camphora._set-view-screenshot:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-count-view.png"
     option:Pie chart
       onchange
         get-widget-property:x:/../*/_event?value
           checked
         if:x:/-/*/*
           camphora._set-view-screenshot:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-pie-chart-sales-2.png"
+    option:Bar chart
+      onchange
+        get-widget-property:x:/../*/_event?value
+          checked
+        if:x:/-/*/*
+          camphora._set-view-screenshot:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-count-view.png"
 
 
 

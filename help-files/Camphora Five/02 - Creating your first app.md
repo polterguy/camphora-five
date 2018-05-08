@@ -17,21 +17,22 @@ If you choose _"Radiobuttons"_ or _"Select dropdown"_ as your field type however
 you supply the legal options for these fields, as a comma separated list of values. After you are done, your
 screen should resemble the following.
 
-https://phosphorusfive.files.wordpress.com/2018/04/camphora-new-screenshot.png
+https://phosphorusfive.files.wordpress.com/2018/05/camphora-five-create-address-boo-screenshot.png
 
 Then simply click the _"power cord"_ button, next to the _"Floppy disc save"_ button. This will both save your app,
 and generate it, at which point you can immediately start using your app. If you now go back to your desktop,
 by clicking the home button, you'll see an icon for you app, resembling the following. If you want to,
 you can change your app's desktop icon - However, we'll have a look at this later.
 
-https://phosphorusfive.files.wordpress.com/2018/03/camphora-five-screenshot-address-book.png
+https://phosphorusfive.files.wordpress.com/2018/05/camphora-five-desktop-screenshot-new.png
 
 If you open your app, and add some records to it, it'll end up resembling the following.
 
-https://phosphorusfive.files.wordpress.com/2018/03/camphora-five-address-book-screenshot.png
+https://phosphorusfive.files.wordpress.com/2018/05/using-camphora-five-address-book-screenshot.png
 
-When you have added some records to your database, you can export your items, and for instance import them
-as a CSV file into Excel, Numbers or any other system that supports importing CSV files.
+**Notice**, already you can filter and sort your items - Both ascending and descending, by clicking
+the column header once or twice to sort in reverse order. To filter, simply type some piece of text
+into the _"search textbox"_ at the top, and click the spyglass.
 
 ### Settings for your app
 
@@ -47,7 +48,7 @@ can change and read its value when you edit a specific item - However, the data 
 main _"datagrid"_ view. If we for instance choose to hide the _"address"_ field, then your app will end
 up looking like the following.
 
-https://phosphorusfive.files.wordpress.com/2018/03/camphora-five-hudden-column-screenshot.png
+https://phosphorusfive.files.wordpress.com/2018/05/camphora-five-hidden-column-screenshot.png
 
 As you can see in the above screenshot, the _"address"_ field is no longer visible in the main _"datagrid"_ view,
 but still possible to edit when having chosen to edit a specific item. This allows you to create a CRUD app with

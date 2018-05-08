@@ -1,48 +1,33 @@
 ## Creating custom views
 
-This is a fairly advanced concept, and requires you to understand Hyperlambda. However, it is also extremely
-powerful, and literally allows you to take control over every single aspect of the rendering of your app - While
-still getting to use your automatically generated Camphora Five _"backend"_. If your view
-is named for instance `some-view`, and your app `address-book`, the URL to your view will become
-`/address-book/some-view`.
+Creating custom views have been significantly simplified in Camphora Five lately, and you
+can now create fairly advanced _"views"_, without any coding experience at all. What views you
+can add to your application, depends upon what fields you have in your app - However, you can
+also create your own custom view entirely from scratch if you know some Hyperlambda. The latter
+allows you to completely override the entire rendering of your page, and literally create _anything_
+as a _"view"_ in your app. However, the simplest way to create a view, unless you want to teach
+yourself Hyperlambda - Is to simply follow the _"wizard"_, and let Camphora Five automatically
+create your code. Below is a screenshot of this process.
 
-From your view, you can take completely control over every aspect of your app, and really do whatever you
-want to do. If you want to access your database from your view, you'll have to use code similar to
-the following.
+https://phosphorusfive.files.wordpress.com/2018/05/camphora-five-screenshot-create-view-pie-chart.png
 
-```hyperlambda
-/*
- * First open up your main Camphora database connection.
- */
-p5.mysql.connect:[camphora]
+Each view has its own unique settings. Often these settings are associated with fields in your app,
+such as the above view that allows you to count the number of items grouped by the value of
+one of your fields. If you for instance had one _"Created by"_ field in your app, you could use the
+_"count"_ view to count each item created by your employees, where each employee has his own username
+to your app, and is allowed to somehow create records in your Camphora app. Then you could choose
+to view the number of items created by your employees, either as a _"pie chart"_ (see screenshot),
+or as a _"bar chart"_, to such create statistical data of how your employees are performing.
 
-  /*
-   * Then (for instance) select items from your address-book table.
-   */
-  p5.mysql.select:select * from address-book
+In fact, the _"sales"_ example app in Camphora Five illustrates a couple of different statistical
+charts. You can of course use this app as a template for your own apps, and modify it according to
+your needs.
 
-    /*
-     * Do something with the above results ...
-     */
-    for-each:x:/@p5.mysql.select/*
+If you want to completely create your own view from scratch, you can easily do this by first creating
+your app, and the open up your apps _"/views/"_ folder in for instance Hyper IDE, and create your
+own Hyperlambda files in here. Your views will automatically populate the _"Views"_ toolbar, which
+for the record is hierarchical, allowing you to even group your different views into folders and
+sub-folders, and create entire hierarchies of such _"views"_.
 
-      // ... code to handle currently iterated item goes here ...
-```
-
-Of course, you could also choose to for instance insert items in your _"view"_. Or really do whatever you wish.
-In fact, you don't even need to access your database at all from within your view. You could also create
-a _"settings"_ view for instance, or a _"help"_ view, etc, etc, etc. Below is an example of a custom view
-that was created wrapping a Camphora Five app.
-
-https://phosphorusfive.files.wordpress.com/2017/12/screen-shot-2017-12-07-at-21-43-05.png
-
-The above is an example of a CRUD app I created, based upon QR codes, that allowed guests to create _"micro blogs"_
-about companies, and help market these companies on Facebook and other social media platforms. It was entirely
-based upon Camphora Five, with a handful of custom views as addons. The above is one such custom view, that
-allows the guest to read a _"micro blog"_. Below is an example of a _"create view"_ for the same app.
-
-https://phosphorusfive.files.wordpress.com/2017/11/screen-shot-2017-11-21-at-08-03-00.png
-
-If you combine Camphora Five with custom views, it can become a very powerful tool for you.
-
-
+**Warning** - If you start editing your app's folder's content after you have generated it, you
+will _loose all of your edits_ if you for some reasons re-generate your app!
