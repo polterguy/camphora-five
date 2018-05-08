@@ -13,8 +13,24 @@
  * Contains the parts of this view that needs to be configured.
  */
 .configure
+  .description:@"This creates a chart view, that will sum all values for some field, grouped
+by the value of another field, resulting in a visual chart, displaying the relative sums
+for you. This view is useful for things such as displaying total sales for employees, etc.
+
+__Notice__, this view expects you to at least have one _'number'_ type of field, that you
+want to sum up - In addition to another field in your app to group your sums by. This view
+will not function correctly if you have too many distinct values for your _'Group by'_ field.
+
+* __[Group by]__ - What field to group your data by.
+* __[Sum field]__ - What field to sum.
+* __[Chart header]__ - Descriptive header for your chart.
+* __[Chart type]__ - What type of chart to use. You can use a pie chart or a bar chart."
   field:Group by
   field:Sum field
+  text:Chart header
+  radio:Chart type
+    option:Bar chart
+    option:Pie chart
 
 
 
@@ -33,6 +49,24 @@
  * Contains the field to aggregate the sum by.
  */
 .sum-field-name:{Sum field}
+
+
+
+
+
+/*
+ * Contains the chart type.
+ */
+.chart-type:{Chart type}
+
+
+
+
+
+/*
+ * Contains the chart header.
+ */
+.chart-header:{Chart header}
 
 
 
@@ -76,6 +110,18 @@ p5.mysql.connect:[camphora]
 
 
 /*
+ * Checking what type of chart we should create.
+ */
+if:x:/@.chart-type?value
+  =:Pie chart
+  set:x:/../*/create-widget/**/micro.widgets.chart.column?name
+    src:micro.widgets.chart.pie
+
+
+
+
+
+/*
  * Creating our main wire frame widget.
  */
 create-widget
@@ -89,7 +135,7 @@ create-widget
           widgets
             h3
               class:center
-              innerValue:Sales by person
+              innerValue:x:/@.chart-header?value
     div
       class:row
       widgets

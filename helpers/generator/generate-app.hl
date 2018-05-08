@@ -343,7 +343,7 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
               =:
 
               /*
-               * Nothing to do here, wmpty value, returning to avoid
+               * Nothing to do here, empty value, returning to avoid
                * evaluation of the rest of our lambda.
                */
               return
@@ -391,6 +391,76 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
               onclick:event.stopPropagation();
               class:camphora-no-pointer-cursor
               innerValue:x:/@lambda2html?value
+
+    /*
+     * Since a [.lambda] column isn't part of the SQL executed towards the
+     * database, we'll need to also add an invisible column with the name of
+     * our markdown column.
+     */
+    set:x:/+/*/*?name
+      src:x:/@_dp/#/*/name?value
+    add:x:/@.column
+      src
+        foo
+          visible:bool:false
+
+  /*
+   * Checking if this is a created type of field, at which point
+   * we make sure we display it formatted nicely.
+   */
+  else-if:x:/@_dp/#/*/type?value
+    =:created
+
+    /*
+     * DateTime/created type of field, making sure we format the date.
+     */
+    eval-x:x:/+/*/*/*/.field-name
+    add:x:/@.column/*
+      src
+        .lambda
+
+          /*
+           * Forward evaluated above.
+           */
+          .field-name:x:/@_dp/#/*/name?value
+
+          /*
+           * Checking if there actually is any value.
+           */
+          eval-x:x:/+
+          .value:x:/../*/row/*/{0}?value
+            :x:/@.field-name?value
+          if:x:/@.value?value
+            not
+            or:x:/@.value?value
+              =:
+
+              /*
+               * Nothing to do here, empty value, returning to avoid
+               * evaluation of the rest of our lambda.
+               */
+              return
+
+          /*
+           * Formatting date.
+           */
+          p5.types.date.format:x:/@.value?value
+            format:@"ddd d. MMM HH:mm yyyy"
+
+          /*
+           * Returning item to caller.
+           *
+           * Notice, to make it possible to actually click hyperlinks
+           * inside of our markdown cells, we'll have to explicitly allow
+           * that by stopping propagation of click event - Since otherwise
+           * the default [onclick] event handler for the row as a whole
+           * would prevent Hyperlinks from being possible to actually click.
+           */
+          eval-x:x:/+/*/*/innerValue
+          return
+            literal
+              element:span
+              innerValue:x:/@p5.types.date.format?value
 
     /*
      * Since a [.lambda] column isn't part of the SQL executed towards the

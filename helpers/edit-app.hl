@@ -421,6 +421,20 @@ create-widget
                                     value
                                   camphora._populate-properties-for-view-selector:x:/@get-widget-property/*/*?value
 
+                          div
+                            class:strip fill
+                            widgets
+                              label
+                                class:description-9
+                                innerValue:Name
+                              input:camphora-view-name
+                                type:text
+                                placeholder:Name of your view ...
+                                onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-create-view-button').raise('onclick');return false;}"
+
+                          /*
+                           * Wrapper for the custom properties for our view.
+                           */
                           container:camphora-view-properties
                             events
 
@@ -436,6 +450,17 @@ create-widget
                                 clear-widget:camphora-view-properties
 
                                 /*
+                                 * Setting the default "view name" value to the name of our view.
+                                 */
+                                set-widget-property:camphora-view-name
+                                  value:x:/../*/_arg?value
+
+                                /*
+                                 * Making sure the "view name" textbox gets initial focus.
+                                 */
+                                micro.page.set-focus:camphora-view-name
+
+                                /*
                                  * Loading up view and parsing its [.configure] section.
                                  */
                                 load-file:@CAMPHORA/helpers/view-templates/{0}.hl
@@ -445,6 +470,24 @@ create-widget
                                  * Checking if view has a [.configure] section.
                                  */
                                 if:x:/@load-file/*/*/.configure
+
+                                  /*
+                                   * Creating a br widget to separate arguments to view
+                                   * from the core properties.
+                                   */
+                                  create-void-widget
+                                    parent:camphora-view-properties
+                                    element:hr
+
+                                  /*
+                                   * Checking if [.configure] section as a [.description] section.
+                                   */
+                                  if:x:/@load-file/*/*/.configure/*/.description
+                                    markdown2html:x:/@load-file/*/*/.configure/*/.description?value
+                                    create-widget
+                                      parent:camphora-view-properties
+                                      element:div
+                                      innerValue:x:/@markdown2html?value
 
                                   /*
                                    * View needs to be configured somehow.
@@ -480,7 +523,7 @@ create-widget
                                               innerValue:x:/@_dp?value
 
                                       /*
-                                       * Creating select widget to associate with variable
+                                       * Creating select widget to associate with variable.
                                        */
                                       create-widget
                                         class:strip fill
@@ -493,28 +536,120 @@ create-widget
                                             .data-field:x:/@_dp/#?value
                                             widgets
 
+                                  /*
+                                   * Iterating through each [text] type of configuration.
+                                   */
+                                  for-each:x:/@load-file/*/*/.configure/*/text
+
+                                    /*
+                                     * Creating widget wrapping [text] type of configuration setting.
+                                     */
+                                    create-widget
+                                      parent:camphora-view-properties
+                                      widgets
+                                        div
+                                          class:strip fill
+                                          widgets
+                                            label
+                                              class:description-9
+                                              innerValue:x:/@_dp/#?value
+                                            input
+                                              type:text
+                                              placeholder:{0} ...
+                                                :x:/@_dp/#?value
+                                              value:x:/@_dp/#?value
+                                              .data-field:x:/@_dp/#?value
+                                              onkeydown:@"if (event.keyCode == 13) {p5.$('camphora-create-view-button').raise('onclick');return false;}"
+
+                                  /*
+                                   * Iterating through each [radio] type of configuration.
+                                   */
+                                  for-each:x:/@load-file/*/*/.configure/*/radio
+
+                                    /*
+                                     * Iterating through each [option] in currently iterated [radio].
+                                     */
+                                    .first:bool:true
+                                    for-each:x:/@_dp/#/*/option
+
+                                      /*
+                                       * Checking if this is our first iteration, at which point
+                                       * we make sure the radio button is checked by default.
+                                       */
+                                      if:x:/@.first?value
+                                        =:bool:true
+                                        set:x:/@.first?value
+                                          src:bool:false
+                                        add:x:/..for-each/*/add/*/*/*/*/input
+                                          src:checked
+
+                                      /*
+                                       * Creating radio button wrapping currently iterated option.
+                                       */
+                                      eval-x:x:/+/*/*/*/*/*
+                                      add:x:/..for-each/..for-each/*/create-widget/*/widgets
+                                        src
+                                          label
+                                            widgets
+                                              span
+                                                innerValue:x:/@_dp/#?value
+                                              input
+                                                type:radio
+                                                name:x:/..for-each/@_dp/#?value
+                                                .data-field:x:/..for-each/@_dp/#?value
+                                                .data-value:x:/@_dp/#?value
+
+                                    /*
+                                     * Creating widget wrapping all radio buttons.
+                                     */
+                                    create-widget
+                                      parent:camphora-view-properties
+                                      widgets
+
                           div
                             class:strip right
                             widgets
-                              button
-                                innerValue:Select
+                              button:camphora-create-view-button
+                                innerValue:Create
                                 onclick
 
                                   /*
-                                   * Finds our "view wrapper", and adds another CodeMirror wrapper, and a wrapper
-                                   * for the view's name.
+                                   * Finds our "view wrapper", and adds another CodeMirror wrapper
+                                   * for the view's content, and a textbox wrapper for the view's name,
+                                   * making sure we parametrize the view according to the configuration
+                                   * settings the user supplied.
                                    */
                                   get-widget-property:camphora-select-view
                                     value
+                                  get-widget-property:camphora-view-name
+                                    value
                                   p5.web.widgets.find-first
                                     .views
+
+                                  /*
+                                   * Sanity checking view name.
+                                   */
+                                  match:x:/../*/get-widget-property/[1,2]/*/*?value
+                                    src:regex:"/^[-_a-z0-9]{3,20}$/"
+                                  if:x:/@match/*?count
+                                    =:int:0
+                                    or:x:/@match/0?value
+                                      =:
+
+                                    /*
+                                     * Not a good name for the view.
+                                     */
+                                    micro.windows.info:Your view's name can only contain a-z, 0-9, and between 3 and 20 characters.
+                                      class:micro-windows-info warning
+                                    micro.page.set-focus:camphora-view-name
+                                    return
 
                                   /*
                                    * Notice, we remove the [.configure] lambda, and its associated
                                    * comment, if any.
                                    */
                                   load-file:@CAMPHORA/helpers/view-templates/{0}.hl
-                                    :x:/@get-widget-property/*/*?value
+                                    :x:/../*/get-widget-property/[0,1]/*/*?value
                                     convert:false
                                   hyper2lambda:x:/@load-file/*?value
                                     keep-comments:true
@@ -546,7 +681,7 @@ create-widget
                                   create-widgets
                                     camphora.widgets._internals.view-definition
                                       parent:x:/@p5.web.widgets.find-first/*/*?value
-                                      name:x:/@get-widget-property/*/*?value
+                                      name:x:/../*/get-widget-property/[1,2]/*/*?value
                                       value:x:/@lambda2hyper?value
 
                                   /*
