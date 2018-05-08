@@ -198,7 +198,7 @@ for-each:x:/@.signal/--/<-/field
             widgets
               label
                 innerValue:x:/@_dp/#/*/name?value
-                class:capitalize
+                class:capitalize description-7
               select
                 class:fill
                 .data-field:x:/@_dp/#/*/name?value

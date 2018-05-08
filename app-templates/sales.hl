@@ -1,0 +1,267 @@
+/*
+ * Example Camphora Five CRUD app, which is a _"sales"_
+ * type of application, allowing you to track sales per
+ * product and per employee, and also show some basic
+ * statistics in addition.
+ */
+views
+  sum-bar-chart:@"/*
+ * A ""view sum"" type of view template for Camphora Five.
+ *
+ * Will sum all [field]'s for your database by the value of another
+ * [field].
+ */
+
+
+
+
+
+/*
+ * Contains the field name to group your SQL by.
+ */
+.group-by-field-name:seller
+
+
+
+
+
+/*
+ * Contains the field to aggregate the sum by.
+ */
+.sum-field-name:amount
+
+
+
+
+
+/*
+ * Contains the chart type.
+ */
+.chart-type:Bar chart
+
+
+
+
+
+/*
+ * Contains the chart header.
+ */
+.chart-header:Accumulated sales per employee
+
+
+
+
+
+/*
+ * Includes Micro's CSS files.
+ */
+micro.css.include
+
+
+
+
+
+/*
+ * Then we connect to our database, and select our sum aggregate values.
+ */
+p5.mysql.connect:[camphora]
+
+  /*
+   * Selecting Markdown field from database.
+   */
+  p5.mysql.select:select `{2}`, sum(`{0}`) from `{1}` group by `{2}`
+    :x:/@.sum-field-name?value
+    :{app-name}
+    :x:/@.group-by-field-name?value
+
+  /*
+   * Adding our data to our bar chart below.
+   */
+  for-each:x:/@p5.mysql.select/*
+    set:x:/+2/*/*?name
+      src:x:/@_dp/#/0?value
+    eval-x:x:/+/*/*
+    add:x:/../*/create-widget/**/micro.widgets.chart.column/*/data
+      src
+        foo:x:/@_dp/#/1?value
+
+
+
+
+
+/*
+ * Checking what type of chart we should create.
+ */
+if:x:/@.chart-type?value
+  =:Pie chart
+  set:x:/../*/create-widget/**/micro.widgets.chart.column?name
+    src:micro.widgets.chart.pie
+
+
+
+
+
+/*
+ * Creating our main wire frame widget.
+ */
+create-widget
+  class:container
+  widgets
+    div
+      class:row
+      widgets
+        div
+          class:col
+          widgets
+            h3
+              class:center
+              innerValue:x:/@.chart-header?value
+    div
+      class:row
+      widgets
+        div
+          class:col-50 offset-25
+          widgets
+            micro.widgets.chart.column
+              data"
+  sales-per-product:@"
+/*
+ * A ""view sum"" type of view template for Camphora Five.
+ *
+ * Will sum all [field]'s for your database by the value of another
+ * [field].
+ */
+
+
+
+
+
+/*
+ * Contains the field name to group your SQL by.
+ */
+.group-by-field-name:product
+
+
+
+
+
+/*
+ * Contains the field to aggregate the sum by.
+ */
+.sum-field-name:amount
+
+
+
+
+
+/*
+ * Contains the chart type.
+ */
+.chart-type:Pie chart
+
+
+
+
+
+/*
+ * Contains the chart header.
+ */
+.chart-header:Sales per product
+
+
+
+
+
+/*
+ * Includes Micro's CSS files.
+ */
+micro.css.include
+
+
+
+
+
+/*
+ * Then we connect to our database, and select our sum aggregate values.
+ */
+p5.mysql.connect:[camphora]
+
+  /*
+   * Selecting Markdown field from database.
+   */
+  p5.mysql.select:select `{2}`, sum(`{0}`) from `{1}` group by `{2}`
+    :x:/@.sum-field-name?value
+    :{app-name}
+    :x:/@.group-by-field-name?value
+
+  /*
+   * Adding our data to our bar chart below.
+   */
+  for-each:x:/@p5.mysql.select/*
+    set:x:/+2/*/*?name
+      src:x:/@_dp/#/0?value
+    eval-x:x:/+/*/*
+    add:x:/../*/create-widget/**/micro.widgets.chart.column/*/data
+      src
+        foo:x:/@_dp/#/1?value
+
+
+
+
+
+/*
+ * Checking what type of chart we should create.
+ */
+if:x:/@.chart-type?value
+  =:Pie chart
+  set:x:/../*/create-widget/**/micro.widgets.chart.column?name
+    src:micro.widgets.chart.pie
+
+
+
+
+
+/*
+ * Creating our main wire frame widget.
+ */
+create-widget
+  class:container
+  widgets
+    div
+      class:row
+      widgets
+        div
+          class:col
+          widgets
+            h3
+              class:center
+              innerValue:x:/@.chart-header?value
+    div
+      class:row
+      widgets
+        div
+          class:col-50 offset-25
+          widgets
+            micro.widgets.chart.column
+              data"
+field
+  name:product
+  type:select
+    radio
+    television
+    stereo
+    computer
+  show:bool:true
+field
+  name:amount
+  type:number
+  show:bool:true
+field
+  name:seller
+  type:user
+  show:bool:true
+field
+  name:when
+  type:created
+  show:bool:true
+desktop-icon:bool:true
