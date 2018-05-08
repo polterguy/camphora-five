@@ -529,6 +529,21 @@ create-widget
                                     element:hr
 
                                   /*
+                                   * Checking if [.configure] section as an [image] section.
+                                   */
+                                  if:x:/@load-file/*/*/.configure/*/image
+
+                                    /*
+                                     * Creating an image widget, which we associate with the description.
+                                     */
+                                    create-widget
+                                      parent:camphora-view-properties
+                                      element:img
+                                      style:"float:right; margin-left: .5rem; max-width: 33%;border-radius:.5rem; box-shadow: 3px 3px 5px rgba(0,0,0,.2);"
+                                      alt:Example of how view might look like
+                                      src:x:/@load-file/*/*/.configure/*/image?value
+
+                                  /*
                                    * Checking if [.configure] section as a [.description] section.
                                    */
                                   if:x:/@load-file/*/*/.configure/*/.description

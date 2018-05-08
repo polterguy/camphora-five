@@ -17,13 +17,17 @@
  * Contains the parts of this view that needs to be configured.
  */
 .configure
-  .description:@"Creates a view that allows you to view a Markdown field from your records.
-This field expects a currently active record - Either in your datagrid while editing your record,
-or as the last entity of the URL to the view. This allows you to create a view, that wraps a markdown
-field from your records, allowing you to easily display markdown from your fields, almost like
-a _'micro CMS'_.
+  .description:@"Creates a view that allows you to view a Markdown field from your records,
+in addition to some header field, expected to be of type 'text'. This field expects a currently
+active record - Either in your datagrid while editing your record, or as the last entity of
+the URL to the view. This allows you to create a view, that wraps a markdown
+field from your records, functioning almost like a _'micro CMS'_.
 
-* __[Markdown field]__ - What field to display as markdown, must be a _'markdown'_ type of field."
+After you have created your view, and/or generated your app, you can easily customize your view,
+to add you own design to it.
+
+* __[Markdown field]__ - What field to display as markdown, must be a _'markdown'_ type of field.
+* __[Header field]__ - What field to display as your view's header, must be a _'text'_ type of field."
   .condition
 
     /*
@@ -38,14 +42,17 @@ a _'micro CMS'_.
 
   field:Markdown field
     markdown
+  field:Header field
+    text
 
 
 
 
 
 /*
- * Contains the field name of your Markdown column.
+ * Contains the field name of your Markdown and header columns.
  */
+.header-field-name:{Header field}
 .markdown-field-name:{Markdown field}
 
 
@@ -78,8 +85,11 @@ micro.css.include
  * If it is, we use the edited item's ID.
  * Otherwise, we assume the database ID to the specified item is the last
  * part of the URL.
+ *
+ * We also keep trackof whether or not URL was taken from the URL or not.
  */
 .id
+.id-from-url:bool:false
 if:x:/../*/id?value
 
   /*
@@ -96,6 +106,8 @@ else
   micro.url.get-entities
   set:x:/@.id?value
     src:x:/@micro.url.get-entities/0/-?name
+  set:x:/@.id-from-url?value
+    src:bool:true
 
 
 
@@ -112,7 +124,7 @@ if
   /*
    * We don't have a valid database ID to an existing item.
    */
-  throw:No database record selected
+  throw:No record selected. Please select a record.
 
 
 
@@ -123,39 +135,26 @@ if
  * and create one paragraph for each second column, injecting it into
  * our Micro CSS column created above.
  */
+.header
 .markdown
 p5.mysql.connect:[camphora]
 
   /*
    * Selecting Markdown field from database.
    */
-  p5.mysql.scalar:select `{0}` from `{1}` where id=@id
+  p5.mysql.select:select `{0}`, `{1}` from `{2}` where id=@id
+    :x:/@.header-field-name?value
     :x:/@.markdown-field-name?value
     :{app-name}
     @id:x:/@.id?value
 
   /*
-   * If above SQL returned nothing, we default it to some generic
-   * piece of text, simply informing user that it was empty.
+   * Retrieving header and Markdown content.
    */
-  if:x:/@p5.mysql.scalar?value
-    =
-    or:x:/@p5.mysql.scalar?value
-      =:
-
-    /*
-     * Above invocation returned nothing.
-     */
-    set:x:/@.markdown?value
-      src:@"This item doesn't contain any Markdown content!"
-
-  else
-
-    /*
-     * Above invocation returned nothing.
-     */
-    set:x:/@.markdown?value
-      src:x:/@p5.mysql.scalar?value
+  set:x:/@.header?value
+    src:x:/@p5.mysql.select/0/0?value
+  set:x:/@.markdown?value
+    src:x:/@p5.mysql.select/0/1?value
 
 
 
@@ -171,6 +170,20 @@ markdown2html:x:/@.markdown?value
 
 
 /*
+ * Setting the title of the page, but only if the database ID
+ * was taken from the URL of the request, since otherwise this
+ * is a simple "preview record" from inside of the main Camphora
+ * app.
+ */
+if:x:/@.id-from-url?value
+  =:bool:true
+  p5.web.page.set-title:x:/@.header?value
+
+
+
+
+
+/*
  * Creating our main wire frame widget.
  */
 create-widget
@@ -179,8 +192,12 @@ create-widget
     div
       class:row
       widgets
-        div
+        article
           class:col
           widgets
-            div
+            h1
+              class:header
+              innerValue:x:/@.header?value
+            section
+              class:content
               innerValue:x:/@markdown2html?value

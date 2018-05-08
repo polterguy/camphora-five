@@ -1,0 +1,191 @@
+/*
+ * Example Camphora Five CRUD app, which is a _"Micro CMS"_
+ * type of application, allowing you to create _"Micro blogs"_
+ * as a Camphora Five application.
+ */
+views
+  blog:@"
+/*
+ * A ""view markdown"" type of view template for Camphora Five.
+ *
+ * Optionally pass in [id] as the database id of the item you
+ * are currently editing. If you don't pass in [id], the database
+ * ID will be assumed to be the last URL entity.
+ *
+ * If no ID can be determined according to above logic, this
+ * file will throw an exception.
+ */
+
+
+
+
+
+/*
+ * Contains the field name of your Markdown and header columns.
+ */
+.header-field-name:name
+.markdown-field-name:content
+
+
+
+
+
+/*
+ * Sanity checking invocation.
+ */
+micro.lambda.contract.optional:x:/..
+  id:long
+
+
+
+
+
+/*
+ * Includes Micro's CSS files.
+ */
+micro.css.include
+
+
+
+
+
+/*
+ * Figuring our item database ID.
+ *
+ * Notice, first we check to see if there is a current item being edited.
+ * If it is, we use the edited item's ID.
+ * Otherwise, we assume the database ID to the specified item is the last
+ * part of the URL.
+ *
+ * We also keep trackof whether or not URL was taken from the URL or not.
+ */
+.id
+.id-from-url:bool:false
+if:x:/../*/id?value
+
+  /*
+   * We have some sort of ""editor"" open for current item.
+   */
+  set:x:/@.id?value
+    src:x:/../*/id?value
+
+else
+
+  /*
+   * Assumes the last part of our URL is our database ID.
+   */
+  micro.url.get-entities
+  set:x:/@.id?value
+    src:x:/@micro.url.get-entities/0/-?name
+  set:x:/@.id-from-url?value
+    src:bool:true
+
+
+
+
+
+/*
+ * Verifying that we somehow have a valid ID to a database item.
+ */
+if
+  p5.types.can-convert:x:/@.id?value
+    type:long
+  =:bool:false
+
+  /*
+   * We don't have a valid database ID to an existing item.
+   */
+  throw:No record selected. Please select a record.
+
+
+
+
+
+/*
+ * Then we connect to our database, select all records from our table,
+ * and create one paragraph for each second column, injecting it into
+ * our Micro CSS column created above.
+ */
+.header
+.markdown
+p5.mysql.connect:[camphora]
+
+  /*
+   * Selecting Markdown field from database.
+   */
+  p5.mysql.select:select `{0}`, `{1}` from `{2}` where id=@id
+    :x:/@.header-field-name?value
+    :x:/@.markdown-field-name?value
+    :{app-name}
+    @id:x:/@.id?value
+
+  /*
+   * Retrieving header and Markdown content.
+   */
+  set:x:/@.header?value
+    src:x:/@p5.mysql.select/0/0?value
+  set:x:/@.markdown?value
+    src:x:/@p5.mysql.select/0/1?value
+
+
+
+
+
+/*
+ * Transforming Markdown to HTML.
+ */
+markdown2html:x:/@.markdown?value
+
+
+
+
+
+/*
+ * Setting the title of the page, but only if the database ID
+ * was taken from the URL of the request, since otherwise this
+ * is a simple ""preview record"" from inside of the main Camphora
+ * app.
+ */
+if:x:/@.id-from-url?value
+  =:bool:true
+  p5.web.page.set-title:x:/@.header?value
+
+
+
+
+
+/*
+ * Creating our main wire frame widget.
+ */
+create-widget
+  class:container
+  widgets
+    div
+      class:row
+      widgets
+        article
+          class:col
+          widgets
+            h1
+              class:header
+              innerValue:x:/@.header?value
+            section
+              class:content
+              innerValue:x:/@markdown2html?value"
+field
+  name:name
+  type:text
+  show:bool:true
+field
+  name:created
+  type:created
+  show:bool:true
+field
+  name:content
+  type:markdown
+  show:bool:true
+field
+  name:author
+  type:user
+  show:bool:true
+desktop-icon:bool:true

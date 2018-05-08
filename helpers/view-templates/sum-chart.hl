@@ -25,6 +25,7 @@ will not function correctly if you have too many distinct values for your _'Grou
 * __[Sum field]__ - What field to sum.
 * __[Chart header]__ - Descriptive header for your chart.
 * __[Chart type]__ - What type of chart to use. You can use a pie chart or a bar chart."
+  image:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-pie-chart-sales-2.png"
   .condition
 
     /*

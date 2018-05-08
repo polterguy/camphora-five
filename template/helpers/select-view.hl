@@ -98,7 +98,7 @@ if:x:/@load-file/*/*(/create-widget|/create-container-widget)
   /*
    * Redirecting client to location of view.
    */
-  p5.web.set-location:/{0}/
+  p5.web.set-location:/{0}
     :x:/@join?value
 
   /*
@@ -161,7 +161,7 @@ if:x:/@load-file/*/*(/create-widget|/create-container-widget)
                       /*
                        * Forward evaluated above.
                        */
-                      .view-url:/{0}/
+                      .view-url:/{0}
                         :x:/@join?value
                       p5.web.send-javascript:@"window.open('{0}', '_new');"
                         :x:/@.view-url?value
