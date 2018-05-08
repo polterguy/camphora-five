@@ -532,6 +532,10 @@ create-widget
                                    * Checking if [.configure] section as a [.description] section.
                                    */
                                   if:x:/@load-file/*/*/.configure/*/.description
+
+                                    /*
+                                     * Making sure we display description for view.
+                                     */
                                     markdown2html:x:/@load-file/*/*/.configure/*/.description?value
                                     create-widget
                                       parent:camphora-view-properties
@@ -597,6 +601,21 @@ create-widget
                                           src
                                             option
                                               innerValue:x:/@_dp/#?value
+
+                                      /*
+                                       * Checking if there is only one valid [field] for currently
+                                       * iterated configuration setting, at which point we disable
+                                       * the select widget.
+                                       */
+                                      if:x:/..for-each/*/create-widget/*/widgets/*/select/*/widgets/*?count
+                                        =:int:1
+
+                                        /*
+                                         * Nothing to actually select for user, hence disabling
+                                         * the select widget
+                                         */
+                                        add:x:/..for-each/*/create-widget/*/widgets/*/select
+                                          src:disabled
 
                                       /*
                                        * Creating select widget to associate with variable.
