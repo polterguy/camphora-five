@@ -313,7 +313,7 @@ for-each:x:/@.signal/--/<-/field
       add:x:/../*/return
         src
           literal
-            element:p
+            class:camphora-created
             oninit
 
               /*
@@ -325,9 +325,30 @@ for-each:x:/@.signal/--/<-/field
               p5.types.date.format:x:/-?value
                 format:@"ddd d. MMM HH:mm yyyy"
               set-widget-property:x:/../*/_event?value
-                innerValue:{0}; {1}
+                innerValue:"<span>{0} - </span><strong>{1}</strong>"
                   :x:/@.name?value
                   :x:/@p5.types.date.format?value
+
+    /*
+     * User type of field.
+     */
+    case:user
+
+      /*
+       * Adding widget to modal window.
+       */
+      eval-x:x:/+/*/*/*/*/*/innerValue
+      add:x:/../*/return
+        src
+          container
+            class:camphora-created
+            widgets
+              span
+                innerValue:"{0} - "
+                  :x:/@_dp/#/*/name?value
+              strong
+                innerValue:{{{0}}}
+                  :x:/@_dp/#/*/name?value
 
 
 

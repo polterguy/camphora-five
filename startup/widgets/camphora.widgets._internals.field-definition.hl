@@ -153,6 +153,9 @@ create-event:camphora.widgets._internals.field-definition
                         option
                           innerValue:Date/time created
                           value:created
+                        option
+                          innerValue:Created by
+                          value:user
                     input
                       type:text
                       placeholder:Options ...

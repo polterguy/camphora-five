@@ -23,10 +23,21 @@ or as the last entity of the URL to the view. This allows you to create a view, 
 field from your records, allowing you to easily display markdown from your fields, almost like
 a _'micro CMS'_.
 
-__Notice__, obviously you'll need to actually have a markdown field in your app to use this view.
-
 * __[Markdown field]__ - What field to display as markdown, must be a _'markdown'_ type of field."
+  .condition
+
+    /*
+     * Verifies that app manifest contains at least one 'markdown' type of field.
+     */
+    p5.web.widgets.find-first
+      .fields
+    micro.form.serialize:x:/-/*/*?value
+    if:x:/@micro.form.serialize/*/field-type/=markdown
+      return:bool:true
+    return:bool:false
+
   field:Markdown field
+    markdown
 
 
 

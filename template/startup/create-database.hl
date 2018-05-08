@@ -41,6 +41,21 @@ for-each:x:/@.fields/*
   alter table `{0}` add `{1}` varchar(512) collate utf8mb4_unicode_ci null;"
             :{app-name}
             :x:/@_dp/#/*/name?value
+    case:user
+      set:x:/@.cols?value
+        src:{0}{1}
+          :x:/@.cols?value
+          :@"`{0}` varchar(100) collate utf8mb4_unicode_ci null,
+  "
+            :x:/@_dp/#/*/name?value
+      set:x:/@.cols-changed?value
+        src:{0}{1}
+          :x:/@.cols-changed?value
+          :@"
+  alter table `{0}` modify `{1}` varchar(100) collate utf8mb4_unicode_ci null;
+  alter table `{0}` add `{1}` varchar(100) collate utf8mb4_unicode_ci null;"
+            :{app-name}
+            :x:/@_dp/#/*/name?value
     case:checkbox
     case:number
       set:x:/@.cols?value

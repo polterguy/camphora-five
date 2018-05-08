@@ -25,8 +25,26 @@ will not function correctly if you have too many distinct values for your _'Grou
 * __[Sum field]__ - What field to sum.
 * __[Chart header]__ - Descriptive header for your chart.
 * __[Chart type]__ - What type of chart to use. You can use a pie chart or a bar chart."
+  .condition
+
+    /*
+     * Verifies that app manifest contains at least one 'number' type of field,
+     * in addition to at least one type of 'select' or 'radio' type of field.
+     */
+    p5.web.widgets.find-first
+      .fields
+    micro.form.serialize:x:/-/*/*?value
+    if:x:/@micro.form.serialize/*/field-type/=number
+      and:x:/@micro.form.serialize/*/field-type(/=select|/=radio|/=user)
+      return:bool:true
+    return:bool:false
+
   field:Group by
+    select
+    radio
+    user
   field:Sum field
+    number
   text:Chart header
   radio:Chart type
     option:Bar chart

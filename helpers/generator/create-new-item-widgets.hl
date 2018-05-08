@@ -244,6 +244,23 @@ for-each:x:/@.signal/--/<-/field
             value:x:/@p5.types.date.now?value.string
 
     /*
+     * User type of field.
+     */
+    case:user
+
+      /*
+       * Adding widget to modal window.
+       */
+      whoami
+      eval-x:x:/+/*/*/*(/value|/.data-field)
+      add:x:/../*/return
+        src
+          input
+            type:hidden
+            .data-field:x:/@_dp/#/*/name?value
+            value:x:/@whoami/*/username?value
+
+    /*
      * Radiobutton type of data.
      */
     case:radio

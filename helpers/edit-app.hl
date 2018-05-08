@@ -371,7 +371,47 @@ create-widget
                      */
                     list-files:@CAMPHORA/helpers/view-templates/
                       filter:.hl
-                    for-each:x:/-/*?name
+
+                    /*
+                     * In case we didn't find one single view that were legal to add to the
+                     * current app, according to its [.condition], this value will be false
+                     * after having iterated through all of our template views - At which
+                     * point we do not show the modal widget at all, but rather warns user
+                     * that no legal views were found.
+                     */
+                    .found-view:bool:false
+                    for-each:x:/@list-files/*?name
+
+                      /*
+                       * Loading file and checking if it has a [.configure]/[.condition] section, at
+                       * which point we evaluate the [.condition], and avoid adding the file the file,
+                       * if its [.condition] evaluated to boolean "false".
+                       */
+                      load-file:x:/@_dp?value
+                      if:x:/@load-file/*/*/.configure/*/.condition
+
+                        /*
+                         * File contains a [.configure]/[.condition] section, evaluating it,
+                         * and verifying it evaluates to boolean "true" before we continue.
+                         */
+                        eval:x:/@load-file/*/*/.configure/*/.condition
+                        if:x:/-?value
+                          =:bool:false
+
+                          /*
+                           * This view is not valid for this app, for some reasons.
+                           */
+                          continue
+
+                      /*
+                       * We have found a view that can be added to the application.
+                       */
+                      set:x:/@.found-view?value
+                        src:bool:true
+
+                      /*
+                       * Figuring out filename for our currently iterated template.
+                       */
                       split:x:/@_dp?value
                         =:/
                         =:.
@@ -380,6 +420,15 @@ create-widget
                         src
                           option
                             innerValue:x:/@split/0/-2?name
+
+                    /*
+                     * Verifying we found at least one valid view before we proceed.
+                     */
+                    if:x:/@.found-view?value
+                      =:bool:false
+                      micro.windows.info:We found no views that can be added to this application
+                        class:micro-windows-info warning
+                      return
 
                     /*
                      * Displays a modal widget, asking user what "template view"
@@ -513,14 +562,41 @@ create-widget
 
                                       /*
                                        * Creating a select list, to allow user to select a field
-                                       * to associate the view with.
+                                       * to associate his view with.
                                        */
-                                      for-each:x:/@micro.form.serialize/*/field-name?value
+                                      for-each:x:/@micro.form.serialize/*/field-name
+
+                                        /*
+                                         * Checking if currently iterated field has declared what
+                                         * types of fields it can be legally added to, and if it has,
+                                         * we verify that currently iterated field is amongst those
+                                         * types.
+                                         */
+                                        if:x:/..for-each/@_dp/#/*
+
+                                          /*
+                                           * Field has a type restriction, making sure currently iterated
+                                           * field is amongst one of these types.
+                                           */
+                                          if:x:/..for-each/@_dp/#/*/{0}
+                                            :x:/@_dp/#/+2?value
+                                            not
+
+                                            /*
+                                             * Currently iterated field is not amongst field type's
+                                             * list of valid fields.
+                                             */
+                                            continue
+
+                                        /*
+                                         * Adding field to select list allowing user to select this field
+                                         * for the currently iterated configuration setting.
+                                         */
                                         eval-x:x:/+/*/*/*
                                         add:x:/..for-each/..for-each/*/create-widget/*/widgets/*/select/*/widgets
                                           src
                                             option
-                                              innerValue:x:/@_dp?value
+                                              innerValue:x:/@_dp/#?value
 
                                       /*
                                        * Creating select widget to associate with variable.
