@@ -542,6 +542,14 @@ create-widget
                                       style:"float:right; margin-left: .5rem; max-width: 33%;border-radius:.5rem; box-shadow: 3px 3px 5px rgba(0,0,0,.2);"
                                       alt:Example of how view might look like
                                       src:x:/@load-file/*/*/.configure/*/image?value
+                                      events
+
+                                        /*
+                                         * Invoked by some views when the screenshot should be changed.
+                                         */
+                                        camphora._set-view-screenshot
+                                          set-widget-property:x:/../*/_event?value
+                                            src:x:/../*/_arg?value
 
                                   /*
                                    * Checking if [.configure] section as a [.description] section.
@@ -696,6 +704,8 @@ create-widget
                                       /*
                                        * Creating radio button wrapping currently iterated option.
                                        */
+                                      add:x:/+2/*/*/*/*/input
+                                        src:x:/@_dp/#/*
                                       eval-x:x:/+/*/*/*/*/*
                                       add:x:/..for-each/..for-each/*/create-widget/*/widgets
                                         src

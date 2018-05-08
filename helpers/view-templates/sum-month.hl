@@ -1,5 +1,5 @@
 /*
- * A "view sum" type of view template for Camphora Five.
+ * A "view sum by month" type of view template for Camphora Five.
  *
  * Will sum all [field]'s for your database by the value of another
  * [field].
@@ -13,19 +13,18 @@
  * Contains the parts of this view that needs to be configured.
  */
 .configure
-  .description:@"This creates a chart view, that will sum all values for some field, grouped
-by the value of another field, resulting in a visual chart, displaying the relative sums
-for you. This view is useful for things such as displaying total sales for employees, etc.
+  .description:@"This creates a chart view, that will sum all values for some _'number'_ field,
+grouped by the month of another _'created'_ type of field, resulting in a visual chart, displaying
+the sums for you on a month to month basis. This view is useful for things such as displaying
+sales per month, etc. The bar chart supports negative values.
 
-__Notice__, this view expects you to at least have one _'number'_ type of field, that you
-want to sum up - In addition to another field in your app to group your sums by. This view
-will not function correctly if you have too many distinct values for your _'Group by'_ field.
+__Notice__, this view expects you to at least have one _'number'_ type of field,
+in addition to another _'created'_ type field in your app to group your sums by.
 
-* __[Group by]__ - What field to group your data by.
-* __[Sum field]__ - What field to sum.
-* __[Chart header]__ - Descriptive header for your chart.
-* __[Chart type]__ - What type of chart to use. You can use a pie chart or a bar chart."
-  image:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-count-view.png"
+* __[Group by]__ - What 'created' field to group your data by.
+* __[Sum field]__ - What 'number' field to sum.
+* __[Chart header]__ - Descriptive header for your chart."
+  image:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-sum-chart.png"
   .condition
 
     /*
@@ -36,30 +35,15 @@ will not function correctly if you have too many distinct values for your _'Grou
       .fields
     micro.form.serialize:x:/-/*/*?value
     if:x:/@micro.form.serialize/*/field-type/=number
-      and:x:/@micro.form.serialize/*/field-type(/=select|/=radio|/=user)
+      and:x:/@micro.form.serialize/*/field-type/=created
       return:bool:true
     return:bool:false
 
   field:Group by
-    select
-    radio
-    user
+    created
   field:Sum field
     number
   text:Chart header
-  radio:Chart type
-    option:Bar chart
-      onchange
-        get-widget-property:x:/../*/_event?value
-          checked
-        if:x:/-/*/*
-          camphora._set-view-screenshot:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-count-view.png"
-    option:Pie chart
-      onchange
-        get-widget-property:x:/../*/_event?value
-          checked
-        if:x:/-/*/*
-          camphora._set-view-screenshot:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-pie-chart-sales-2.png"
 
 
 
@@ -78,15 +62,6 @@ will not function correctly if you have too many distinct values for your _'Grou
  * Contains the field to aggregate the sum by.
  */
 .sum-field-name:{Sum field}
-
-
-
-
-
-/*
- * Contains the chart type.
- */
-.chart-type:{Chart type}
 
 
 
@@ -118,7 +93,7 @@ p5.mysql.connect:[camphora]
   /*
    * Selecting Markdown field from database.
    */
-  p5.mysql.select:select `{2}`, sum(`{0}`) from `{1}` group by `{2}`
+  p5.mysql.select:select DATE_FORMAT(`{2}`,'%Y, %b') as Date, sum(`{0}`) from `{1}` group by Date
     :x:/@.sum-field-name?value
     :{app-name}
     :x:/@.group-by-field-name?value
@@ -133,18 +108,6 @@ p5.mysql.connect:[camphora]
     add:x:/../*/create-widget/**/micro.widgets.chart.column/*/data
       src
         foo:x:/@_dp/#/1?value
-
-
-
-
-
-/*
- * Checking what type of chart we should create.
- */
-if:x:/@.chart-type?value
-  =:Pie chart
-  set:x:/../*/create-widget/**/micro.widgets.chart.column?name
-    src:micro.widgets.chart.pie
 
 
 

@@ -13,19 +13,17 @@
  * Contains the parts of this view that needs to be configured.
  */
 .configure
-  .description:@"This creates a chart view, that will count all records, grouped
-by the value of one field, resulting in a visual chart, displaying the count
+  .description:@"This view creates a bar chart or a pie chart, that will count all records, grouped
+by the value of a field, resulting in a visual chart, displaying the count
 for you for each type. This view is useful for things such as displaying total
-number of items, etc.
+number of items of specific type, etc.
 
 __Notice__, this view expects you to at least have one field in your app to group your sums by.
-This view will not function correctly if you have too many distinct values for your _'Group by'_
-field.
 
 * __[Group by]__ - What field to group your data by.
 * __[Chart header]__ - Descriptive header for your chart.
 * __[Chart type]__ - What type of chart to use. You can use a pie chart or a bar chart."
-  image:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-pie-chart-sales-2.png"
+  image:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-count-view.png"
   .condition
 
     /*
@@ -46,7 +44,17 @@ field.
   text:Chart header
   radio:Chart type
     option:Bar chart
+      onchange
+        get-widget-property:x:/../*/_event?value
+          checked
+        if:x:/-/*/*
+          camphora._set-view-screenshot:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-count-view.png"
     option:Pie chart
+      onchange
+        get-widget-property:x:/../*/_event?value
+          checked
+        if:x:/-/*/*
+          camphora._set-view-screenshot:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-pie-chart-sales-2.png"
 
 
 
