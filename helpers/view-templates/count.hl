@@ -1,0 +1,152 @@
+/*
+ * A "count" type of view template for Camphora Five.
+ *
+ * Will count all [field]'s groupedby by the value of another
+ * [field].
+ */
+
+
+
+
+
+/*
+ * Contains the parts of this view that needs to be configured.
+ */
+.configure
+  .description:@"This creates a chart view, that will count all records, grouped
+by the value of one field, resulting in a visual chart, displaying the count
+for you for each type. This view is useful for things such as displaying total
+number of items, etc.
+
+__Notice__, this view expects you to at least have one field in your app to group your sums by.
+This view will not function correctly if you have too many distinct values for your _'Group by'_
+field.
+
+* __[Group by]__ - What field to group your data by.
+* __[Chart header]__ - Descriptive header for your chart.
+* __[Chart type]__ - What type of chart to use. You can use a pie chart or a bar chart."
+  image:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-pie-chart-sales-2.png"
+  .condition
+
+    /*
+     * Verifies that app manifest contains at least one 'number' type of field,
+     * in addition to at least one type of 'select' or 'radio' type of field.
+     */
+    p5.web.widgets.find-first
+      .fields
+    micro.form.serialize:x:/-/*/*?value
+    if:x:/@micro.form.serialize/*/field-type(/=select|/=radio|/=user)
+      return:bool:true
+    return:bool:false
+
+  field:Group by
+    select
+    radio
+    user
+  text:Chart header
+  radio:Chart type
+    option:Bar chart
+    option:Pie chart
+
+
+
+
+
+/*
+ * Contains the field name to group your SQL by.
+ */
+.group-by-field-name:{Group by}
+
+
+
+
+
+/*
+ * Contains the chart type.
+ */
+.chart-type:{Chart type}
+
+
+
+
+
+/*
+ * Contains the chart header.
+ */
+.chart-header:{Chart header}
+
+
+
+
+
+/*
+ * Includes Micro's CSS files.
+ */
+micro.css.include
+
+
+
+
+
+/*
+ * Then we connect to our database, and select our sum aggregate values.
+ */
+p5.mysql.connect:[camphora]
+
+  /*
+   * Selecting Markdown field from database.
+   */
+  p5.mysql.select:select count(`{1}`), `{1}` from `{0}` group by `{1}`
+    :{app-name}
+    :x:/@.group-by-field-name?value
+
+  /*
+   * Adding our data to our bar chart below.
+   */
+  for-each:x:/@p5.mysql.select/*
+    set:x:/+2/*/*?name
+      src:x:/@_dp/#/1?value
+    eval-x:x:/+/*/*
+    add:x:/../*/create-widget/**/micro.widgets.chart.column/*/data
+      src
+        foo:x:/@_dp/#/0?value
+
+
+
+
+
+/*
+ * Checking what type of chart we should create.
+ */
+if:x:/@.chart-type?value
+  =:Pie chart
+  set:x:/../*/create-widget/**/micro.widgets.chart.column?name
+    src:micro.widgets.chart.pie
+
+
+
+
+
+/*
+ * Creating our main wire frame widget.
+ */
+create-widget
+  class:container
+  widgets
+    div
+      class:row
+      widgets
+        div
+          class:col
+          widgets
+            h3
+              class:center
+              innerValue:x:/@.chart-header?value
+    div
+      class:row
+      widgets
+        div
+          class:col-50 offset-25
+          widgets
+            micro.widgets.chart.column
+              data

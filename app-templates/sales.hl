@@ -5,11 +5,9 @@
  * statistics in addition.
  */
 views
-  sum-bar-chart:@"/*
- * A ""view sum"" type of view template for Camphora Five.
- *
- * Will sum all [field]'s for your database by the value of another
- * [field].
+  sales-per-employee:@"/*
+ * This view will show accumulated sales for each of
+ * your employees as a bar chart.
  */
 
 
@@ -126,10 +124,8 @@ create-widget
               data"
   sales-per-product:@"
 /*
- * A ""view sum"" type of view template for Camphora Five.
- *
- * Will sum all [field]'s for your database by the value of another
- * [field].
+ * This view will show accumulated sales per
+ * product as a pie chart.
  */
 
 
