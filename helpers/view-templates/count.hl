@@ -34,7 +34,7 @@ __Notice__, this view expects you to at least have one field in your app to grou
     p5.web.widgets.find-first
       .fields
     micro.form.serialize:x:/-/*/*?value
-    if:x:/@micro.form.serialize/*/field-type(/=select|/=radio|/=user)
+    if:x:/@micro.form.serialize/*/field-type(/=select|/=radio|/=user|/=checkbox)
       return:bool:true
     return:bool:false
 
@@ -42,6 +42,7 @@ __Notice__, this view expects you to at least have one field in your app to grou
     select
     radio
     user
+    checkbox
   text:Chart header
   radio:Chart type
     option:Pie chart
