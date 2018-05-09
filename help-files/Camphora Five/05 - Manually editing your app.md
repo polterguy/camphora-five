@@ -3,7 +3,7 @@
 When you have generated your app, you can use Hyper IDE to edit your app's files. If your app's name is
 for instance _"address-book"_, then you can find your app's files in the folder _"/modules/address-book/"_.
 
-**Warning** - If you edit your app, for then to later re-generate your app, then your changes will be lost, since
+**Warning** - If you edit your app, for then to later re-generate your app, your changes will be lost, since
 the generating process overwrites all files from your app's folder.
 
 Your app's structure is the same as any other module you have in your Phosphorus Five installation. The
@@ -30,6 +30,7 @@ for-each:x:@"/@html2lambda/**/\@class/""=:regex:/icon-.{1,}/""?value"
     src
       container
         element:li
+        style:"font-size: 2rem;"
         widgets
           span
             innerValue:
@@ -89,7 +90,7 @@ and normal Phosphorus Five module. The template folder again will contain most o
 up your Phosphorus Five application, such as a _"desktop.hl"_ file, a _"launch.hl"_ file, etc.
 
 When your app is generated, it works in most regards exactly as any other type of Phosphorus Five module, and
-if you know Hyperlambda, and understands the Micro extension widgets, you can easily edit your app, and modify it
+if you know Hyperlambda, and the Micro extension widgets, you can easily edit your app, and modify it
 as you see fit.
 
 One detail though, is that each _"view"_ you create, can be found within the _"/views/"_ folder. This folder by
@@ -112,4 +113,8 @@ particular app. Markdown is created as a _"leaky format"_, which allows you to c
 your Markdown. These tags will be rendered _"as is"_ in your resulting HTML. However, your HTML
 whitelist file, declares which HTML elements and attributes of HTML elements are legal to render here - But only for your
 specific app, and not all apps in general. Any HTML tag found in a Markdown field, that does not exist in
-your whitelist file, will simply be entirely removed.
+your whitelist file, will simply be entirely removed, preventing injection of malicious HTML tags into
+your dataset.
+
+**Notice**, if you create your own custom views, rendering Markdown, you need to make sure yourself that
+no malicious HTML tags are injected into your resulting HTML!

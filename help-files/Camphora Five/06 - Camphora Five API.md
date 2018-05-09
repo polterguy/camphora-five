@@ -35,16 +35,16 @@ widget ID of your datagrid as their __[\_arg]__ argument.
 In addition to the above Active Events, the datagrid of your Camphora Five app will also _"publish"_ a couple of
 Active Events when some sort of event occurs. Below is a list of these events.
 
-- __[camphora.xxx.filter-changed]__ - Invoked when your datagrid's filter is for some reasons changed.
 - __[camphora.xxx.datagrid.databound]__ - Invoked when for some reasons the datagrid is databound.
-- __[camphora.xxx.count-changed]__ - Invoked when for some reasons the count of items in your database has changed.
-- __[camphora.xxx.sort-changed]__ - Invoked when for some reasons the sorting of your datagrid has changed.
 
 By consuming the above Active Events and extension widgets yourself, you can take completely control over
 how your apps are wired together, and for instance create your own paging logic, filtering logic, and completely
 for instance drop the default toolbar, etc. Assuming you have created an app called `address-book`, you
 can evaluate the snippet below to see an example of consuming the API directly yourself, to display only
 the first 5 items, not allowing for editing items at all.
+
+**Notice**, unless you actually _have_ an _"address-book"_ app in your installation, the following
+snippet will not work.
 
 ```hyperlambda-snippet
 /*

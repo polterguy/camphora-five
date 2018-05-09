@@ -57,8 +57,8 @@ eval-x:x:/+/*/*
   camphora.database.import-csv-file
     :camphora.{0}.database.import-csv-file
       :x:/../*/app-name?value
-  camphora.database.delete-all-items
-    :camphora.{0}.database.delete-all-items
+  camphora.database.delete-all-filtered-items
+    :camphora.{0}.database.delete-all-filtered-items
       :x:/../*/app-name?value
   camphora.database.update
     :camphora.{0}.database.update
@@ -77,12 +77,6 @@ eval-x:x:/+/*/*
       :x:/../*/app-name?value
   camphora.datagrid.filter
     :camphora.{0}.datagrid.filter
-      :x:/../*/app-name?value
-  camphora.count-changed
-    :camphora.{0}.count-changed
-      :x:/../*/app-name?value
-  camphora.filter-changed
-    :camphora.{0}.filter-changed
       :x:/../*/app-name?value
   camphora.datagrid.databound
     :camphora.{0}.datagrid.databound

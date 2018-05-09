@@ -5,7 +5,7 @@ If you still want to follow this tutorial, and create this app exactly as illust
 delete the example app called _"address-book"_ from your list of apps.
 
 [Open up Camphora Five](/camphora-five) and click the _"+"_ button, at the top right corner of your page.
-Then name your app `address-book`. Notice, you cannot use spaces in your app's name.
+Then name your app `address-book`. Notice, you cannot use spaces or capital letters in your app's name.
 Then add some fields to your app, by clicking the _"+"_ in the area of your screen where it says _"fields"_.
 You can create any fields you want to create, such as for instance.
 
@@ -31,8 +31,8 @@ If you open your app, and add some records to it, it'll end up resembling the fo
 https://phosphorusfive.files.wordpress.com/2018/05/using-camphora-five-address-book-screenshot.png
 
 **Notice**, already you can filter and sort your items - Both ascending and descending, by clicking
-the column header once or twice to sort in reverse order. To filter, simply type some piece of text
-into the _"search textbox"_ at the top, and click the spyglass.
+the column header once to sort ascencing, or twice to sort in reverse order. To filter, simply type
+some piece of text into the _"search textbox"_ at the top, and click the spyglass.
 
 ### Settings for your app
 

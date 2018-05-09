@@ -34,12 +34,3 @@ camphora.datagrid.databind:x:/../*/datagrid?value
   order-by:x:/../*/column?value
   order-dir:x:/../*/order-dir?value
   page
-
-
-
-
-
-/*
- * Making sure we signal to any listeners that the sort has changed.
- */
-camphora.sort-changed:x:/../*/datagrid?value

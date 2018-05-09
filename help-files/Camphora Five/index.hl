@@ -11,7 +11,7 @@ micro.widgets.file
       href:/camphora-five/
 
 p
-  innerValue:@"Camphora Five is a CRUD app generator and a codebuilder, that allows you to create some fairly
+  innerValue:@"Camphora Five is a CRUD app generator and a <em>'Code Builder'</em>, that allows you to create some fairly
 rich web apps, without requiring you to learn any programming. If all you need to do is to create a web app
 that allows you to collect, edit, and administrate tabular datasets, like you do in for instance Excel, and
 create some statistics for your data - Then Camphora Five should be your application of choice."

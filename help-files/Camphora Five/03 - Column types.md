@@ -8,7 +8,7 @@ list, and their most important traits explained.
 * __Markdown content__ - A Markdown field, that you can edit using a web based Markdown editor, and that will be formatted as HTML or _"rich text"_ when displayed.
 * __Checkbox__ - A yes/no type of field.
 * __Number__ - A number type of input.
-* __Select dropdown__ - Allows the user to select from a pre-defined set of different options.
+* __Select dropdown__ - Allows the user to select from a pre-defined set of different options from a _"dropdown"_ widget.
 * __Radiobuttons__ - Similar to select dropdown, but will display the different options as radiobuttons.
 * __Date/time created__ - Not per se an input field, but an automatically created field, that allows you to track when the item was actually created.
 * __Created by__ - Also not an actual input field, but tracks what user created the record automatically.
@@ -23,9 +23,75 @@ These types of fields allows the user to apply rich formatting to text, using th
 will be edited with a Markdown type of editor, and when displayed, it will be transformed into its rich text (HTML)
 counterpart. This field does not allow for malicious HTML injection, since every time its value is displayed, by
 default the value will be semantically checked for malicious HTML tags - Unless you create your own views, at which
-point you'll have to explicitly _"white wash"_ your own HTML.
+point you'll have to explicitly _"white wash"_ your own HTML. The list of legal elements can be configured though,
+and you can find it in your app's _"/configuration/"_ folder. Below is an example of the most important
+formatting instructions you can use in a Markdown field.
 
-The list of legal elements can be configured though, and you can find it in your app's _"/configuration/"_ folder.
+```markdown
+# Large header
+
+## Smaller header
+
+### Event smaller header (continues to 6)
+
+_emphasized/italics text_
+
+__bold text__
+
+Some paragraph, declared by adding an additional carriage return after the above paragraph or element.
+Notice, it overflows unto the next line, and can use _emphasize_ and __strong__ elements inline and
+even [hyperlinks](https://github.com/polterguy/phosphorusfive) inline.
+
+Another paragraph ...
+
+[Some hyperlink](https://your-hyperlinks-url.com)
+
+* A bunch of
+* bulleted lists
+
+1. A numbered
+2. list
+3. of items ...
+
+> Quotation of some piece of text ...
+```
+
+The above will resemble the following when viewed ...
+
+<div class="shaded rounded air-inner air bg">
+
+# Large header
+
+## Smaller header
+
+### Event smaller header (continues to 6)
+
+_emphasized/italics text_
+
+__bold text__
+
+Some paragraph, declared by adding an additional carriage return after the above paragraph or element.
+Notice, it overflows unto the next line, and can use _emphasize_ and __strong__ elements inline and
+even [hyperlinks](https://github.com/polterguy/phosphorusfive) inline.
+
+Another paragraph ...
+
+> Quotation of some piece of text ...
+
+[Some hyperlink](https://your-hyperlinks-url.com)
+
+* A bunch of
+* bulleted lists
+
+1. A numbered
+2. list
+3. of items ...
+
+</div>
+
+The entire specification for Markdown is beyond the purpose of this document. However, you can start
+out [here](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) if you'd like to see
+a more detailed description of all of its elements.
 
 ### Select and radiobutton fields
 
@@ -49,5 +115,5 @@ of creation as you read your item later.
 
 ### Created by fields
 
-This field automatically tracks what username created the record, and is in such a regard similar to the
-Date/time created field.
+This field automatically tracks what user created the record, and is in such a regard similar to the
+Date/time created field in that it is not an _"input"_ field.

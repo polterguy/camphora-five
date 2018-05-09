@@ -1,13 +1,13 @@
 ## Introduction to Camphora Five
 
-Camphora Five is a CRUD app generator and codebuilder, that allows you to create apps declaratively,
+Camphora Five is a CRUD app generator and a _'Code Builder'_, that allows you to create apps declaratively,
 to collect and edit tabular datasets. Although it is very powerful, and allows you to create your own
 views in Hyperlambda - It doesn't require you to know any programming to create basic CRUD apps.
 In such a way, it arguably resembles Microsoft Excel or Access. Below is a screenshot of Camphora Five.
 
 https://phosphorusfive.files.wordpress.com/2018/05/camphora-five-new-screenshot.png
 
-In the above screenshot, you can see the process of creating a sales per month statistical graph,
+In the above screenshot, you can see the process of creating a sales per month statistical chart,
 associated with a sales application, which allows you to keep track of sales done by your employees.
 
 When you have _"generated"_ your app, you can Create, Read, Update, and Delete records from your database, hence
