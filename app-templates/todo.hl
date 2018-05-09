@@ -183,7 +183,7 @@ create-widget
 .chart-type:Bar chart
 
 // Contains the chart header.
-.chart-header:Bugs reported by
+.chart-header:Items reported by users
 
 // Contains the chart description.
 .chart-description:This chart shows how many items are reported from each of your users.

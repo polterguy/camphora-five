@@ -1,11 +1,11 @@
-
 ## Creating custom view templates
 
 One really nice feature with Camphora Five is the ability to create _"custom views"_. Arguably the power
 of this feature is only surpassed by your ability to create _"custom view templates"_. If you take some
 time to invest in learning Hyperlambda, you can actually extend the view templates that your users can
 use when creating their own views, by creating your own _"template view"_, and simply add it as a Hyperlambda
-file to the _"/modules/camphora-five/helpers/view-templates/"_ folder.
+file to the _"/modules/camphora-five/helpers/view-templates/"_ folder. This allows you to extend the _"code
+builder"_ features of Camphora Five.
 
 This allows you to create your own _"wizards"_, where your users can by following a simple wizard, create
 their own views, 100% visually, without needing to do any Hyperlambda programming themselves. To understand

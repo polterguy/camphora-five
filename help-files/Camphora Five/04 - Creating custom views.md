@@ -1,13 +1,15 @@
 ## Creating custom views
 
-Creating custom views have been significantly simplified in Camphora Five lately, and you
+Creating custom views have been significantly simplified in Camphora Five, and you
 can now create fairly advanced _"views"_, without any coding experience at all. What views you
 can add to your application, depends upon what fields you have in your app - However, you can
-also create your own custom view entirely from scratch if you know some Hyperlambda. The latter
+also create your own custom view entirely from scratch, if you know some Hyperlambda. The latter
 allows you to completely override the entire rendering of your page, and literally create _anything_
 as a _"view"_ in your app. However, the simplest way to create a view, unless you want to teach
 yourself Hyperlambda - Is to simply follow the _"wizard"_, and let Camphora Five automatically
-create your code. Below is a screenshot of this process.
+create your code. To create a custom view, click the _"eye button"_, with the _"+"_ icon next to
+it, while you are editing one of your apps. This should bring up a _"wizard window"_, that you
+can follow to parametrize your view. Below is a screenshot of this process.
 
 https://phosphorusfive.files.wordpress.com/2018/05/camphora-five-screenshot-create-view-pie-chart.png
 
