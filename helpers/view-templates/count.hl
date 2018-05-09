@@ -22,7 +22,8 @@ __Notice__, this view expects you to at least have one field in your app to grou
 
 * __[Group by]__ - What field to group your data by.
 * __[Chart header]__ - Descriptive header for your chart.
-* __[Chart type]__ - What type of chart to use. You can use a pie chart or a bar chart."
+* __[Chart type]__ - What type of chart to use. You can use a pie chart or a bar chart.
+* __[Chart description]__ - A description of your chart, feel free to use Markdown syntax here."
   image:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-pie-chart-sales-2.png"
   .condition
 
@@ -55,6 +56,7 @@ __Notice__, this view expects you to at least have one field in your app to grou
           checked
         if:x:/-/*/*
           camphora._set-view-screenshot:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-count-view.png"
+  markdown:Chart description
 
 
 
@@ -82,6 +84,15 @@ __Notice__, this view expects you to at least have one field in your app to grou
  * Contains the chart header.
  */
 .chart-header:{Chart header}
+
+
+
+
+
+/*
+ * Contains the chart description.
+ */
+.chart-description:{Chart description}
 
 
 
@@ -136,6 +147,15 @@ if:x:/@.chart-type?value
 
 
 /*
+ * Making sure we turn the chart's description into HTML, assuming
+ * it is Markdown.
+ */
+markdown2html:x:/../*/.chart-description?value
+
+
+
+
+/*
  * Creating our main wire frame widget.
  */
 create-widget
@@ -154,7 +174,10 @@ create-widget
       class:row
       widgets
         div
-          class:col-50 offset-25
+          class:col-50
+          innerValue:x:/@markdown2html?value
+        div
+          class:col-50
           widgets
             micro.widgets.chart.column
               data

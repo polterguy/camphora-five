@@ -23,7 +23,8 @@ in addition to another _'created'_ type field in your app to group your sums by.
 
 * __[Group by]__ - What 'created' field to group your data by.
 * __[Sum field]__ - What 'number' field to sum.
-* __[Chart header]__ - Descriptive header for your chart."
+* __[Chart header]__ - Descriptive header for your chart.
+* __[Chart description]__ - A description of your chart, feel free to use Markdown syntax here."
   image:"https://phosphorusfive.files.wordpress.com/2018/05/screenshot-sum-chart.png"
   .condition
 
@@ -44,6 +45,7 @@ in addition to another _'created'_ type field in your app to group your sums by.
   field:Sum field
     number
   text:Chart header
+  markdown:Chart description
 
 
 
@@ -71,6 +73,15 @@ in addition to another _'created'_ type field in your app to group your sums by.
  * Contains the chart header.
  */
 .chart-header:{Chart header}
+
+
+
+
+
+/*
+ * Contains the chart description.
+ */
+.chart-description:{Chart description}
 
 
 
@@ -114,6 +125,16 @@ p5.mysql.connect:[camphora]
 
 
 /*
+ * Making sure we turn the chart's description into HTML, assuming
+ * it is Markdown.
+ */
+markdown2html:x:/../*/.chart-description?value
+
+
+
+
+
+/*
  * Creating our main wire frame widget.
  */
 create-widget
@@ -132,7 +153,10 @@ create-widget
       class:row
       widgets
         div
-          class:col-50 offset-25
+          class:col-50
+          innerValue:x:/@markdown2html?value
+        div
+          class:col-50
           widgets
             micro.widgets.chart.column
               data

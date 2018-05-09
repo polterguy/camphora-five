@@ -100,13 +100,13 @@ if:x:/../*/filter?value
   /*
    * Adding 'equal' fields, if there are any such fields.
    */
-  if:x:/@.fields/*/field/*/type(/=number|/=select|/=radio)/./*/name
+  if:x:/@.fields/*/field/*/type(/=number|/=select|/=radio|/=user)/./*/name
 
     /*
      * There exists "equal" type of fields in app.
      * Iterating through them all and adding them to our [.filter].
      */
-    for-each:x:/@.fields/*/field/*/type(/=number|/=select|/=radio)/./*/name
+    for-each:x:/@.fields/*/field/*/type(/=number|/=select|/=radio|/=user)/./*/name
 
       /*
        * If this is a "number" type of field, and the actual query cannot be converted

@@ -726,6 +726,24 @@ create-widget
                                       parent:camphora-view-properties
                                       widgets
 
+                                  /*
+                                   * Iterating through each [markdown] type of configuration.
+                                   */
+                                  for-each:x:/@load-file/*/*/.configure/*/markdown
+
+                                    /*
+                                     * Creating widget wrapping [markdown] type of configuration setting.
+                                     */
+                                    eval-x:x:/+/*/*/*(/innerValue|/.data-field)
+                                    create-widget
+                                      parent:camphora-view-properties
+                                      widgets
+                                        label
+                                          innerValue:x:/@_dp/#?value
+                                        micro.widgets.codemirror
+                                          mode:markdown
+                                          .data-field:x:/@_dp/#?value
+
                           div
                             class:strip right
                             widgets
@@ -745,9 +763,29 @@ create-widget
                                     value
                                   p5.web.widgets.find-first
                                     .views
+                                  micro.form.serialize:x:/-/*/*?value
 
                                   /*
                                    * Sanity checking view name.
+                                   *
+                                   * First checking that there does not exist a view with the same name
+                                   * from before.
+                                   */
+                                  if:x:/@micro.form.serialize/*/view-name/={0}
+                                    :x:/@get-widget-property/*/*?value
+
+                                    /*
+                                     * There exists a view with the same name from before.
+                                     */
+                                    micro.windows.info:Your view's name must be unique
+                                      class:micro-windows-info warning
+                                    micro.page.set-focus:camphora-view-name
+                                    return
+
+                                  /*
+                                   * Then checking that view's name does not contain illegal
+                                   * characters. Notice, we only allowfor a-z, 0-1, '_' and '-'
+                                   * here - And its name must be between 3 and 20 characters long.
                                    */
                                   match:x:/../*/get-widget-property/[1,2]/*/*?value
                                     src:regex:"/^[-_a-z0-9]{3,20}$/"
@@ -759,7 +797,7 @@ create-widget
                                     /*
                                      * Not a good name for the view.
                                      */
-                                    micro.windows.info:Your view's name can only contain a-z, 0-9, and between 3 and 20 characters.
+                                    micro.windows.info:Your view's name can only contain a-z, 0-9, '-' and '_' - And its length must be between 3 and 20 characters
                                       class:micro-windows-info warning
                                     micro.page.set-focus:camphora-view-name
                                     return
@@ -808,6 +846,12 @@ create-widget
                                    * Deleting modal widget.
                                    */
                                   delete-widget:camphora-select-template-view
+
+                                  /*
+                                   * Giving user some feedback.
+                                   */
+                                  micro.windows.info:View was successfully associated with your app. Scroll to the bottom of page to edit your view.
+                                    class:micro-windows-info success
 
             h3
               innerValue:Views
