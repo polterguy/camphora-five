@@ -163,7 +163,7 @@ if:x:/@load-file/*/*(/create-widget|/create-container-widget)
                        */
                       .view-url:/{0}
                         :x:/@join?value
-                      p5.web.send-javascript:@"window.open('{0}', '_new');"
+                      p5.web.send-javascript:@"window.open('{0}', '_blank');"
                         :x:/@.view-url?value
 
                   button
@@ -178,8 +178,12 @@ if:x:/@load-file/*/*(/create-widget|/create-container-widget)
 
               /*
                * This is the widget where we actually inject our view.
+               *
+               * Notice the top margin, which makes sure the actual view doesn't
+               * "crash" with the "close view" button or the "open view's URL" button.
                */
               container:camphora-view-wrapper
+                style:"margin-top: 2rem;"
 
   /*
    * Adding [parent] argument to our first [create-widget] or

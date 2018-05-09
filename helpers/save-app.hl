@@ -33,7 +33,7 @@ micro.form.serialize:x:/@p5.web.widgets.find-first-ancestor/*/*?value
  * Sanity checking name of app.
  */
 match:x:/@micro.form.serialize/*/name?value
-  src:regex:@"/^[-_a-z0-9]{3,20}$/i"
+  src:regex:@"/^[-_a-z0-9]{3,20}$/"
 if:x:/@match/0?name
   =:
   or:x:/@match/*?count
@@ -138,14 +138,14 @@ for-each:x:/@micro.form.serialize/*/view-name
    * Making sure view's name doesn't contain "illegal characters".
    */
   match:x:/@_dp/#?value
-    src:regex:"/^[-_a-z0-9]{3,20}$/"
+    src:regex:"/^[-_a-z0-9]{3,30}$/"
   if:x:/@match/*?count
     =:int:0
 
     /*
      * View name was not valid.
      */
-    micro.windows.info:Your view can only contain a-z. 0-9, - and _ in its name, and must be between 3 and 20 characters long.
+    micro.windows.info:Your view can only contain a-z. 0-9, - and _ in its name, and must be between 3 and 30 characters long.
       class:micro-windows-info warning
     return:bool:false
 

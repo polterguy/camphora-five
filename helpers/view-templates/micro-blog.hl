@@ -24,7 +24,7 @@ the URL to the view. This allows you to create a view, that wraps a markdown
 field from your records, functioning almost like a _'micro CMS'_.
 
 After you have created your view, and/or generated your app, you can easily customize your view,
-to add you own design to it.
+to add your own design to it.
 
 * __[Markdown field]__ - What field to display as markdown, must be a _'markdown'_ type of field.
 * __[Header field]__ - What field to display as your view's header, must be a _'text'_ type of field."

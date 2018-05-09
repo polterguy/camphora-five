@@ -1,0 +1,112 @@
+/*
+ * A "datagrid" type of view template for Camphora Five.
+ *
+ * This view will create (another) datagrid view for your app,
+ * allowing you to further configure how the datagrid is rendered.
+ */
+
+
+
+
+
+/*
+ * Contains the parts of this view that needs to be configured.
+ */
+.configure
+  .description:@"Creates a read only datagrid for your records. Notice, this view only
+allows you to browse your items in a datagrid, implying that any 'hidden' fields in
+your app will not be possible to see.
+
+After you have created your view, and/or generated your app, you can easily customize your view,
+to add your own design to it.
+
+* __[Title field]__ - What title you want to use for your page."
+  image:"https://phosphorusfive.files.wordpress.com/2018/05/read-only-camphora-datagrid-view-screenshot.png"
+  text:Title field
+
+
+
+
+
+/*
+ * Contains the field name of your Markdown and header columns.
+ */
+.title-field-name:{Title field}
+
+
+
+
+
+/*
+ * Including Micro's CSS files, in addition to our main CSS
+ * file for currently evaluated Camphora app.
+ */
+micro.css.include
+p5.web.include-css-file:/modules/{0}/media/main.css
+  :{app-name}
+
+
+
+
+
+/*
+ * Changing title of page to whatever value the user chose
+ * when he created his view.
+ */
+p5.web.page.set-title:x:/@.title-field-name?value
+
+
+
+
+
+/*
+ * Creating main wire frame for view containing its datagrid.
+ */
+create-widget
+  class:container
+  widgets
+
+
+    /*
+     * Row wrapping all toolbars for app.
+     */
+    div
+      class:row
+      widgets
+        div
+          class:col-100
+          widgets
+
+
+            /*
+             * Our actual toolbar.
+             */
+            camphora.widgets.toolbar
+              datagrid:camphora-read-only-datagrid
+              main-toolbar:true
+                import:false
+                export:false
+              filter-toolbar:true
+                filter:true
+                pager:true
+                create:false
+
+
+    /*
+     * Main row wrapping our MySQL datagrid.
+     */
+    div
+      class:row
+      widgets
+        div
+          class:col-100
+          widgets
+
+            /*
+             * Our actual datagrid.
+             */
+            camphora.widgets.datagrid:camphora-read-only-datagrid
+              page-size:10
+              edit:false
+              delete:false
+              headers:true

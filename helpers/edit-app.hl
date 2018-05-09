@@ -274,7 +274,7 @@ create-widget
                           get-widget-property:x:/../*/_event?value
                             value
                           match:x:/@get-widget-property/*/*?value
-                            src:regex:"/^[-_a-z0-9]{3,20}$/i"
+                            src:regex:"/^[-_a-z0-9]{3,20}$/"
                           if:x:/@match/*?count
                             =:int:0
                             or:x:/@match/0?name
@@ -283,7 +283,7 @@ create-widget
                             /*
                              * Not an acceptable name of app.
                              */
-                            micro.windows.info:Not an acceptable name. Use only a-z, A-Z, 0-1, '_' and/or '-' in your app's name
+                            micro.windows.info:Not an acceptable name. Use only a-z, A-Z, 0-1, '_' and/or '-' in your app's name, and between 3 and 20 characters
                               class:micro-windows-info warning
                             micro.page.set-focus:x:/../*/_event?value
 
@@ -438,7 +438,7 @@ create-widget
                       micro.widgets.modal:camphora-select-template-view
                         widgets
                           h3
-                            innerValue:Select template view
+                            innerValue:Create new view
 
                           div
                             class:strip fill
@@ -747,8 +747,76 @@ create-widget
                           div
                             class:strip right
                             widgets
+                              button
+                                innerValue:Suggest new view ...
+                                onclick
+
+                                  /*
+                                   * Creates (yet another) a modal widget that displays the
+                                   * process of suggesting a new view to the user.
+                                   */
+                                  create-widgets
+                                    micro.widgets.modal:camphora-suggest-view
+                                      widgets
+                                        h3
+                                          innerValue:Suggest a view
+                                        p
+                                          innerValue:@"If you want to suggest a view for Camphora Five,
+you can <a target=""_blank"" href=""https://github.com/polterguy/phosphorusfive/issues"">submit an issue ticket</a>.
+Notice, I normally prioritize creating new views suggested by paying customers of mine, unless your suggestion
+is particularly intelligent. I also occassionally release (closed source) view templates only to paying customers.
+If you would like to obtain a proprietary license for Phosphorus Five, and such become a paying customer of mine,
+you can use the button below. All purchases comes with a 30 days guarantee, and are secured by PayPal."
+                                        p
+                                          innerValue:@"<strong>Notice</strong>, clicking the PayPal button below will
+reload your page. Save your work first!"
+                                        div
+                                          class:center
+                                          widgets
+                                            a
+                                              href:#
+                                              class:jumbo-button center
+                                              onclick
+
+                                                /*
+                                                 * Creating a lambda object for being evaluated on next pageload,
+                                                 * before we reload the page.
+                                                 */
+                                                desktop.evaluate.on-next-pageload
+                                                  lambda
+                                                    desktop.license.check
+                                                      force:bool:true
+
+                                                /*
+                                                 * Reloading location.
+                                                 */
+                                                p5.web.reload-location
+
+                                              widgets
+                                                span
+                                                  innerValue:Purchase license
+                                                literal
+                                                  element:span
+                                                  class:icon-paypal
+                                        p
+                                          innerValue:... then afterwards.
+                                        h3
+                                          class:center
+                                          innerValue:@"<a target=""_blank"" href=""https://github.com/polterguy/phosphorusfive/issues"">Suggest a new view</a>"
+                                        div
+                                          class:right
+                                          widgets
+                                            button
+                                              innerValue:I'll do this later thanks ...
+                                              onclick
+
+                                                /*
+                                                 * Deleting (secondary) modal widget.
+                                                 */
+                                                delete-widget:camphora-suggest-view
+
                               button:camphora-create-view-button
-                                innerValue:Create
+                                innerValue:Create view
                                 onclick
 
                                   /*
@@ -785,10 +853,10 @@ create-widget
                                   /*
                                    * Then checking that view's name does not contain illegal
                                    * characters. Notice, we only allowfor a-z, 0-1, '_' and '-'
-                                   * here - And its name must be between 3 and 20 characters long.
+                                   * here - And its name must be between 3 and 30 characters long.
                                    */
                                   match:x:/../*/get-widget-property/[1,2]/*/*?value
-                                    src:regex:"/^[-_a-z0-9]{3,20}$/"
+                                    src:regex:"/^[-_a-z0-9]{3,30}$/"
                                   if:x:/@match/*?count
                                     =:int:0
                                     or:x:/@match/0?value
@@ -797,7 +865,7 @@ create-widget
                                     /*
                                      * Not a good name for the view.
                                      */
-                                    micro.windows.info:Your view's name can only contain a-z, 0-9, '-' and '_' - And its length must be between 3 and 20 characters
+                                    micro.windows.info:Your view's name can only contain a-z, 0-9, '-' and '_' - And its length must be between 3 and 30 characters
                                       class:micro-windows-info warning
                                     micro.page.set-focus:camphora-view-name
                                     return

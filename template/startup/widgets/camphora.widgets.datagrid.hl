@@ -305,6 +305,8 @@ create-event:camphora.widgets.datagrid
           camphora.datagrid.search:x:/../*/_event?value
             filter:x:/@.query?value
             page:x:/@.page?value
+            order-by
+            order-dir
 
         else
 
@@ -319,6 +321,9 @@ create-event:camphora.widgets.datagrid
           eval-x:x:/+/*
           camphora.datagrid.databind:x:/../*/_event?value
             page:x:/@.page?value
+            order-by
+            order-dir
+            filter
 
 
       /*
@@ -509,6 +514,8 @@ create-event:camphora.widgets.datagrid
             filter:string
           micro.lambda.contract.optional:x:/..
             page:long
+            order-by:string
+            order-dir:string
 
           /*
            * Checking if caller provided a [page] argument.
@@ -520,6 +527,8 @@ create-event:camphora.widgets.datagrid
           /*
            * Evaluating file responsible for creating a new record.
            */
+          add:x:/+2
+            src:x:/../*(/order-by|/order-dir)
           eval-x:x:/+/*(/filter|/datagrid)
           micro.evaluate.file:/modules/{0}/helpers/search-datagrid.hl
             :{app-name}
