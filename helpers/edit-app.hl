@@ -559,11 +559,11 @@ create-widget
                                     /*
                                      * Making sure we display description for view.
                                      */
-                                    markdown2html:x:/@load-file/*/*/.configure/*/.description?value
+                                    micro.markdown.markdown2html:x:/@load-file/*/*/.configure/*/.description?value
                                     create-widget
                                       parent:camphora-view-properties
                                       element:div
-                                      innerValue:x:/@markdown2html?value
+                                      innerValue:x:/@micro.markdown.markdown2html?value
 
                                   /*
                                    * View needs to be configured somehow.

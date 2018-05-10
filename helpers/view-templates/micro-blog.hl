@@ -163,7 +163,12 @@ p5.mysql.connect:[camphora]
 /*
  * Transforming Markdown to HTML.
  */
-markdown2html:x:/@.markdown?value
+load-file:/modules/{0}/configuration/html-whitelist.hl
+  :{app-name}
+add:x:/+/*/elements
+  src:x:/@load-file/*/*
+micro.markdown.markdown2html:x:/@.markdown?value
+  elements
 
 
 
@@ -200,4 +205,4 @@ create-widget
               innerValue:x:/@.header?value
             section
               class:content
-              innerValue:x:/@markdown2html?value
+              innerValue:x:/@micro.markdown.markdown2html?value

@@ -349,31 +349,14 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
               return
 
           /*
-           * Transforming Markdown to HMTL.
+           * Transforming Markdown to HMTL, making sure we whitelist it.
            */
-          markdown2html:x:/@.content?value
-
-          /*
-           * Semantically sanity checking Markdown according to HTML
-           * whitelist, to avoid injection of malicious HTML tags.
-           */
-          html2lambda:x:/@markdown2html?value
           load-file:/modules/{0}/configuration/html-whitelist.hl
             :x:/@.app-name?value
-          for-each:x:/@html2lambda/**
-            if:x:/@load-file/*/*/\{0}
-              :x:/@_dp/#?name
-              not
-
-              /*
-               * Illegals HTML tag, hence removing it.
-               */
-              set:x:/@_dp/#
-
-          /*
-           * Transforming lambda to HTML again.
-           */
-          lambda2html:x:/@html2lambda/*
+          add:x:/+/*/elements
+            src:x:/@load-file/*/*
+          micro.markdown.markdown2html:x:/@.content?value
+            elements
 
           /*
            * Returning item to caller.
@@ -390,7 +373,7 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
               element:div
               onclick:event.stopPropagation();
               class:camphora-no-pointer-cursor
-              innerValue:x:/@lambda2html?value
+              innerValue:x:/@micro.markdown.markdown2html?value
 
     /*
      * Since a [.lambda] column isn't part of the SQL executed towards the

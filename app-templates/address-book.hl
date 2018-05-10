@@ -1,7 +1,3 @@
-/*
- * Example Camphora Five CRUD app, which is a simple _"address book"_
- * type of application.
- */
 views
 field
   name:name
@@ -12,9 +8,11 @@ field
   type:textarea
   show:bool:true
 field
-  name:sex
-  type:radio
-    male
-    female
+  name:phone
+  type:text
+  show:bool:false
+field
+  name:email
+  type:text
   show:bool:true
 desktop-icon:bool:true

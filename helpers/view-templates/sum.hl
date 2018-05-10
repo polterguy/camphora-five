@@ -165,7 +165,7 @@ if:x:/@.chart-type?value
  * Making sure we turn the chart's description into HTML, assuming
  * it is Markdown.
  */
-markdown2html:x:/../*/.chart-description?value
+micro.markdown.markdown2html:x:/../*/.chart-description?value
 
 
 
@@ -191,7 +191,7 @@ create-widget
       widgets
         div
           class:col-50
-          innerValue:x:/@markdown2html?value
+          innerValue:x:/@micro.markdown.markdown2html?value
         div
           class:col-50
           widgets

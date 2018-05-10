@@ -1,5 +1,169 @@
 views
-  types:@"
+  done:@"
+/*
+ * A ""count"" type of view template for Camphora Five.
+ *
+ * Will count all [field]'s groupedby by the value of another
+ * [field].
+ */
+
+// Contains the field name to group your SQL by.
+.group-by-field-name:done
+
+// Contains the chart type.
+.chart-type:Pie chart
+
+// Contains the chart header.
+.chart-header:Items that are finished
+
+// Contains the chart description.
+.chart-description:This chart shows how many items are finished, and how many still needs to be finished.
+
+// Includes Micro's CSS files.
+micro.css.include
+
+// Then we connect to our database, and select our sum aggregate values.
+p5.mysql.connect:[camphora]
+
+  // Selecting Markdown field from database.
+  p5.mysql.select:select count(`{1}`), `{1}` from `{0}` group by `{1}`
+    :{app-name}
+    :x:/@.group-by-field-name?value
+
+  // Adding our data to our bar chart below.
+  for-each:x:/@p5.mysql.select/*
+    set:x:/+2/*/*?name
+      src:x:/@_dp/#/1?value
+    eval-x:x:/+/*/*
+    add:x:/../*/create-widget/**/micro.widgets.chart.column/*/data
+      src
+        foo:x:/@_dp/#/0?value
+
+// Checking what type of chart we should create.
+if:x:/@.chart-type?value
+  =:Pie chart
+  set:x:/../*/create-widget/**/micro.widgets.chart.column?name
+    src:micro.widgets.chart.pie
+
+/*
+ * Making items green/red according to type.
+ */
+add:x:/../*/create-widget/**/micro.widgets.chart.pie/*/data/0
+  src
+    color:#fab0b0
+add:x:/../*/create-widget/**/micro.widgets.chart.pie/*/data/1
+  src
+    color:#b0fab0
+
+
+/*
+ * Making sure we turn the chart's description into HTML, assuming
+ * it is Markdown.
+ */
+micro.markdown.markdown2html:x:/../*/.chart-description?value
+
+// Creating our main wire frame widget.
+create-widget
+  class:container
+  widgets
+    div
+      class:row
+      widgets
+        div
+          class:col
+          widgets
+            h3
+              class:center
+              innerValue:x:/@.chart-header?value
+    div
+      class:row
+      widgets
+        div
+          class:col-50
+          innerValue:x:/@micro.markdown.markdown2html?value
+        div
+          class:col-50
+          widgets
+            micro.widgets.chart.column
+              data"
+  count-users:@"
+/*
+ * A ""count"" type of view template for Camphora Five.
+ *
+ * Will count all [field]'s groupedby by the value of another
+ * [field].
+ */
+
+// Contains the field name to group your SQL by.
+.group-by-field-name:user
+
+// Contains the chart type.
+.chart-type:Bar chart
+
+// Contains the chart header.
+.chart-header:Items submitted by users
+
+// Contains the chart description.
+.chart-description:This chart shows how many items have been submitted by your users.
+
+// Includes Micro's CSS files.
+micro.css.include
+
+// Then we connect to our database, and select our sum aggregate values.
+p5.mysql.connect:[camphora]
+
+  // Selecting Markdown field from database.
+  p5.mysql.select:select count(`{1}`), `{1}` from `{0}` group by `{1}`
+    :{app-name}
+    :x:/@.group-by-field-name?value
+
+  // Adding our data to our bar chart below.
+  for-each:x:/@p5.mysql.select/*
+    set:x:/+2/*/*?name
+      src:x:/@_dp/#/1?value
+    eval-x:x:/+/*/*
+    add:x:/../*/create-widget/**/micro.widgets.chart.column/*/data
+      src
+        foo:x:/@_dp/#/0?value
+
+// Checking what type of chart we should create.
+if:x:/@.chart-type?value
+  =:Pie chart
+  set:x:/../*/create-widget/**/micro.widgets.chart.column?name
+    src:micro.widgets.chart.pie
+
+
+/*
+ * Making sure we turn the chart's description into HTML, assuming
+ * it is Markdown.
+ */
+micro.markdown.markdown2html:x:/../*/.chart-description?value
+
+// Creating our main wire frame widget.
+create-widget
+  class:container
+  widgets
+    div
+      class:row
+      widgets
+        div
+          class:col
+          widgets
+            h3
+              class:center
+              innerValue:x:/@.chart-header?value
+    div
+      class:row
+      widgets
+        div
+          class:col-50
+          innerValue:x:/@micro.markdown.markdown2html?value
+        div
+          class:col-50
+          widgets
+            micro.widgets.chart.column
+              data"
+  count-type:@"
 /*
  * A ""count"" type of view template for Camphora Five.
  *
@@ -17,8 +181,7 @@ views
 .chart-header:Items according to type
 
 // Contains the chart description.
-.chart-description:@""This chart shows the relative values of how many todo items of each type there exists
-in your database.""
+.chart-description:This chart shows you how many items of each type there is in the system
 
 // Includes Micro's CSS files.
 micro.css.include
@@ -51,7 +214,7 @@ if:x:/@.chart-type?value
  * Making sure we turn the chart's description into HTML, assuming
  * it is Markdown.
  */
-markdown2html:x:/../*/.chart-description?value
+micro.markdown.markdown2html:x:/../*/.chart-description?value
 
 // Creating our main wire frame widget.
 create-widget
@@ -71,175 +234,7 @@ create-widget
       widgets
         div
           class:col-50
-          innerValue:x:/@markdown2html?value
-        div
-          class:col-50
-          widgets
-            micro.widgets.chart.column
-              data"
-  done:@"
-/*
- * A ""count"" type of view template for Camphora Five.
- *
- * Will count all [field]'s groupedby by the value of another
- * [field].
- */
-
-// Contains the field name to group your SQL by.
-.group-by-field-name:done
-
-// Contains the chart type.
-.chart-type:Pie chart
-
-// Contains the chart header.
-.chart-header:Percentage of TODO items that are done
-
-// Contains the chart description.
-.chart-description:@""This chart shows what percentage of all your TODO items are actually done.
-
-* __Red items__ - Open items.
-* __Green items__ - Closed items.""
-
-// Includes Micro's CSS files.
-micro.css.include
-
-// Then we connect to our database, and select our sum aggregate values.
-p5.mysql.connect:[camphora]
-
-  // Selecting Markdown field from database.
-  p5.mysql.select:select count(`{1}`), `{1}` from `{0}` group by `{1}`
-    :{app-name}
-    :x:/@.group-by-field-name?value
-
-  // Adding our data to our bar chart below.
-  for-each:x:/@p5.mysql.select/*
-    set:x:/+2/*/*?name
-      src:x:/@_dp/#/1?value
-    eval-x:x:/+/*/*
-    add:x:/../*/create-widget/**/micro.widgets.chart.column/*/data
-      src
-        foo:x:/@_dp/#/0?value
-
-// Checking what type of chart we should create.
-if:x:/@.chart-type?value
-  =:Pie chart
-  set:x:/../*/create-widget/**/micro.widgets.chart.column?name
-    src:micro.widgets.chart.pie
-
-
-/*
- * Making sure we turn the chart's description into HTML, assuming
- * it is Markdown.
- */
-markdown2html:x:/../*/.chart-description?value
-
-/*
- * Making items green/red according to type.
- */
-add:x:/../*/create-widget/**/micro.widgets.chart.pie/*/data/0
-  src
-    color:#fab0b0
-add:x:/../*/create-widget/**/micro.widgets.chart.pie/*/data/1
-  src
-    color:#b0fab0
-
-// Creating our main wire frame widget.
-create-widget
-  class:container
-  widgets
-    div
-      class:row
-      widgets
-        div
-          class:col
-          widgets
-            h3
-              class:center
-              innerValue:x:/@.chart-header?value
-    div
-      class:row
-      widgets
-        div
-          class:col-70
-          innerValue:x:/@markdown2html?value
-        div
-          class:col-30
-          widgets
-            micro.widgets.chart.column
-              legend:bool:false
-              data"
-  user:@"
-/*
- * A ""count"" type of view template for Camphora Five.
- *
- * Will count all [field]'s groupedby by the value of another
- * [field].
- */
-
-// Contains the field name to group your SQL by.
-.group-by-field-name:user
-
-// Contains the chart type.
-.chart-type:Bar chart
-
-// Contains the chart header.
-.chart-header:Items reported by users
-
-// Contains the chart description.
-.chart-description:This chart shows how many items are reported from each of your users.
-
-// Includes Micro's CSS files.
-micro.css.include
-
-// Then we connect to our database, and select our sum aggregate values.
-p5.mysql.connect:[camphora]
-
-  // Selecting Markdown field from database.
-  p5.mysql.select:select count(`{1}`), `{1}` from `{0}` group by `{1}`
-    :{app-name}
-    :x:/@.group-by-field-name?value
-
-  // Adding our data to our bar chart below.
-  for-each:x:/@p5.mysql.select/*
-    set:x:/+2/*/*?name
-      src:x:/@_dp/#/1?value
-    eval-x:x:/+/*/*
-    add:x:/../*/create-widget/**/micro.widgets.chart.column/*/data
-      src
-        foo:x:/@_dp/#/0?value
-
-// Checking what type of chart we should create.
-if:x:/@.chart-type?value
-  =:Pie chart
-  set:x:/../*/create-widget/**/micro.widgets.chart.column?name
-    src:micro.widgets.chart.pie
-
-
-/*
- * Making sure we turn the chart's description into HTML, assuming
- * it is Markdown.
- */
-markdown2html:x:/../*/.chart-description?value
-
-// Creating our main wire frame widget.
-create-widget
-  class:container
-  widgets
-    div
-      class:row
-      widgets
-        div
-          class:col
-          widgets
-            h3
-              class:center
-              innerValue:x:/@.chart-header?value
-    div
-      class:row
-      widgets
-        div
-          class:col-50
-          innerValue:x:/@markdown2html?value
+          innerValue:x:/@micro.markdown.markdown2html?value
         div
           class:col-50
           widgets

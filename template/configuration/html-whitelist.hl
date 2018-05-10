@@ -33,9 +33,6 @@ strong
 ul
 img
 
-// Content of elements.
-#text
-
 // Attributes.
 @target
 @title

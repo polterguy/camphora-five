@@ -1,80 +1,37 @@
-/*
- * Example Camphora Five CRUD app, which is a _"sales"_
- * type of application, allowing you to track sales per
- * product and per employee, and also show some basic
- * statistics in addition.
- */
 views
-  sales-per-employee:@"/*
- * This view will show accumulated sales for each of
- * your employees as a bar chart.
- */
-
-
-
-
-
+  sum-month:@"
 /*
- * Contains the field name to group your SQL by.
+ * A ""view sum by month"" type of view template for Camphora Five.
+ *
+ * Will sum all [field]'s for your database by the value of another
+ * [field].
  */
-.group-by-field-name:seller
 
+// Contains the field name to group your SQL by.
+.group-by-field-name:when
 
-
-
-
-/*
- * Contains the field to aggregate the sum by.
- */
+// Contains the field to aggregate the sum by.
 .sum-field-name:amount
 
+// Contains the chart header.
+.chart-header:Sales on a monthly basis
 
+// Contains the chart description.
+.chart-description:This chart displays the total amount of sales for each month.
 
-
-
-/*
- * Contains the chart type.
- */
-.chart-type:Bar chart
-
-
-
-
-
-/*
- * Contains the chart header.
- */
-.chart-header:Accumulated sales per employee
-
-
-
-
-
-/*
- * Includes Micro's CSS files.
- */
+// Includes Micro's CSS files.
 micro.css.include
 
-
-
-
-
-/*
- * Then we connect to our database, and select our sum aggregate values.
- */
+// Then we connect to our database, and select our sum aggregate values.
 p5.mysql.connect:[camphora]
 
-  /*
-   * Selecting Markdown field from database.
-   */
-  p5.mysql.select:select `{2}`, sum(`{0}`) from `{1}` group by `{2}`
+  // Selecting Markdown field from database.
+  p5.mysql.select:select DATE_FORMAT(`{2}`,'%Y, %b') as Date, sum(`{0}`) from `{1}` group by Date
     :x:/@.sum-field-name?value
     :{app-name}
     :x:/@.group-by-field-name?value
 
-  /*
-   * Adding our data to our bar chart below.
-   */
+  // Adding our data to our bar chart below.
   for-each:x:/@p5.mysql.select/*
     set:x:/+2/*/*?name
       src:x:/@_dp/#/0?value
@@ -84,24 +41,13 @@ p5.mysql.connect:[camphora]
         foo:x:/@_dp/#/1?value
 
 
-
-
-
 /*
- * Checking what type of chart we should create.
+ * Making sure we turn the chart's description into HTML, assuming
+ * it is Markdown.
  */
-if:x:/@.chart-type?value
-  =:Pie chart
-  set:x:/../*/create-widget/**/micro.widgets.chart.column?name
-    src:micro.widgets.chart.pie
+micro.markdown.markdown2html:x:/../*/.chart-description?value
 
-
-
-
-
-/*
- * Creating our main wire frame widget.
- */
+// Creating our main wire frame widget.
 create-widget
   class:container
   widgets
@@ -118,81 +64,49 @@ create-widget
       class:row
       widgets
         div
-          class:col-50 offset-25
+          class:col-50
+          innerValue:x:/@micro.markdown.markdown2html?value
+        div
+          class:col-50
           widgets
             micro.widgets.chart.column
               data"
-  sales-per-product:@"
+  sum-product:@"
 /*
- * This view will show accumulated sales per
- * product as a pie chart.
+ * A ""view sum"" type of view template for Camphora Five.
+ *
+ * Will sum all [field]'s for your database by the value of another
+ * [field].
  */
 
-
-
-
-
-/*
- * Contains the field name to group your SQL by.
- */
+// Contains the field name to group your SQL by.
 .group-by-field-name:product
 
-
-
-
-
-/*
- * Contains the field to aggregate the sum by.
- */
+// Contains the field to aggregate the sum by.
 .sum-field-name:amount
 
-
-
-
-
-/*
- * Contains the chart type.
- */
+// Contains the chart type.
 .chart-type:Pie chart
 
+// Contains the chart header.
+.chart-header:Chart header
 
+// Contains the chart description.
+.chart-description:This chart displays the total amount of sales for each product.
 
-
-
-/*
- * Contains the chart header.
- */
-.chart-header:Sales per product
-
-
-
-
-
-/*
- * Includes Micro's CSS files.
- */
+// Includes Micro's CSS files.
 micro.css.include
 
-
-
-
-
-/*
- * Then we connect to our database, and select our sum aggregate values.
- */
+// Then we connect to our database, and select our sum aggregate values.
 p5.mysql.connect:[camphora]
 
-  /*
-   * Selecting Markdown field from database.
-   */
+  // Selecting Markdown field from database.
   p5.mysql.select:select `{2}`, sum(`{0}`) from `{1}` group by `{2}`
     :x:/@.sum-field-name?value
     :{app-name}
     :x:/@.group-by-field-name?value
 
-  /*
-   * Adding our data to our bar chart below.
-   */
+  // Adding our data to our bar chart below.
   for-each:x:/@p5.mysql.select/*
     set:x:/+2/*/*?name
       src:x:/@_dp/#/0?value
@@ -201,25 +115,20 @@ p5.mysql.connect:[camphora]
       src
         foo:x:/@_dp/#/1?value
 
-
-
-
-
-/*
- * Checking what type of chart we should create.
- */
+// Checking what type of chart we should create.
 if:x:/@.chart-type?value
   =:Pie chart
   set:x:/../*/create-widget/**/micro.widgets.chart.column?name
     src:micro.widgets.chart.pie
 
 
-
-
-
 /*
- * Creating our main wire frame widget.
+ * Making sure we turn the chart's description into HTML, assuming
+ * it is Markdown.
  */
+micro.markdown.markdown2html:x:/../*/.chart-description?value
+
+// Creating our main wire frame widget.
 create-widget
   class:container
   widgets
@@ -236,7 +145,91 @@ create-widget
       class:row
       widgets
         div
-          class:col-50 offset-25
+          class:col-50
+          innerValue:x:/@micro.markdown.markdown2html?value
+        div
+          class:col-50
+          widgets
+            micro.widgets.chart.column
+              data"
+  sum-seller:@"
+/*
+ * A ""view sum"" type of view template for Camphora Five.
+ *
+ * Will sum all [field]'s for your database by the value of another
+ * [field].
+ */
+
+// Contains the field name to group your SQL by.
+.group-by-field-name:seller
+
+// Contains the field to aggregate the sum by.
+.sum-field-name:amount
+
+// Contains the chart type.
+.chart-type:Bar chart
+
+// Contains the chart header.
+.chart-header:Sales for each salesman
+
+// Contains the chart description.
+.chart-description:This chart displays the total amount of sales for each of your employees.
+
+// Includes Micro's CSS files.
+micro.css.include
+
+// Then we connect to our database, and select our sum aggregate values.
+p5.mysql.connect:[camphora]
+
+  // Selecting Markdown field from database.
+  p5.mysql.select:select `{2}`, sum(`{0}`) from `{1}` group by `{2}`
+    :x:/@.sum-field-name?value
+    :{app-name}
+    :x:/@.group-by-field-name?value
+
+  // Adding our data to our bar chart below.
+  for-each:x:/@p5.mysql.select/*
+    set:x:/+2/*/*?name
+      src:x:/@_dp/#/0?value
+    eval-x:x:/+/*/*
+    add:x:/../*/create-widget/**/micro.widgets.chart.column/*/data
+      src
+        foo:x:/@_dp/#/1?value
+
+// Checking what type of chart we should create.
+if:x:/@.chart-type?value
+  =:Pie chart
+  set:x:/../*/create-widget/**/micro.widgets.chart.column?name
+    src:micro.widgets.chart.pie
+
+
+/*
+ * Making sure we turn the chart's description into HTML, assuming
+ * it is Markdown.
+ */
+micro.markdown.markdown2html:x:/../*/.chart-description?value
+
+// Creating our main wire frame widget.
+create-widget
+  class:container
+  widgets
+    div
+      class:row
+      widgets
+        div
+          class:col
+          widgets
+            h3
+              class:center
+              innerValue:x:/@.chart-header?value
+    div
+      class:row
+      widgets
+        div
+          class:col-50
+          innerValue:x:/@micro.markdown.markdown2html?value
+        div
+          class:col-50
           widgets
             micro.widgets.chart.column
               data"
