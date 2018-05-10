@@ -1,0 +1,13 @@
+/*
+ * Creates the __[desktop.help-files.xxx.generated-app]__ Active Event.
+ */
+
+/*
+ * This event serves as an Active Event sink, that returns the path to your
+ * Camphora Five app's main help files. It is consumed by the Desktop's help
+ * file logic.
+ */
+create-event:desktop.help-files.generated-app
+
+  return:/modules/{0}/help-files/{0}/
+    :{app-name}

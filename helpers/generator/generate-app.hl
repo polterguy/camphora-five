@@ -497,6 +497,17 @@ move-file:/modules/{0}/startup/widgets/camphora.widgets.toolbar.hl
 
 
 /*
+ * Renaming name of "help files folder" for app.
+ */
+move-folder:/modules/{0}/help-files/app-name/
+  :x:/@split/0/-2?name
+  dest:/modules/{0}/help-files/{0}/
+    :x:/@split/0/-2?name
+
+
+
+
+/*
  * Creating our "insert new item" file, according to app manifest file.
  *
  * We do this by loading the "create-item.hl" file and modify the
@@ -653,6 +664,32 @@ micro.evaluate.file:@CAMPHORA/helpers/generator/replace-app-name.hl
   folder:/modules/{0}/
     :x:/@split/0/-2?name
   app-name:x:/@split/0/-2?name
+
+
+
+
+
+/*
+ * Making sure we forward evaluate expressions inside of app's
+ * "index.hl" help file.
+ */
+load-file:/modules/{0}/help-files/{0}/index.hl
+  :x:/@split/0/-2?name
+eval-x:x:/@load-file/*/*/*/folder
+add:x:/+3/*/*
+  src:/modules/{0}/desktop.hl
+    :x:/@split/0/-2?name
+eval-x:x:/+/*/*
+add:x:/+/*/*/*
+  src
+    href:x:/@split/0/-2?name
+add:x:/@load-file/*/*/micro.widgets.file
+  src
+    files
+lambda2hyper:x:/@load-file/*/*
+save-file:/modules/{0}/help-files/{0}/index.hl
+  :x:/@split/0/-2?name
+  src:x:/@lambda2hyper?value
 
 
 

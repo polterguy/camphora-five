@@ -87,6 +87,9 @@ eval-x:x:/+/*/*
   camphora.datagrid.edited-item-id
     :camphora.{0}.datagrid.edited-item-id
       :x:/../*/app-name?value
+  desktop.help-files.generated-app
+    :desktop.help-files.{0}.generated-app
+      :x:/../*/app-name?value
 
 
 

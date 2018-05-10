@@ -113,7 +113,8 @@ create-widget:camphora-main-container
       /*
        * Returning the root folder for Camphora's help files.
        */
-      return:@CAMPHORA/help-files/Camphora Five/index.hl
+      return:/modules/{0}/help-files/{0}/index.hl
+        :{app-name}
 
 
   widgets

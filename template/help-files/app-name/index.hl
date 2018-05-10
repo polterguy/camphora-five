@@ -1,0 +1,37 @@
+/*
+ * This is our main _"landing page"_ for our Camphora Five
+ * generated app's help files, documenting the app.
+ */
+h2
+  innerValue:{app-name}
+
+micro.widgets.file
+  style:"float:right; margin-left: 1rem; margin-bottom: 1rem;"
+
+p
+  innerValue:@"The <em>'{0}'</em> app allows you to Create, Read, Update, and Delete <em>'{0}'</em> items
+from a database. Hence the acronym <em>'CRUD'</em>. In addition it easily allows you to sort and filter
+your data, and page back and forth. You can also export and import your items to and from Excel, or other
+systems that somehow supports the <em>'CSV'</em> file format."
+    :{app-name}
+
+p
+  innerValue:@"Since the app natively supports phones and tablets, it is a nice data gathering application
+for you, or your organisation, centralizing your data, yet still making it securely available on all
+devices you and your organisation happens to own."
+
+
+/*
+ * All files at "root" of Camphora Five help folder.
+ */
+desktop.help.widgets.help-index
+  folder:/modules/{0}/help-files/{0}/
+    :{app-name}
+
+
+/*
+ * Meta information for all files in module.
+ */
+desktop.help.widgets.file-meta
+  folder:/modules/{0}/
+    :{app-name}
