@@ -99,6 +99,16 @@ create-widgets
               micro.css.delete:x:/@p5.web.widgets.find-like/*/*?value
                 class:camphora-sort-column-asc camphora-sort-column-desc
 
+              /*
+               * Resetting filter.
+               */
+              p5.web.widgets.find-first
+                .toolbar:x:/@.datagrid?value
+              p5.web.widgets.find-first:x:/-/*/*?value
+                .filter
+              set-widget-property:x:/-/*/*?value
+                value:
+
           button
             innerValue:Cancel
             onclick

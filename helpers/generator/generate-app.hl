@@ -302,11 +302,41 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
     =:textarea
 
     /*
-     * Applying preformatted class to the cell.
+     * Making sure we HTML encode its value.
      */
+    eval-x:x:/+/*/*/*/.field-name
     add:x:/@.column/*
       src
-        class:camphora-pre-cell
+        .lambda
+
+          /*
+           * Forward evaluated above.
+           */
+          .field-name:x:/@_dp/#/*/name?value
+
+          /*
+           * HTML encoding value, and wrapping it inside of a 'span' widget.
+           */
+          p5.html.html-encode:x:/../*/row/*/{0}?value
+            :x:/@.field-name?value
+          eval-x:x:/+/*/*/innerValue
+          return
+            literal
+              element:span
+              class:camphora-pre-cell
+              innerValue:x:/@p5.html.html-encode?value
+
+    /*
+     * Since a [.lambda] column isn't part of the SQL executed towards the
+     * database, we'll need to also add an invisible column with the name of
+     * our field.
+     */
+    set:x:/+/*/*?name
+      src:x:/@_dp/#/*/name?value
+    add:x:/@.column
+      src
+        foo
+          visible:bool:false
 
   /*
    * Checking if this is a Markdown type of field, at which point
@@ -449,6 +479,50 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
      * Since a [.lambda] column isn't part of the SQL executed towards the
      * database, we'll need to also add an invisible column with the name of
      * our markdown column.
+     */
+    set:x:/+/*/*?name
+      src:x:/@_dp/#/*/name?value
+    add:x:/@.column
+      src
+        foo
+          visible:bool:false
+
+  /*
+   * Notice, this is a default field (none of the above), and to
+   * make sure some adversary isn't able to inject malicious HTML tags,
+   * that are evaluated on another client, we make sure its value is HTML
+   * encoded.
+   */
+  else
+
+    /*
+     * Making sure we HTML encode its value.
+     */
+    eval-x:x:/+/*/*/*/.field-name
+    add:x:/@.column/*
+      src
+        .lambda
+
+          /*
+           * Forward evaluated above.
+           */
+          .field-name:x:/@_dp/#/*/name?value
+
+          /*
+           * HTML encoding value, and wrapping it inside of a 'span' widget.
+           */
+          p5.html.html-encode:x:/../*/row/*/{0}?value
+            :x:/@.field-name?value
+          eval-x:x:/+/*/*/innerValue
+          return
+            literal
+              element:span
+              innerValue:x:/@p5.html.html-encode?value
+
+    /*
+     * Since a [.lambda] column isn't part of the SQL executed towards the
+     * database, we'll need to also add an invisible column with the name of
+     * our field.
      */
     set:x:/+/*/*?name
       src:x:/@_dp/#/*/name?value

@@ -1,5 +1,4 @@
-
-## Introduction
+## Introduction - THIS IS A STUB, EDIT IT BEFORE RELEASING YOUR APP!!
 
 Your app contains at the very least one _"datagrid"_. This is a tabular view of your data, similar to how
 it looks like in Excel. This datagrid allows you to page back and forth by clicking the arrows in its toolbar,

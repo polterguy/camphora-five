@@ -71,7 +71,7 @@
 .camphora-datagrid tr.camphora-grid-editable td div.camphora-no-pointer-cursor {
     cursor: default;
 }
-.camphora-datagrid tr td.camphora-pre-cell {
+.camphora-datagrid tr td span.camphora-pre-cell {
     white-space: pre;
 }
 .camphora-datagrid tr.camphora-row-is-edited td {

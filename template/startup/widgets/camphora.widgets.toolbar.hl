@@ -150,10 +150,10 @@ create-event:camphora.widgets.toolbar
   /*
    * Returning our toolbar widget to caller.
    */
-  eval-x:x:/+/**(/.datagrid|/.query)
+  eval-x:x:/+/**(/.datagrid|/.query|/.toolbar)
   return
     div
-      .toolbar
+      .toolbar:x:/../*/datagrid?value
       widgets
         div
           class:strip right toolbar
@@ -167,6 +167,33 @@ create-event:camphora.widgets.toolbar
               innerValue:@"<span class=""icon-download2""></span>"
               title:Download filtered items as a CSV file
               .export
+              .onclick
+
+                /*
+                 * Making sure we delete cover widget created as export was initiated.
+                 */
+                try
+                  camphora.export-button._export
+                finally
+                  delete-widget:camphora-export-cover-widget
+
+              onclick
+
+                /*
+                 * Making sure we create a cover widget, and ping back to server again,
+                 * doing our actual import,
+                 */
+                create-widgets
+                  micro.widgets.cover:camphora-export-cover-widget
+                    message:Please wait while I export your items ...
+                eval-x:x:/+/*/*/.event
+                micro.lambda.create-timeout
+                  milliseconds:1
+                  onfinish
+                    .event:x:/../*/_event?value
+                    p5.web.widgets.ajax-events.raise:x:/@.event?value
+                      .onclick
+
               events
 
 
@@ -197,14 +224,14 @@ create-event:camphora.widgets.toolbar
                     delete-widget-property:x:/../*/_event?value
                       disabled
 
-              onclick
+                camphora.export-button._export
 
-                /*
-                 * Invoking widget lambda event that is responsible for
-                 * downloading the database as a CSV file.
-                 */
-                .datagrid:x:/../*/datagrid?value
-                camphora.download-items:x:/-?value
+                  /*
+                   * Invoking widget lambda event that is responsible for
+                   * downloading the database as a CSV file.
+                   */
+                  .datagrid:x:/../*/datagrid?value
+                  camphora.download-items:x:/-?value
 
 
             /*
@@ -241,6 +268,12 @@ create-event:camphora.widgets.toolbar
                  * filtering records, immediately after import.
                  */
                 micro.page.set-focus:x:/@p5.web.widgets.find-first/*/*?value
+
+                /*
+                 * Giving some feedback to user.
+                 */
+                micro.windows.info:Your file was successfully imported
+                  class:micro-windows-info success
 
 
             a
