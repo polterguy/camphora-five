@@ -106,6 +106,26 @@ if:x:@"/@micro.form.serialize/*/.signal/@show-in-grid/""=:bool:true""?count"
 
 
 /*
+ * Making sure app has maximum one [user] and only one [created] field.
+ */
+if:x:/@micro.form.serialize/*/field-type/=user?count
+  >:int:1
+  or:x:/@micro.form.serialize/*/field-type/=created?count
+    >:int:1
+
+
+  /*
+   * More than one [user] or [created] field found!
+   */
+  micro.windows.info:Your app can only have one of each 'Created by' and 'Date/time created' fields
+    class:micro-windows-info warning
+  return:bool:false
+
+
+
+
+
+/*
  * Used to hold actual data for our app.
  */
 .data

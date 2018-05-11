@@ -213,6 +213,7 @@ create-widget
                       add:x:/+
                         src:x:/../*/_event
                       micro.evaluate.file:@CAMPHORA/helpers/save-app.hl
+                      return:x:/-?value
 
                 button
                   innerValue:@"<span class=""icon-power-cord""></span>"

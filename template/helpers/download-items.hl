@@ -75,6 +75,41 @@ set:x:/@.cols?value
 
 
 /*
+ * Dynamically building SQL according to filter condition.
+ */
+.sql
+camphora.datagrid.filter:x:/../*/datagrid?value
+if:x:/@camphora.{0}.datagrid.filter/*
+  :{app-name}
+
+  /*
+   * Filter exists, making sure we only export filtered items.
+   */
+  set:x:/@.sql?value
+    src:select {0} from `{1}` where {2}
+      :x:/@.cols?value
+      :{app-name}
+      :x:/@camphora.{0}.datagrid.filter/0?value
+        :{app-name}
+  add:x:/../*/p5.mysql.connect/*/p5.mysql.select
+    src:x:/@camphora.{0}.datagrid.filter/0/*
+      :{app-name}
+
+else
+
+  /*
+   * No filter.
+   */
+  set:x:/@.sql?value
+    src:select {0} from `{1}`
+      :x:/@.cols?value
+      :{app-name}
+
+
+
+
+
+/*
  * Selecting all records from database, and creating a CSV file out of them.
  */
 p5.mysql.connect:[camphora]
@@ -82,9 +117,7 @@ p5.mysql.connect:[camphora]
   /*
    * Runninq query.
    */
-  p5.mysql.select:@"select {0} from `{1}`"
-    :x:/@.cols?value
-    :{app-name}
+  p5.mysql.select:x:/@.sql?value
 
   /*
    * Creating CSV content out of query's result.

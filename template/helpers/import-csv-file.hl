@@ -198,3 +198,15 @@ p5.mysql.connect:[camphora]
      * Committing transaction.
      */
     p5.mysql.transaction.commit
+
+
+
+
+
+/*
+ * Resets the CSS classes of all "sort header linkbuttons".
+ */
+p5.web.widgets.find-like:x:/../*/datagrid?value
+  class:camphora-sort-column
+micro.css.delete:x:/@p5.web.widgets.find-like/*/*?value
+  class:camphora-sort-column-asc camphora-sort-column-desc

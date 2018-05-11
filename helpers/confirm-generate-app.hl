@@ -76,6 +76,8 @@ create-widgets
                      * Saving of form was not successful.
                      * Returning early, to abort generating of app.
                      */
+                    micro.windows.info:Your app for some reasons is not valid. Try to save it to see why.
+                      class:micro-windows-info warning
                     return
 
                   /*

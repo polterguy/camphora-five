@@ -165,7 +165,7 @@ create-event:camphora.widgets.toolbar
              */
             button
               innerValue:@"<span class=""icon-download2""></span>"
-              title:Download items as CSV file
+              title:Download filtered items as a CSV file
               .export
               events
 
