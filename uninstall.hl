@@ -16,7 +16,7 @@
  */
 delete-event:p5.io.unroll-path.@CAMPHORA
 delete-event:desktop.help-files.02-camphora-five
-delete-event:camphora.generate-app
+delete-event:camphora._generate-app
 delete-event:camphora.version
 delete-event:camphora.widgets._internals.field-definition
 delete-event:camphora.widgets._internals.view-definition

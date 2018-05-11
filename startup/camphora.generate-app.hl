@@ -1,5 +1,5 @@
 /*
- * Creates the __[camphora.generate-app]__ Active Event.
+ * Creates the __[camphora._generate-app]__ Active Event.
  */
 
 
@@ -12,7 +12,7 @@
  * The event expects a __[manifest]__ argument being the manifest declaration
  * for your module, and __[\_arg]__ being the name for your Camphora Five module.
  */
-create-event:camphora.generate-app
+create-event:camphora._generate-app
 
   /*
    * Sanity check.
