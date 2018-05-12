@@ -11,4 +11,4 @@
  */
 create-event:camphora.version
 
-  return:decimal:8.0
+  return:decimal:8.1
