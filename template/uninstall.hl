@@ -19,3 +19,4 @@
 delete-event:camphora.widgets.datagrid
 delete-event:camphora.widgets.toolbar
 delete-event:camphora.version
+delete-event:desktop.help-files.generated-app
