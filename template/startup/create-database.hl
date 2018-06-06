@@ -76,15 +76,15 @@ for-each:x:/@.fields/*
       set:x:/@.cols?value
         src:{0}{1}
           :x:/@.cols?value
-          :@"`{0}` timestamp not null default current_timestamp,
+          :@"`{0}` datetime not null default current_timestamp,
   "
             :x:/@_dp/#/*/name?value
       set:x:/@.cols-changed?value
         src:{0}{1}
           :x:/@.cols-changed?value
           :@"
-  alter table `{0}` modify `{1}` timestamp not null default current_timestamp;
-  alter table `{0}` add `{1}` timestamp not null default current_timestamp;"
+  alter table `{0}` modify `{1}` datetime not null default current_timestamp;
+  alter table `{0}` add `{1}` datetime not null default current_timestamp;"
             :{app-name}
             :x:/@_dp/#/*/name?value
     case:textarea
