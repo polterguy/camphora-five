@@ -220,11 +220,11 @@ for-each:x:/@.signal/--/<-/field
               label
                 class:capitalize
                 widgets
-                  span
-                    innerValue:x:/@_dp/#/*/name?value
                   input
                     type:checkbox
                     .data-field:x:/@_dp/#/*/name?value
+                  span
+                    innerValue:x:/@_dp/#/*/name?value
 
     /*
      * Created type of field.
@@ -297,12 +297,12 @@ for-each:x:/@.signal/--/<-/field
             label
               class:capitalize
               widgets
-                span
-                  innerValue:x:/@_dp/#?name
                 input
                   type:radio
                   name:x:/@for-each/@_dp/#/*/name?value
                   .data-value:x:/@_dp/#?name
+                span
+                  innerValue:x:/@_dp/#?name
 
       /*
        * Now adding radiobutton group widget to modal widget.

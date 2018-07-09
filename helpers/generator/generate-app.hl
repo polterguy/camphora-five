@@ -45,7 +45,9 @@ if
   if
     fetch:x:/0/0?value
       file-exists:/modules/{0}/uninstall.hl
+        :x:/@split/0/-2?name
     micro.evaluate.file:/modules/{0}/uninstall.hl
+      :x:/@split/0/-2?name
   delete-folder:/modules/{0}/
     :x:/@split/0/-2?name
 

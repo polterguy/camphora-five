@@ -236,8 +236,6 @@ for-each:x:/@.signal/--/<-/field
               label
                 class:capitalize
                 widgets
-                  span
-                    innerValue:x:/@_dp/#/*/name?value
                   input
                     type:checkbox
                     .data-field:x:/@_dp/#/*/name?value
@@ -253,6 +251,8 @@ for-each:x:/@.signal/--/<-/field
                         =:int:1
                         set-widget-property:x:/../*/_event?value
                           checked
+                  span
+                    innerValue:x:/@_dp/#/*/name?value
 
     /*
      * Radiobutton type of data.
@@ -273,8 +273,6 @@ for-each:x:/@.signal/--/<-/field
             label
               class:capitalize
               widgets
-                span
-                  innerValue:x:/@_dp/#?name
                 input
                   type:radio
                   name:x:/@for-each/@_dp/#/*/name?value
@@ -292,6 +290,8 @@ for-each:x:/@.signal/--/<-/field
                       =:x:/@.data-value?value
                       set-widget-property:x:/../*/_event?value
                         checked
+                span
+                  innerValue:x:/@_dp/#?name
 
       /*
        * Now adding radiobutton group widget to modal widget.
