@@ -130,6 +130,27 @@ create-widget:camphora-main-container
           class:col-100
           widgets
 
+            /*
+             * Column wrapping the header of application.
+             */
+            div
+              class:left
+              widgets
+
+                /*
+                 * This is just a simple header, displaying some information
+                 * to the user, according to how many items and such there exists
+                 * in the current dataset (according to filter criteria).
+                 *
+                 * It is modified in the Active Event sinks further down in page.
+                 */
+                literal:camphora-app-header
+                  element:h1
+                  class:camphora-header center
+
+        div
+          class:col-100
+          widgets
 
             /*
              * Our actual toolbar.
@@ -153,24 +174,6 @@ create-widget:camphora-main-container
                 filter:true
                 pager:true
                 create:true
-
-            /*
-             * Column wrapping the header of application.
-             */
-            div
-              class:left
-              widgets
-
-                /*
-                 * This is just a simple header, displaying some information
-                 * to the user, according to how many items and such there exists
-                 * in the current dataset (according to filter criteria).
-                 *
-                 * It is modified in the Active Event sinks further down in page.
-                 */
-                literal:camphora-app-header
-                  element:h4
-                  class:camphora-header
 
 
     /*

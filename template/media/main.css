@@ -84,9 +84,14 @@
 .camphora-datagrid tr.camphora-edit-row td {
     background: transparent !important;
     border-top: none;
+    overflow: visible;
 }
 .camphora-navbar .item.leaf>a>span.icon:before {
     content: '\e9ce';
+}
+.camphora-navbar li:not(.tree-leaf)>a.item-label>.folder-close,
+.camphora-navbar li:not(.tree-leaf)>a.item-label>.folder-open {
+    background-image: none;
 }
 .camphora-view-toolbar {
     position: absolute;
