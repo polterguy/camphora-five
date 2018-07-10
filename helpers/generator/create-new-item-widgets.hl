@@ -266,6 +266,20 @@ for-each:x:/@.signal/--/<-/field
     case:radio
 
       /*
+       * Making sure we turn the return widget into a select-panel, and create a label for it.
+       */
+      eval-x:x:/+/*/*/*
+      add:x:/..case/*/add/[1,2]/*/*/*
+        src
+          label
+            style:"margin-bottom:0;"
+            class:capitalize
+            innerValue:x:/@_dp/#/*/name?value
+          div
+            class:select-panel
+            widgets
+
+      /*
        * Adding each option for radiobutton field.
        */
       .first:bool:true
@@ -292,7 +306,7 @@ for-each:x:/@.signal/--/<-/field
          * Adding radio button to modal widget.
          */
         eval-x:x:/+/**(/innerValue|/name|/.data-value)
-        add:x:/..case/*/add/*/*/*/widgets
+        add:x:/..case/*/add/[1,2]/*/*/*/widgets/*/div/*/widgets
           src
             label
               class:capitalize

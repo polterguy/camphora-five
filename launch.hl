@@ -154,7 +154,6 @@ create-widget:camphora-main-container
                  * This is the actual grid wrapping all app manifest files.
                  */
                 micro.widgets.grid:camphora-apps
-                  class:striped hover
                   oninit
 
                     /*

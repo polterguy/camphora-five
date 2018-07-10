@@ -54,7 +54,6 @@ create-event:camphora.widgets._internals.field-definition
   eval-x:x:/+/**/value
   return
     container
-      class:air-inner rounded shaded
       widgets
         container
           class:row
@@ -75,14 +74,14 @@ create-event:camphora.widgets._internals.field-definition
                       .data-field:field-name
                       value:x:/@.signal/--/name?value
                     label
+                      title:If the field shall be displayed in the grid view or not.
                       widgets
-                        span
-                          innerValue:Show
                         input
                           type:checkbox
-                          title:Show field in grid
                           .data-field:show-in-grid
                           checked
+                        span
+                          innerValue:Grid
             container
               class:col-50
               widgets

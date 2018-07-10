@@ -23,7 +23,6 @@ create-event:camphora.widgets._internals.view-definition
   eval-x:x:/+/**/value
   return
     container
-      class:shaded rounded air-inner
       .view
       widgets
         div
@@ -35,12 +34,6 @@ create-event:camphora.widgets._internals.view-definition
               type:text
               value:x:/../*/name?value
               .data-field:view-name
-        micro.widgets.codemirror
-          value:x:/../*/value?value
-          .data-field:view-content
-        div
-          class:right air-top
-          widgets
             button
               innerValue:@"<span class=""icon-bin""></span>"
               title:Delete view
@@ -54,3 +47,9 @@ create-event:camphora.widgets._internals.view-definition
                 p5.web.widgets.find-first-ancestor:x:/../*/_event?value
                   .view
                 delete-widget:x:/-/*/*?value
+                micro.windows.info:View deleted
+                  class:micro-windows-info success
+
+        micro.widgets.codemirror
+          value:x:/../*/value?value
+          .data-field:view-content

@@ -299,9 +299,8 @@ create-widget
                        * Desktop icon checkbox.
                        */
                       label
+                        title:If a desktop icon should be created for your app or not. Notice, if you don't create a desktop icon, you'll have to manually navigate to your app, by remembering its URL/name.
                         widgets
-                          span
-                            innerValue:Desktop icon
                           input:camphora-desktop-icon
                             type:checkbox
                             .data-field:desktop-icon
@@ -319,6 +318,8 @@ create-widget
                                  */
                                 set-widget-property:x:/../*/_event?value
                                   checked
+                          span
+                            innerValue:Desktop icon
 
         div
           class:shaded rounded air-inner
@@ -712,13 +713,13 @@ create-widget
                                         src
                                           label
                                             widgets
-                                              span
-                                                innerValue:x:/@_dp/#?value
                                               input
                                                 type:radio
                                                 name:x:/..for-each/@_dp/#?value
                                                 .data-field:x:/..for-each/@_dp/#?value
                                                 .data-value:x:/@_dp/#?value
+                                              span
+                                                innerValue:x:/@_dp/#?value
 
                                     /*
                                      * Creating widget wrapping all radio buttons.
@@ -748,76 +749,9 @@ create-widget
                           div
                             class:strip right
                             widgets
-                              button
-                                innerValue:Suggest new view ...
-                                onclick
-
-                                  /*
-                                   * Creates (yet another) a modal widget that displays the
-                                   * process of suggesting a new view to the user.
-                                   */
-                                  create-widgets
-                                    micro.widgets.modal:camphora-suggest-view
-                                      widgets
-                                        h3
-                                          innerValue:Suggest a view
-                                        p
-                                          innerValue:@"If you want to suggest a view for Camphora Five,
-you can <a target=""_blank"" href=""https://github.com/polterguy/phosphorusfive/issues"">submit an issue ticket</a>.
-Notice, I normally prioritize creating new views suggested by paying customers of mine, unless your suggestion
-is particularly intelligent. I also occassionally release (closed source) view templates only to paying customers.
-If you would like to obtain a proprietary license for Phosphorus Five, and such become a paying customer of mine,
-you can use the button below. All purchases comes with a 30 days guarantee, and are secured by PayPal."
-                                        p
-                                          innerValue:@"<strong>Notice</strong>, clicking the PayPal button below will
-reload your page. Save your work first!"
-                                        div
-                                          class:center
-                                          widgets
-                                            a
-                                              href:#
-                                              class:jumbo-button center
-                                              onclick
-
-                                                /*
-                                                 * Creating a lambda object for being evaluated on next pageload,
-                                                 * before we reload the page.
-                                                 */
-                                                desktop.evaluate.on-next-pageload
-                                                  lambda
-                                                    desktop.license.check
-                                                      force:bool:true
-
-                                                /*
-                                                 * Reloading location.
-                                                 */
-                                                p5.web.reload-location
-
-                                              widgets
-                                                span
-                                                  innerValue:Purchase license
-                                                literal
-                                                  element:span
-                                                  class:icon-paypal
-                                        p
-                                          innerValue:... then afterwards.
-                                        h3
-                                          class:center
-                                          innerValue:@"<a target=""_blank"" href=""https://github.com/polterguy/phosphorusfive/issues"">Suggest a new view</a>"
-                                        div
-                                          class:right
-                                          widgets
-                                            button
-                                              innerValue:I'll do this later thanks ...
-                                              onclick
-
-                                                /*
-                                                 * Deleting (secondary) modal widget.
-                                                 */
-                                                delete-widget:camphora-suggest-view
-
                               button:camphora-create-view-button
-                                innerValue:Create view
+                                innerValue:Create
+                                title:Creates your view and associates it with your app.
                                 onclick
 
                                   /*
@@ -919,8 +853,88 @@ reload your page. Save your work first!"
                                   /*
                                    * Giving user some feedback.
                                    */
-                                  micro.windows.info:View was successfully associated with your app. Scroll to the bottom of page to edit your view.
+                                  micro.windows.info:View was successfully created
                                     class:micro-windows-info success
+                                  micro.page.scroll-into-view:x:/@create-widgets/*/0?value
+
+                              button
+                                innerValue:Suggest
+                                title:Allows you to suggest a new view for me to create.
+                                onclick
+
+                                  /*
+                                   * Creates (yet another) a modal widget that displays the
+                                   * process of suggesting a new view to the user.
+                                   */
+                                  create-widgets
+                                    micro.widgets.modal:camphora-suggest-view
+                                      widgets
+                                        h3
+                                          innerValue:Suggest a view
+                                        p
+                                          innerValue:@"If you want to suggest a view for Camphora Five,
+you can <a target=""_blank"" href=""https://github.com/polterguy/phosphorusfive/issues"">submit an issue ticket</a>.
+Notice, I normally prioritize creating new views suggested by paying customers of mine, unless your suggestion
+is particularly intelligent. I also occassionally release (closed source) view templates only to paying customers.
+If you would like to obtain a proprietary license for Phosphorus Five, and such become a paying customer of mine,
+you can use the button below. All purchases comes with a 30 days guarantee, and are secured by PayPal."
+                                        p
+                                          innerValue:@"<strong>Notice</strong>, clicking the PayPal button below will
+reload your page. Save your work first!"
+                                        div
+                                          class:center
+                                          widgets
+                                            a
+                                              href:#
+                                              class:jumbo-button center
+                                              onclick
+
+                                                /*
+                                                 * Creating a lambda object for being evaluated on next pageload,
+                                                 * before we reload the page.
+                                                 */
+                                                desktop.evaluate.on-next-pageload
+                                                  lambda
+                                                    desktop.license.check
+                                                      force:bool:true
+
+                                                /*
+                                                 * Reloading location.
+                                                 */
+                                                p5.web.reload-location
+
+                                              widgets
+                                                span
+                                                  innerValue:Purchase license
+                                                literal
+                                                  element:span
+                                                  class:icon-paypal
+                                        p
+                                          innerValue:... then afterwards.
+                                        h3
+                                          class:center
+                                          innerValue:@"<a target=""_blank"" href=""https://github.com/polterguy/phosphorusfive/issues"">Suggest a new view</a>"
+                                        div
+                                          class:right
+                                          widgets
+                                            button
+                                              innerValue:I'll do this later thanks ...
+                                              onclick
+
+                                                /*
+                                                 * Deleting (secondary) modal widget.
+                                                 */
+                                                delete-widget:camphora-suggest-view
+
+                              button:camphora-close-create-view-button
+                                innerValue:Close
+                                title:Closes your create new view dialogue
+                                onclick
+
+                                  /*
+                                   * Deleting modal widget.
+                                   */
+                                  delete-widget:camphora-select-template-view
 
             h3
               innerValue:Views
@@ -929,3 +943,9 @@ reload your page. Save your work first!"
             div
               .views
               widgets
+
+
+/*
+ * Scrolling edit widget into view.
+ */
+micro.page.scroll-into-view:x:/@create-widget?value
