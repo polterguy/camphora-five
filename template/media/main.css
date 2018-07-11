@@ -7,6 +7,37 @@
 .camphora-datagrid {
     table-layout: fixed;
 }
+/* Making sure columns are removed beneath some threshold to avoid making datagrid impossible to read on phones etc */
+.camphora-datagrid tr th,
+.camphora-datagrid tr td {
+    display: none;
+}
+.camphora-datagrid tr th:nth-child(2),
+.camphora-datagrid tr td:nth-child(2) {
+    display: table-cell;
+}
+.camphora-datagrid tr th:last-child,
+.camphora-datagrid tr td:last-child {
+    display: table-cell;
+}
+@media screen and (min-width:400px) {
+.camphora-datagrid tr th:nth-child(3),
+.camphora-datagrid tr td:nth-child(3) {
+    display: table-cell;
+}
+}
+@media screen and (min-width:700px) {
+.camphora-datagrid tr th:nth-child(4),
+.camphora-datagrid tr td:nth-child(4) {
+    display: table-cell;
+}
+}
+@media screen and (min-width:800px) {
+.camphora-datagrid tr th,
+.camphora-datagrid tr td {
+    display: table-cell;
+}
+}
 .camphora-datagrid tr th {
     padding: 0;
 }
@@ -81,10 +112,44 @@
 .camphora-datagrid tr.camphora-row-is-edited:hover td {
     background: rgba(0,0,0,.1) !important;
 }
+.camphora-datagrid tr.camphora-edit-row {
+    display: block;
+    width: calc(100vw - 2rem);
+}
 .camphora-datagrid tr.camphora-edit-row td {
+    width: calc(100vw - 2rem);
     background: transparent !important;
     border-top: none;
     overflow: visible;
+}
+.camphora-datagrid tr.camphora-edit-row td>div {
+    width: calc(100vw - 2rem);
+}
+.camphora-hide-on-small-device {
+    display: none;
+}
+.toolbar button:nth-child(3) {
+    border-left-style: none;
+}
+@media screen and (min-width:800px) {
+.camphora-datagrid tr.camphora-edit-row {
+    width: auto;
+    min-width: calc(800px - 2rem);
+}
+.camphora-datagrid tr.camphora-edit-row td {
+    width: auto;
+    min-width: calc(800px - 2rem);
+}
+.camphora-datagrid tr.camphora-edit-row td>div {
+    width: auto;
+    min-width: calc(800px - 2rem);
+}
+.camphora-hide-on-small-device {
+    display: inline;
+}
+.toolbar button:nth-child(3) {
+    border-left-style: solid;
+}
 }
 .camphora-navbar .item.leaf>a>span.icon:before {
     content: '\e9ce';

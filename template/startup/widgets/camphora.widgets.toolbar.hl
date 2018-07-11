@@ -119,9 +119,9 @@ create-event:camphora.widgets.toolbar
       =:bool:false
 
       /*
-       * Removing export button.
+       * Removing filtering button.
        */
-      set:x:/../*/return/*/div/*/widgets/0/-/*/widgets/*/*(/.filtering)/.
+      set:x:/../*/return/*/div/**/.filtering/.
 
     /*
      * Checking if caller does not want to allow paging, at
@@ -131,21 +131,21 @@ create-event:camphora.widgets.toolbar
       =:bool:false
 
       /*
-       * Removing pager button.
+       * Removing pager buttons entire strip.
        */
-      set:x:/../*/return/*/div/*/widgets/0/-/*/widgets/*/*(/.pager)/.
+      set:x:/../*/return/*/div/**/.pager/././.
 
     /*
-     * Checking if caller does not want to allow paging, at
-     * which point we remove the paging parts of the toolbar.
+     * Checking if caller does not want to allow creating new items, at
+     * which point we remove the create new item parts of the toolbar.
      */
     if:x:(/../*/filter-toolbar/*/create|/@.defaults/*/filter-toolbar/*/create)/$?value.bool
       =:bool:false
 
       /*
-       * Removing pager button.
+       * Removing create button's entire strip.
        */
-      set:x:/../*/return/*/div/*/widgets/0/-/*/widgets/*/*(/.create)/.
+      set:x:/../*/return/*/div/**/.create/././.
 
   /*
    * Returning our toolbar widget to caller.
@@ -166,6 +166,7 @@ create-event:camphora.widgets.toolbar
             button
               innerValue:@"<span class=""icon-download2""></span>"
               title:Download filtered items as a CSV file
+              class:camphora-hide-on-small-device
               .export
               .onclick
 
@@ -239,6 +240,7 @@ create-event:camphora.widgets.toolbar
              */
             micro.widgets.upload-button
               title:Import a CSV file from your local disc
+              class:camphora-hide-on-small-device
               accept:.csv
               .import
               .onupload
@@ -285,111 +287,11 @@ create-event:camphora.widgets.toolbar
 
 
         /*
-         * Pager toolbar, containing paging buttons and
-         * filter textbox and button.
+         * Pager toolbar, contains paging buttons.
          */
         div
           class:strip right
           widgets
-
-
-            /*
-             * Add new record button.
-             */
-            button
-              innerValue:@"<span class=""icon-plus""></span>"
-              class:large
-              title:Create new record
-              .create
-              onclick
-
-                /*
-                 * Invoking widget lambda event that is responsible for
-                 * creating a new item.
-                 */
-                .datagrid:x:/../*/datagrid?value
-                camphora.create-new-item:x:/-?value
-
-
-            /*
-             * Search textbox.
-             */
-            input
-              type:text
-              placeholder:Filter ...
-              .filter
-              .filtering
-              onkeydown:@"if (event.keyCode == 13) {p5.$(event.target.parentNode.querySelector('.search-button')).raise('onclick');return false;}"
-              events
-
-
-                /*
-                 * Active Event sink invoked when for some reasons the filter textbox
-                 * should get focus.
-                 */
-                camphora.toolbar._set-focus-to-filter-textbox
-
-                  /*
-                   * Checking that this is our guy.
-                   */
-                  .datagrid:x:/../*/datagrid?value
-                  if:x:/../*/_arg?value
-                    !=:x:/@.datagrid?value
-                    return
-                  micro.page.set-focus:x:/../*/_event?value
-
-              oninit
-
-                /*
-                 * Forward evaluated above.
-                 */
-                .query:x:/../*/query?value
-
-                /*
-                 * Sets the initial filter of our filter textbox, if any.
-                 */
-                if:x:/@.query?value
-                  set-widget-property:x:/../*/_event?value
-                    value:x:/@.query?value
-
-                /*
-                 * Setting initial focus to search textbox.
-                 */
-                micro.page.set-focus:x:/../*/_event?value
-
-
-            /*
-             * Search button.
-             */
-            button
-              innerValue:@"<span class=""icon-search""></span>"
-              title:Search for items
-              .filtering
-              class:search-button
-              onclick
-
-                /*
-                 * Retrieving search query.
-                 */
-                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
-                  .toolbar
-                p5.web.widgets.find-first:x:/-/*/*?value
-                  .filter
-                get-widget-property:x:/-/*/*?value
-                  value
-
-                /*
-                 * Re-databinding datagrid, now with a search filter condition.
-                 */
-                .datagrid:x:/../*/datagrid?value
-                eval-x:x:/+/*
-                camphora.datagrid.search:x:/@.datagrid?value
-                  filter:x:/@get-widget-property/*/*?value
-
-                /*
-                 * Setting focus to search button.
-                 */
-                micro.page.set-focus:x:/@p5.web.widgets.find-first/*/*?value
 
 
             /*
@@ -506,3 +408,118 @@ create-event:camphora.widgets.toolbar
                  */
                 .datagrid:x:/../*/datagrid?value
                 camphora.datagrid.databind.next:x:/-?value
+
+
+        /*
+         * Filter strip, contains filtering textbox and button.
+         */
+        div
+          class:strip right
+          widgets
+
+
+            /*
+             * Search textbox.
+             */
+            input
+              type:text
+              placeholder:Filter ...
+              .filter
+              .filtering
+              onkeydown:@"if (event.keyCode == 13) {p5.$(event.target.parentNode.querySelector('.search-button')).raise('onclick');return false;}"
+              events
+
+
+                /*
+                 * Active Event sink invoked when for some reasons the filter textbox
+                 * should get focus.
+                 */
+                camphora.toolbar._set-focus-to-filter-textbox
+
+                  /*
+                   * Checking that this is our guy.
+                   */
+                  .datagrid:x:/../*/datagrid?value
+                  if:x:/../*/_arg?value
+                    !=:x:/@.datagrid?value
+                    return
+                  micro.page.set-focus:x:/../*/_event?value
+
+              oninit
+
+                /*
+                 * Forward evaluated above.
+                 */
+                .query:x:/../*/query?value
+
+                /*
+                 * Sets the initial filter of our filter textbox, if any.
+                 */
+                if:x:/@.query?value
+                  set-widget-property:x:/../*/_event?value
+                    value:x:/@.query?value
+
+                /*
+                 * Setting initial focus to search textbox.
+                 */
+                micro.page.set-focus:x:/../*/_event?value
+
+
+            /*
+             * Search button.
+             */
+            button
+              innerValue:@"<span class=""icon-search""></span>"
+              title:Search for items
+              .filtering
+              class:search-button
+              onclick
+
+                /*
+                 * Retrieving search query.
+                 */
+                p5.web.widgets.find-first-ancestor:x:/../*/_event?value
+                  .toolbar
+                p5.web.widgets.find-first:x:/-/*/*?value
+                  .filter
+                get-widget-property:x:/-/*/*?value
+                  value
+
+                /*
+                 * Re-databinding datagrid, now with a search filter condition.
+                 */
+                .datagrid:x:/../*/datagrid?value
+                eval-x:x:/+/*
+                camphora.datagrid.search:x:/@.datagrid?value
+                  filter:x:/@get-widget-property/*/*?value
+
+                /*
+                 * Setting focus to search button.
+                 */
+                micro.page.set-focus:x:/@p5.web.widgets.find-first/*/*?value
+
+
+        /*
+         * Create strip, contains create new items button.
+         */
+        div
+          class:strip right
+          widgets
+
+
+            /*
+             * Add new record button.
+             */
+            button
+              innerValue:@"<span class=""icon-plus""></span>"
+              class:large
+              title:Create new record
+              .create
+              onclick
+
+                /*
+                 * Invoking widget lambda event that is responsible for
+                 * creating a new item.
+                 */
+                .datagrid:x:/../*/datagrid?value
+                camphora.create-new-item:x:/-?value

@@ -152,15 +152,16 @@ create-widget:camphora-main-container
                 filter:true
                 pager:true
                 create:true
-        div
-          class:col-100
-          widgets
 
             /*
              * Column wrapping the header of application.
              */
+        div
+          class:col-100
+          style:"margin-top:-1rem;"
+          widgets
             div
-              class:left
+              class:right
               widgets
 
                 /*
@@ -171,7 +172,8 @@ create-widget:camphora-main-container
                  * It is modified in the Active Event sinks further down in page.
                  */
                 literal:camphora-app-header
-                  element:h1
+                  style:"margin:0;"
+                  element:label
                   class:camphora-header center
 
 
@@ -344,8 +346,7 @@ create-widget:camphora-main-container
                    * Only 1 record matching current filter.
                    */
                   set-widget-property:camphora-app-header
-                    innerValue:1 record of type '{0}'
-                      :{app-name}
+                    innerValue:1 record
 
                 else-if:x:/../*/count?value.long
                   =:long:0
@@ -354,8 +355,7 @@ create-widget:camphora-main-container
                    * No matching records.
                    */
                   set-widget-property:camphora-app-header
-                    innerValue:No records of type '{0}'
-                      :{app-name}
+                    innerValue:No records
 
                 else
 
@@ -363,9 +363,8 @@ create-widget:camphora-main-container
                    * More than 1 matching record matching our current filter.
                    */
                   set-widget-property:camphora-app-header
-                    innerValue:{0} records of type '{1}'
+                    innerValue:{0} records
                       :x:/../*/count?value
-                      :{app-name}
 
               else
 
@@ -377,7 +376,6 @@ create-widget:camphora-main-container
                 +:x:/../*/page?value
                   _:1
                 set-widget-property:camphora-app-header
-                  innerValue:Page {0} of {1} records of type '{2}'
+                  innerValue:Page {0} of {1} records
                     :x:/@+?value
                     :x:/../*/count?value
-                    :{app-name}

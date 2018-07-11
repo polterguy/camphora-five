@@ -460,7 +460,7 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
            * Formatting date.
            */
           p5.types.date.format:x:/@.value?value
-            format:@"ddd d. MMM HH:mm yyyy"
+            format:@"d. MMM yyyy"
 
           /*
            * Returning item to caller.
@@ -639,17 +639,13 @@ if:x:/../*/load-file/[0,1]/*/*/views/*
 
 
 /*
- * Making sure that our "edit-item.hl" file knows how many visible columns
- * there are in the datagrid in total in its [.column-count] node - In addition
- * to creating its form collection for editing an item.
+ * Generating our "edit-item.hl" file.
  */
 load-file:/modules/{0}/helpers/edit-item.hl
   :x:/@split/0/-2?name
   convert:false
 hyper2lambda:x:/@load-file/*?value
   keep-comments:true
-set:x:/@hyper2lambda/*/.column-count?value
-  src:x:@"/../*/load-file/[0,1]/*/*/field/*/show/""=:bool:true""?count"
 add:x:/+/*
   src:x:/../*/load-file/[0,1]/*/*/field
 add:x:/@hyper2lambda/*/create-widget/**/widgets/=data

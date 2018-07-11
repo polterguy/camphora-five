@@ -31,34 +31,6 @@ micro.lambda.contract.min:x:/..
 
 
 /*
- * How many visible columns we have in our table in total.
- */
-.column-count
-
-
-
-
-
-/*
- * Checking if deletion of items is allowed, at which point we'll have to modify the
- * colspan of our edit row widget.
- */
-if:x:/../*/delete?value
-  =:bool:true
-
-  /*
-   * We need to increment the [.column-count] by 1, to accommodate
-   * for the "delete item" row.
-   */
-  set:x:/@.column-count?value
-    +:x:/@.column-count?value
-      _:1
-
-
-
-
-
-/*
  * Toggling editing row CSS class on row caller wants to edit.
  */
 micro.css.toggle:x:/../*/row-widget-id?value
@@ -223,7 +195,6 @@ create-widget
 
   widgets
     td
-      colspan:x:/@.column-count?value
       widgets
         div
           class:shaded rounded air-inner air-top air-bottom bg
