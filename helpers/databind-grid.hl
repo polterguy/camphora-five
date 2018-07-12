@@ -30,32 +30,27 @@ for-each:x:/@list-files/*?name
   add:x:/../*/micro.widgets.grid.databind
     src
       item
+        .row
+          style:"cursor:pointer;"
+          onclick
+
+            /*
+             * Forward evaluated above.
+             */
+            .filename:x:/@_dp?value
+
+            /*
+             * Evaluating file responsible for editing app.
+             */
+            eval-x:x:/+/*
+            micro.evaluate.file:@CAMPHORA/helpers/edit-app.hl
+              filename:x:/@.filename?value
         name:x:/@split/0/-2?name
         edit
           widgets
             div
               class:strip right
               widgets
-
-                /*
-                 * Edit app manifest button.
-                 */
-                button
-                  innerValue:@"<span class=""icon-pencil""></span>"
-                  title:Edit your app
-                  onclick
-
-                    /*
-                     * Forward evaluated above.
-                     */
-                    .filename:x:/@_dp?value
-
-                    /*
-                     * Evaluating file responsible for editing app.
-                     */
-                    eval-x:x:/+/*
-                    micro.evaluate.file:@CAMPHORA/helpers/edit-app.hl
-                      filename:x:/@.filename?value
 
                 /*
                  * Copy app manifest button.

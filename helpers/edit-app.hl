@@ -750,7 +750,7 @@ create-widget
                             class:strip right
                             widgets
                               button:camphora-create-view-button
-                                innerValue:Create
+                                innerValue:OK
                                 title:Creates your view and associates it with your app.
                                 onclick
 
