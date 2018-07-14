@@ -425,10 +425,18 @@ for-each:x:@"/../*/load-file/[0,1]/*/*/field(/*/show/""=:bool:true"")/."
    */
   else-if:x:/@_dp/#/*/type?value
     =:created
+    or:x:/@_dp/#/*/type?value
+      =:datetime
+    or:x:/@_dp/#/*/type?value
+      =:date
 
     /*
-     * DateTime/created type of field, making sure we format the date.
+     * DateTime/created, date or datetime type of field, making sure we format the date.
      */
+    if:x:/@_dp/#/*/type?value
+      =:datetime
+      set:x:/..else-if/*/add/*/*/.lambda/**/p5.types.date.format/*/format?value
+        src:@"d. MMM yyyy HH:mm"
     eval-x:x:/+/*/*/*/.field-name
     add:x:/@.column/*
       src

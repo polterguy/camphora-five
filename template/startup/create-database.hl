@@ -72,6 +72,36 @@ for-each:x:/@.fields/*
   alter table `{0}` add `{1}` int(10) null;"
             :{app-name}
             :x:/@_dp/#/*/name?value
+    case:date
+      set:x:/@.cols?value
+        src:{0}{1}
+          :x:/@.cols?value
+          :@"`{0}` date null,
+  "
+            :x:/@_dp/#/*/name?value
+      set:x:/@.cols-changed?value
+        src:{0}{1}
+          :x:/@.cols-changed?value
+          :@"
+  alter table `{0}` modify `{1}` date null;
+  alter table `{0}` add `{1}` date null;"
+            :{app-name}
+            :x:/@_dp/#/*/name?value
+    case:datetime
+      set:x:/@.cols?value
+        src:{0}{1}
+          :x:/@.cols?value
+          :@"`{0}` datetime null,
+  "
+            :x:/@_dp/#/*/name?value
+      set:x:/@.cols-changed?value
+        src:{0}{1}
+          :x:/@.cols-changed?value
+          :@"
+  alter table `{0}` modify `{1}` datetime null;
+  alter table `{0}` add `{1}` datetime null;"
+            :{app-name}
+            :x:/@_dp/#/*/name?value
     case:created
       set:x:/@.cols?value
         src:{0}{1}

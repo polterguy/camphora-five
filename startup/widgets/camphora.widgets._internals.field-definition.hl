@@ -144,6 +144,12 @@ create-event:camphora.widgets._internals.field-definition
                           innerValue:Number
                           value:number
                         option
+                          innerValue:Date
+                          value:date
+                        option
+                          innerValue:Date time
+                          value:datetime
+                        option
                           innerValue:Select dropdown
                           value:select
                         option

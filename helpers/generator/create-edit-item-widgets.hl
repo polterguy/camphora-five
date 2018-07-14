@@ -44,6 +44,8 @@ for-each:x:/@.signal/--/<-/field
      */
     case:text
     case:number
+    case:date
+    case:datetime
 
       /*
        * Checking if this is our first "focusable" item.
@@ -78,6 +80,26 @@ for-each:x:/@.signal/--/<-/field
         add:x:/..case/*/add/*/*/*/*/input
           src
             type:number
+
+      else-if:x:/@_dp/#/*/type?value
+        =:date
+
+        /*
+         * Date type of textbox.
+         */
+        add:x:/..case/*/add/*/*/*/*/input
+          src
+            type:date
+
+      else-if:x:/@_dp/#/*/type?value
+        =:datetime
+
+        /*
+         * Datetime type of textbox.
+         */
+        add:x:/..case/*/add/*/*/*/*/input
+          src
+            type:datetime-local
 
       else
 
