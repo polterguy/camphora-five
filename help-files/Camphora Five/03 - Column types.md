@@ -8,6 +8,8 @@ list, and their most important traits explained.
 * __Markdown content__ - A Markdown field, that you can edit using a web based Markdown editor, and that will be formatted as HTML or _"rich text"_ when displayed.
 * __Checkbox__ - A yes/no type of field.
 * __Number__ - A number type of input.
+* __Date__ - A date type of input.
+* __Datetime__ - A date and time type of input.
 * __Select dropdown__ - Allows the user to select from a pre-defined set of different options from a _"dropdown"_ widget.
 * __Radiobuttons__ - Similar to select dropdown, but will display the different options as radiobuttons.
 * __Date/time created__ - Not per se an input field, but an automatically created field, that allows you to track when the item was actually created.
