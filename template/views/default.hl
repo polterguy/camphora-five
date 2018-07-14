@@ -153,9 +153,14 @@ create-widget:camphora-main-container
                 pager:true
                 create:true
 
-            /*
-             * Column wrapping the header of application.
-             */
+
+    /*
+     * Row wrapping header for app.
+     */
+    div
+      class:row hide
+      .camphora-view-extra
+      widgets
         div
           class:col-100
           style:"margin-top:-1rem;"
@@ -175,13 +180,89 @@ create-widget:camphora-main-container
                   style:"margin:0;"
                   element:label
                   class:camphora-header center
+                  events
+
+
+                    /*
+                     * Invoked when for some reasons the datagrid has been databound.
+                     * The datagrid ID will be given as [_arg], the current page as
+                     * [page], whether nor not the datagrid has more pages as a boolean
+                     * [more-pages], and the total number of items matching the current
+                     * filter as [count].
+                     *
+                     * In this widget lambda event, we simply set the label's [innerValue]
+                     * to the total number of items matching the [filter].
+                     */
+                    camphora.datagrid.databound
+
+                      /*
+                       * Checking if this is "our" datagrid.
+                       */
+                      if:x:/../*/_arg?value
+                        !=:camphora-main-datagrid
+                        return
+
+                      /*
+                       * Checking if the current filter contains more items
+                       * than we have room for in one page.
+                       */
+                      .page-size:x:/../*/.page-size?value
+                      if:x:/../*/count?value
+                        <=:x:/@.page-size?value
+
+                        /*
+                         * Current page shows all items in filter.
+                         *
+                         * Checking number of items, and modifying the header accordingly.
+                         */
+                        if:x:/../*/count?value.long
+                          =:long:1
+
+                          /*
+                           * Only 1 record matching current filter.
+                           */
+                          set-widget-property:camphora-app-header
+                            innerValue:1 record
+
+                        else-if:x:/../*/count?value.long
+                          =:long:0
+
+                          /*
+                           * No matching records.
+                           */
+                          set-widget-property:camphora-app-header
+                            innerValue:No records
+
+                        else
+
+                          /*
+                           * More than 1 matching record matching our current filter.
+                           */
+                          set-widget-property:camphora-app-header
+                            innerValue:{0} records
+                              :x:/../*/count?value
+
+                      else
+
+                        /*
+                         * We don't have room for all filtered records in one page.
+                         * Modifying [innerValue] to contain record count in addition
+                         * to the current page number.
+                         */
+                        +:x:/../*/page?value
+                          _:1
+                        set-widget-property:camphora-app-header
+                          innerValue:Page {0} of {1} records
+                            :x:/@+?value
+                            :x:/../*/count?value
 
 
     /*
      * Row wrapping view TreeView "navbar".
      */
     div:camphora-navbar
-      class:row
+      class:row hide
+      .camphora-view-extra
       widgets
         div
           class:col-100
@@ -299,83 +380,3 @@ create-widget:camphora-main-container
               edit:true
               delete:true
               headers:true
-
-          /*
-           * Supporting widget lambda events, that are subscribers
-           * to events raise by the Camphora widgets internally.
-           */
-          events
-
-
-            /*
-             * Invoked when for some reasons the datagrid has been databound.
-             * The datagrid ID will be given as [_arg], the current page as
-             * [page], whether nor not the datagrid has more pages as a boolean
-             * [more-pages], and the total number of items matching the current
-             * filter as [count].
-             *
-             * In this widget lambda event, we simply set the label's [innerValue]
-             * to the total number of items matching the [filter].
-             */
-            camphora.datagrid.databound
-
-              /*
-               * Checking if this is "our" datagrid.
-               */
-              if:x:/../*/_arg?value
-                !=:camphora-main-datagrid
-                return
-
-              /*
-               * Checking if the current filter contains more items
-               * than we have room for in one page.
-               */
-              .page-size:x:/../*/.page-size?value
-              if:x:/../*/count?value
-                <=:x:/@.page-size?value
-
-                /*
-                 * Current page shows all items in filter.
-                 *
-                 * Checking number of items, and modifying the header accordingly.
-                 */
-                if:x:/../*/count?value.long
-                  =:long:1
-
-                  /*
-                   * Only 1 record matching current filter.
-                   */
-                  set-widget-property:camphora-app-header
-                    innerValue:1 record
-
-                else-if:x:/../*/count?value.long
-                  =:long:0
-
-                  /*
-                   * No matching records.
-                   */
-                  set-widget-property:camphora-app-header
-                    innerValue:No records
-
-                else
-
-                  /*
-                   * More than 1 matching record matching our current filter.
-                   */
-                  set-widget-property:camphora-app-header
-                    innerValue:{0} records
-                      :x:/../*/count?value
-
-              else
-
-                /*
-                 * We don't have room for all filtered records in one page.
-                 * Modifying [innerValue] to contain record count in addition
-                 * to the current page number.
-                 */
-                +:x:/../*/page?value
-                  _:1
-                set-widget-property:camphora-app-header
-                  innerValue:Page {0} of {1} records
-                    :x:/@+?value
-                    :x:/../*/count?value
