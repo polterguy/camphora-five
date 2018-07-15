@@ -185,6 +185,7 @@ for-each:x:/@.signal/--/<-/field
           label
             innerValue:x:/@_dp/#/*/name?value
             class:capitalize
+            style:"margin-bottom:0;"
           micro.widgets.codemirror
             mode:markdown
             track-dirty:bool:false
@@ -238,6 +239,7 @@ for-each:x:/@.signal/--/<-/field
       add:x:/../*/return
         src
           div
+            class:select-panel
             widgets
               label
                 class:capitalize

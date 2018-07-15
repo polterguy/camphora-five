@@ -182,11 +182,12 @@ for-each:x:/@.signal/--/<-/field
       /*
        * Adding widget to modal window.
        */
-      eval-x:x:/+/*/*/*(/placeholder|/.data-field|/value)
+      eval-x:x:/+/*/*/*(/innerValue|/.data-field|/value)
       add:x:/../*/return
         src
           label
             innerValue:x:/@_dp/#/*/name?value
+            style:"margin-bottom:0;"
             class:capitalize
           micro.widgets.codemirror
             mode:markdown
@@ -254,6 +255,7 @@ for-each:x:/@.signal/--/<-/field
       add:x:/../*/return
         src
           div
+            class:select-panel
             widgets
               label
                 class:capitalize
@@ -361,7 +363,7 @@ for-each:x:/@.signal/--/<-/field
               p5.types.date.format:x:/-?value
                 format:@"ddd d. MMM HH:mm yyyy"
               set-widget-property:x:/../*/_event?value
-                innerValue:"<span>{0} - </span><strong>{1}</strong>"
+                innerValue:"<strong>{0} - </strong>{1}"
                   :x:/@.name?value
                   :x:/@p5.types.date.format?value
 
@@ -377,12 +379,13 @@ for-each:x:/@.signal/--/<-/field
       add:x:/../*/return
         src
           container
+            element:p
             class:camphora-created
             widgets
-              span
+              strong
                 innerValue:"{0} - "
                   :x:/@_dp/#/*/name?value
-              strong
+              span
                 innerValue:{{{0}}}
                   :x:/@_dp/#/*/name?value
 

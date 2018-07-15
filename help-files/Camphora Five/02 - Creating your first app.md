@@ -70,6 +70,9 @@ your app.
 In general, your CRUD apps will be _"responsive"_. This implies that they'll also perfectly work on your
 smart phone, tablet, and other types of devices capable of rendering HTML. However, since a phone typically
 doesn't have the same resolution as a computer system, this might have consequences for the number of columns
-you want to display in the grid portions of your apps. This allows you to easily collect data using your phone,
-while you're out working on some project, gathering data - For then to later export your data to any other type
-of system, that can somehow handle CSV files.
+that will be shown while you use a Camphora Five app on your phone or tablet. On a device with very small
+resolution, only the first column will be visible, since otherwise the app would be almost impossible to use.
+On larger devices, more and more columns are incrementally shown. You can also explicitly declare to some
+extent which fields from your app you want to show in the datagrid view of your app.
+
+Due to the above, it might be smart to make sure your most important fields are the first fields of your app.
